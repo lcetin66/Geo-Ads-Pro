@@ -5,7 +5,7 @@ Tags: ads, geo ads, banner, advertising, widget, shortcode, rest api
 Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -91,13 +91,20 @@ Eklenti geo-ads-pro text domain kullanır ve languages klasöründen çeviri yü
 Yeni arayüz metinleri __(), esc_html__(), esc_html_e() veya esc_attr__() ile çevrilebilir hale getirilmelidir.
 
 === Installation ===
-1. GitHub reposundaki dist/geo-ads-pro-1.0.5.zip dosyasını indirin
+1. GitHub reposundaki dist/geo-ads-pro-1.0.6.zip dosyasını indirin
 2. WordPress Admin -> Plugins -> Add New -> Upload Plugin ekranını açın
-3. geo-ads-pro-1.0.5.zip dosyasını seçip Install Now ile yükleyin
+3. geo-ads-pro-1.0.6.zip dosyasını seçip Install Now ile yükleyin
 4. Eklentiyi etkinleştirin
 5. Geo Ads Pro menüsünden bölgeleri ve banner’ları yönetin
 
 === Changelog ===
+= 1.0.6 =
+* Analytics ekranındaki Chart.js CDN bağımlılığı kaldırıldı
+* Analytics grafiği native canvas ile çalışacak hale getirildi
+* Analytics tablosu eklendi; JS kapalı ya da grafik çizilemezse veriler yine görünür
+* Analytics asset enqueue hook eşleşmesi daha dayanıklı hale getirildi
+* Asset/schema sürümü 1.0.6 / 2026060606 olarak güncellendi
+
 = 1.0.5 =
 * Admin banner yükleme alanı drag & drop destekli hale getirildi
 * Çoklu banner dosyası yükleme desteği eklendi

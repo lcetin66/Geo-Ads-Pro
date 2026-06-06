@@ -91,6 +91,9 @@ msgstr ""
 msgid "Click URL"
 msgstr ""
 
+msgid "Clicks"
+msgstr ""
+
 msgid "Current Mappings"
 msgstr ""
 
@@ -139,6 +142,9 @@ msgstr ""
 msgid "Invalid request."
 msgstr ""
 
+msgid "Impressions"
+msgstr ""
+
 msgid "Last Upgrade"
 msgstr ""
 
@@ -152,6 +158,9 @@ msgid "Location Mode:"
 msgstr ""
 
 msgid "No region selected."
+msgstr ""
+
+msgid "No analytics data yet."
 msgstr ""
 
 msgid "Plugin Version"
@@ -251,6 +260,9 @@ msgid "Upload"
 msgstr ""
 
 msgid "Upload error."
+msgstr ""
+
+msgid "Upload / Edit Banners"
 msgstr ""
 
 msgid "Variants"

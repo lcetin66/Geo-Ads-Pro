@@ -3,7 +3,12 @@
 
 #gapChart {
     margin-top: 30px;
+    max-width: 100%;
     background: #fff;
     border: 1px solid #ddd;
     padding: 20px;
+}
+
+.gap-analytics-table {
+    margin-top: 24px;
 }

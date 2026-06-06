@@ -91,6 +91,9 @@ msgstr "Şehir → Bölge Eşleştirme"
 msgid "Click URL"
 msgstr "Tıklama URL"
 
+msgid "Clicks"
+msgstr "Tıklamalar"
+
 msgid "Current Mappings"
 msgstr "Mevcut Eşleştirmeler"
 
@@ -139,6 +142,9 @@ msgstr "Geçersiz dosya türü."
 msgid "Invalid request."
 msgstr "Geçersiz istek."
 
+msgid "Impressions"
+msgstr "Gösterimler"
+
 msgid "Last Upgrade"
 msgstr "Son Upgrade"
 
@@ -153,6 +159,9 @@ msgstr "Konum Modu:"
 
 msgid "No region selected."
 msgstr "Bölge seçilmedi."
+
+msgid "No analytics data yet."
+msgstr "Henüz analytics verisi yok."
 
 msgid "Plugin Version"
 msgstr "Plugin Sürümü"
@@ -252,6 +261,9 @@ msgstr "Yükle"
 
 msgid "Upload error."
 msgstr "Yükleme hatası."
+
+msgid "Upload / Edit Banners"
+msgstr "Banner Yükle / Düzenle"
 
 msgid "Variants"
 msgstr "Varyantlar"

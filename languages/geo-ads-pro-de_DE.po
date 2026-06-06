@@ -91,6 +91,9 @@ msgstr "Stadt → Region Zuordnung"
 msgid "Click URL"
 msgstr "Klick-URL"
 
+msgid "Clicks"
+msgstr "Klicks"
+
 msgid "Current Mappings"
 msgstr "Aktuelle Zuordnungen"
 
@@ -139,6 +142,9 @@ msgstr "Ungültiger Dateityp."
 msgid "Invalid request."
 msgstr "Ungültige Anfrage."
 
+msgid "Impressions"
+msgstr "Impressionen"
+
 msgid "Last Upgrade"
 msgstr "Letztes Upgrade"
 
@@ -153,6 +159,9 @@ msgstr "Standortmodus:"
 
 msgid "No region selected."
 msgstr "Keine Region ausgewählt."
+
+msgid "No analytics data yet."
+msgstr "Noch keine Analytics-Daten."
 
 msgid "Plugin Version"
 msgstr "Plugin-Version"
@@ -252,6 +261,9 @@ msgstr "Hochladen"
 
 msgid "Upload error."
 msgstr "Upload-Fehler."
+
+msgid "Upload / Edit Banners"
+msgstr "Banner hochladen / bearbeiten"
 
 msgid "Variants"
 msgstr "Varianten"

@@ -68,13 +68,19 @@ class Geo_Ads_Pro_Analytics {
         $regions = $this->regions->get_all();
 
         foreach ($regions as $region => &$data) {
-            foreach (($data['banners'] ?? []) as &$banner) {
+            if (empty($data['banners']) || !is_array($data['banners'])) {
+                continue;
+            }
+
+            foreach ($data['banners'] as &$banner) {
                 $banner_id = (string) intval($banner['id']);
                 $stats = $this->data[$banner_id] ?? null;
                 $banner['impressions'] = intval($stats['impressions'] ?? ($banner['impressions'] ?? 0));
                 $banner['clicks'] = intval($stats['clicks'] ?? ($banner['clicks'] ?? 0));
             }
+            unset($banner);
         }
+        unset($data);
 
         return $regions;
     }
@@ -129,6 +135,22 @@ class Geo_Ads_Pro_Analytics {
         }
 
         $regions = $this->get_regions_with_stats();
+        $rows = [];
+
+        foreach ($regions as $region => $data) {
+            foreach (($data['banners'] ?? []) as $banner) {
+                $impressions = intval($banner['impressions'] ?? 0);
+                $clicks = intval($banner['clicks'] ?? 0);
+                $rows[] = [
+                    'region' => $region,
+                    'id' => intval($banner['id']),
+                    'file' => $banner['file'] ?? '',
+                    'impressions' => $impressions,
+                    'clicks' => $clicks,
+                    'ctr' => $impressions > 0 ? round(($clicks / $impressions) * 100, 2) : 0,
+                ];
+            }
+        }
 
         ?>
         <div class="wrap">
@@ -137,6 +159,37 @@ class Geo_Ads_Pro_Analytics {
             <p><?php esc_html_e('This screen displays click and impression statistics.', 'geo-ads-pro'); ?></p>
 
             <canvas id="gapChart" width="800" height="400"></canvas>
+
+            <table class="widefat striped gap-analytics-table">
+                <thead>
+                    <tr>
+                        <th><?php esc_html_e('Region', 'geo-ads-pro'); ?></th>
+                        <th>ID</th>
+                        <th><?php esc_html_e('File', 'geo-ads-pro'); ?></th>
+                        <th><?php esc_html_e('Impressions', 'geo-ads-pro'); ?></th>
+                        <th><?php esc_html_e('Clicks', 'geo-ads-pro'); ?></th>
+                        <th>CTR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($rows)): ?>
+                        <?php foreach ($rows as $row): ?>
+                            <tr>
+                                <td><?php echo esc_html($row['region']); ?></td>
+                                <td><?php echo esc_html($row['id']); ?></td>
+                                <td><?php echo esc_html($row['file']); ?></td>
+                                <td><?php echo esc_html($row['impressions']); ?></td>
+                                <td><?php echo esc_html($row['clicks']); ?></td>
+                                <td><?php echo esc_html($row['ctr']); ?>%</td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6"><?php esc_html_e('No analytics data yet.', 'geo-ads-pro'); ?></td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
 
             <script>
                 window.GAP_ANALYTICS = <?php echo wp_json_encode($regions, JSON_UNESCAPED_UNICODE); ?>;

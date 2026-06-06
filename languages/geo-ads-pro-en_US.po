@@ -91,6 +91,9 @@ msgstr "City → Region Mapping"
 msgid "Click URL"
 msgstr "Click URL"
 
+msgid "Clicks"
+msgstr "Clicks"
+
 msgid "Current Mappings"
 msgstr "Current Mappings"
 
@@ -139,6 +142,9 @@ msgstr "Invalid file type."
 msgid "Invalid request."
 msgstr "Invalid request."
 
+msgid "Impressions"
+msgstr "Impressions"
+
 msgid "Last Upgrade"
 msgstr "Last Upgrade"
 
@@ -153,6 +159,9 @@ msgstr "Location Mode:"
 
 msgid "No region selected."
 msgstr "No region selected."
+
+msgid "No analytics data yet."
+msgstr "No analytics data yet."
 
 msgid "Plugin Version"
 msgstr "Plugin Version"
@@ -252,6 +261,9 @@ msgstr "Upload"
 
 msgid "Upload error."
 msgstr "Upload error."
+
+msgid "Upload / Edit Banners"
+msgstr "Upload / Edit Banners"
 
 msgid "Variants"
 msgstr "Variants"

@@ -27,6 +27,15 @@ class Geo_Ads_Pro_Admin {
             'dashicons-location-alt',
             60
         );
+
+        add_submenu_page(
+            'geo-ads-pro',
+            __('Upload / Edit Banners', 'geo-ads-pro'),
+            __('Upload / Edit Banners', 'geo-ads-pro'),
+            'manage_options',
+            'geo-ads-pro',
+            [$this, 'render_page']
+        );
     }
 
     private function region_exists($region, $regions = null) {
