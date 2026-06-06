@@ -90,9 +90,11 @@ Eklenti geo-ads-pro text domain kullanır ve languages klasöründen çeviri yü
 Yeni arayüz metinleri __(), esc_html__(), esc_html_e() veya esc_attr__() ile çevrilebilir hale getirilmelidir.
 
 === Installation ===
-1. Eklentiyi yükleyin
-2. Etkinleştirin
-3. Geo Ads Pro menüsünden bölgeleri ve banner’ları yönetin
+1. GitHub reposundaki dist/geo-ads-pro-1.0.4.zip dosyasını indirin
+2. WordPress Admin -> Plugins -> Add New -> Upload Plugin ekranını açın
+3. geo-ads-pro-1.0.4.zip dosyasını seçip Install Now ile yükleyin
+4. Eklentiyi etkinleştirin
+5. Geo Ads Pro menüsünden bölgeleri ve banner’ları yönetin
 
 === Changelog ===
 = 1.0.4 =

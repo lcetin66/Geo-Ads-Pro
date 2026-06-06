@@ -133,6 +133,22 @@ geo-ads-pro/
 
 ---
 
+## 📦 Installation
+
+Download the installable plugin package from this repository:
+
+- `dist/geo-ads-pro-1.0.4.zip`
+
+Then install it in WordPress:
+
+1. Open **WordPress Admin → Plugins → Add New → Upload Plugin**.
+2. Select `geo-ads-pro-1.0.4.zip`.
+3. Click **Install Now** and activate **Geo Ads Pro**.
+
+The zip contains a single `geo-ads-pro/` plugin folder, ready for WordPress upload installation.
+
+---
+
 ## 🧠 Runtime Data
 
 Geo Ads Pro stores runtime data under the WordPress uploads directory:
