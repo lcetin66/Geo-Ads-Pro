@@ -5,6 +5,7 @@ msgstr ""
 "Last-Translator: Levent Cetin - 3CCS.com\n"
 "Language-Team: English\n"
 "Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -57,6 +58,11 @@ msgstr "Banner deleted."
 
 msgid "Banner uploaded."
 msgstr "Banner uploaded."
+
+msgid "%d banner uploaded."
+msgid_plural "%d banners uploaded."
+msgstr[0] "%d banner uploaded."
+msgstr[1] "%d banners uploaded."
 
 msgid "Banners with the same size are automatically grouped as variants."
 msgstr "Banners with the same size are automatically grouped as variants."
@@ -202,6 +208,9 @@ msgstr "Select Region"
 msgid "Select a region"
 msgstr "Select a region"
 
+msgid "Select or drop banner images"
+msgstr "Select or drop banner images"
+
 msgid "Selections and URLs saved."
 msgstr "Selections and URLs saved."
 
@@ -216,6 +225,12 @@ msgstr "Size"
 
 msgid "There are no banners for this region yet."
 msgstr "There are no banners for this region yet."
+
+msgid "Drop banner images here"
+msgstr "Drop banner images here"
+
+msgid "or click to choose JPG, PNG, GIF, or WebP files"
+msgstr "or click to choose JPG, PNG, GIF, or WebP files"
 
 msgid "There are no mappings yet."
 msgstr "There are no mappings yet."

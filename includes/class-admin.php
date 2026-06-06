@@ -57,6 +57,76 @@ class Geo_Ads_Pro_Admin {
         return @rmdir($region_real);
     }
 
+    private function normalize_uploaded_files($field) {
+        if (empty($_FILES[$field]['name'])) {
+            return [];
+        }
+
+        if (!is_array($_FILES[$field]['name'])) {
+            return [$_FILES[$field]];
+        }
+
+        $files = [];
+        foreach ($_FILES[$field]['name'] as $index => $name) {
+            if ($name === '') {
+                continue;
+            }
+
+            $files[] = [
+                'name' => $name,
+                'type' => $_FILES[$field]['type'][$index] ?? '',
+                'tmp_name' => $_FILES[$field]['tmp_name'][$index] ?? '',
+                'error' => $_FILES[$field]['error'][$index] ?? UPLOAD_ERR_NO_FILE,
+                'size' => $_FILES[$field]['size'][$index] ?? 0,
+            ];
+        }
+
+        return $files;
+    }
+
+    private function handle_banner_upload($file, $region, $region_dir) {
+        $uploaded = wp_handle_upload($file, [
+            'test_form' => false,
+            'mimes'     => [
+                'jpg|jpeg' => 'image/jpeg',
+                'png'      => 'image/png',
+                'gif'      => 'image/gif',
+                'webp'     => 'image/webp',
+            ]
+        ]);
+
+        if (isset($uploaded['error']) || empty($uploaded['file'])) {
+            return new WP_Error('gap_upload_error', __('Upload error.', 'geo-ads-pro'));
+        }
+
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($uploaded['type'], $allowed_types, true)) {
+            @unlink($uploaded['file']);
+            return new WP_Error('gap_invalid_file_type', __('Invalid file type.', 'geo-ads-pro'));
+        }
+
+        $filename = basename($uploaded['file']);
+        $new_path = trailingslashit($region_dir) . $filename;
+
+        @rename($uploaded['file'], $new_path);
+
+        $size = @getimagesize($new_path);
+        $w = $size ? (int) $size[0] : 0;
+        $h = $size ? (int) $size[1] : 0;
+        $id = time() . rand(1000, 9999);
+
+        $this->regions->add_banner($region, [
+            'id'       => $id,
+            'file'     => $filename,
+            'width'    => $w,
+            'height'   => $h,
+            'selected' => false,
+            'url'      => ''
+        ]);
+
+        return true;
+    }
+
     public function render_page() {
 
         if (!current_user_can('manage_options')) {
@@ -154,53 +224,27 @@ class Geo_Ads_Pro_Admin {
                 $region_dir = trailingslashit($base_dir) . gap_region_folder_name($region);
                 if (!file_exists($region_dir)) wp_mkdir_p($region_dir);
 
-                if (!empty($_FILES['gap_banner_file']['name'])) {
+                $files = $this->normalize_uploaded_files('gap_banner_file');
+                if (!empty($files)) {
+                    $uploaded_count = 0;
+                    $errors = [];
 
-                    $file = $_FILES['gap_banner_file'];
-
-                    $uploaded = wp_handle_upload($file, [
-                        'test_form' => false,
-                        'mimes'     => [
-                            'jpg|jpeg' => 'image/jpeg',
-                            'png'      => 'image/png',
-                            'gif'      => 'image/gif',
-                            'webp'     => 'image/webp',
-                        ]
-                    ]);
-
-                    if (!isset($uploaded['error']) && !empty($uploaded['file'])) {
-
-                        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                        if (!in_array($uploaded['type'], $allowed_types, true)) {
-                            @unlink($uploaded['file']);
-                            echo '<div class="error"><p>' . esc_html__('Invalid file type.', 'geo-ads-pro') . '</p></div>';
+                    foreach ($files as $file) {
+                        $result = $this->handle_banner_upload($file, $region, $region_dir);
+                        if (is_wp_error($result)) {
+                            $errors[] = $file['name'] . ': ' . $result->get_error_message();
                         } else {
-
-                            $filename = basename($uploaded['file']);
-                            $new_path = $region_dir . '/' . $filename;
-
-                            @rename($uploaded['file'], $new_path);
-
-                            $size = @getimagesize($new_path);
-                            $w = $size ? (int) $size[0] : 0;
-                            $h = $size ? (int) $size[1] : 0;
-
-                            $id = time() . rand(1000, 9999);
-
-                            $this->regions->add_banner($region, [
-                                'id'       => $id,
-                                'file'     => $filename,
-                                'width'    => $w,
-                                'height'   => $h,
-                                'selected' => false,
-                                'url'      => ''
-                            ]);
-
-                            echo '<div class="updated"><p>' . esc_html__('Banner uploaded.', 'geo-ads-pro') . '</p></div>';
-                            $regions = $this->regions->get_all();
+                            $uploaded_count++;
                         }
-                    } else {
-                        echo '<div class="error"><p>' . esc_html__('Upload error.', 'geo-ads-pro') . '</p></div>';
+                    }
+
+                    if ($uploaded_count > 0) {
+                        echo '<div class="updated"><p>' . esc_html(sprintf(_n('%d banner uploaded.', '%d banners uploaded.', $uploaded_count, 'geo-ads-pro'), $uploaded_count)) . '</p></div>';
+                        $regions = $this->regions->get_all();
+                    }
+
+                    foreach ($errors as $error) {
+                        echo '<div class="error"><p>' . esc_html($error) . '</p></div>';
                     }
                 }
             }
@@ -336,10 +380,16 @@ class Geo_Ads_Pro_Admin {
 
             <h2><?php echo esc_html(sprintf(__('%s Region – Upload Banner', 'geo-ads-pro'), $region)); ?></h2>
 
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" class="gap-upload-form">
                 <?php wp_nonce_field('gap_upload_banner_nonce'); ?>
                 <input type="hidden" name="gap_selected_region" value="<?php echo esc_attr($region); ?>">
-                <input type="file" name="gap_banner_file" required>
+                <div class="gap-dropzone" tabindex="0" role="button" aria-label="<?php echo esc_attr__('Select or drop banner images', 'geo-ads-pro'); ?>">
+                    <input class="gap-dropzone-input" type="file" name="gap_banner_file[]" accept="image/jpeg,image/png,image/gif,image/webp" multiple required>
+                    <div class="gap-dropzone-icon">+</div>
+                    <div class="gap-dropzone-title"><?php esc_html_e('Drop banner images here', 'geo-ads-pro'); ?></div>
+                    <div class="gap-dropzone-text"><?php esc_html_e('or click to choose JPG, PNG, GIF, or WebP files', 'geo-ads-pro'); ?></div>
+                </div>
+                <ul class="gap-upload-file-list" aria-live="polite"></ul>
                 <button class="button button-primary" name="gap_upload_banner"><?php esc_html_e('Upload', 'geo-ads-pro'); ?></button>
             </form>
 

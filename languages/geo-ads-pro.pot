@@ -59,6 +59,11 @@ msgstr ""
 msgid "Banner uploaded."
 msgstr ""
 
+msgid "%d banner uploaded."
+msgid_plural "%d banners uploaded."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Banners with the same size are automatically grouped as variants."
 msgstr ""
 
@@ -203,6 +208,9 @@ msgstr ""
 msgid "Select a region"
 msgstr ""
 
+msgid "Select or drop banner images"
+msgstr ""
+
 msgid "Selections and URLs saved."
 msgstr ""
 
@@ -216,6 +224,12 @@ msgid "Size"
 msgstr ""
 
 msgid "There are no banners for this region yet."
+msgstr ""
+
+msgid "Drop banner images here"
+msgstr ""
+
+msgid "or click to choose JPG, PNG, GIF, or WebP files"
 msgstr ""
 
 msgid "There are no mappings yet."
