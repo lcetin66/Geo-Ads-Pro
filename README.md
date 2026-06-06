@@ -30,7 +30,7 @@ Geo Ads Pro is a professional GEO-targeted banner and advertisement management p
 ### 🎯 Ad Management
 - **Region Creation:** Easily organize banners by region.
 - **Banner Uploader:** Upload and manage image banners.
-- **Drag & Drop Uploads:** Drop multiple banner images directly into the admin upload area.
+- **Drag & Drop Uploads:** Drop multiple banner images directly into the admin upload area after adding or selecting a region.
 - **Auto-Dimension Detection:** Automatically detects banner width and height.
 - **Selective Display:** Easily toggle active/inactive banners.
 - **Click Tracking URLs:** Assign custom redirection links to each banner.
@@ -49,7 +49,7 @@ Geo Ads Pro is a professional GEO-targeted banner and advertisement management p
 - **Separate Analytics Store:** Keeps tracking counters in a protected `analytics.json.php` file instead of mutating banner configuration on every view.
 - **Impression Throttling:** Prevents rapid duplicate impression writes per visitor/banner for a short interval.
 - **CTR Calculation:** Automatically calculates Click-Through Rates.
-- **Visual Analytics:** Interactive charts representing performance across regions (Chart.js integration).
+- **Visual Analytics:** Native canvas charts plus a PHP fallback table for clicks, impressions, and CTR.
 
 ### 🧪 A/B Testing System
 - **Variant Grouping:** Banners of the same size are automatically grouped as variants.
@@ -138,12 +138,12 @@ geo-ads-pro/
 
 Download the installable plugin package from this repository:
 
-- `dist/geo-ads-pro-1.0.6.zip`
+- `dist/geo-ads-pro-1.0.7.zip`
 
 Then install it in WordPress:
 
 1. Open **WordPress Admin → Plugins → Add New → Upload Plugin**.
-2. Select `geo-ads-pro-1.0.6.zip`.
+2. Select `geo-ads-pro-1.0.7.zip`.
 3. Click **Install Now** and activate **Geo Ads Pro**.
 
 The zip contains a single `geo-ads-pro/` plugin folder, ready for WordPress upload installation.

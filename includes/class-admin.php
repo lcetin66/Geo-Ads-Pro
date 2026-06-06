@@ -215,6 +215,7 @@ class Geo_Ads_Pro_Admin {
                 if (!file_exists($region_dir)) wp_mkdir_p($region_dir);
                 echo '<div class="updated"><p>' . esc_html(sprintf(__('Region added: %s', 'geo-ads-pro'), $region)) . '</p></div>';
                 $regions = $this->regions->get_all();
+                $_POST['gap_selected_region'] = $region;
             }
         }
 
@@ -469,6 +470,18 @@ class Geo_Ads_Pro_Admin {
                 <br>
                 <button class="button button-primary" name="gap_save_selection"><?php esc_html_e('Save Selections', 'geo-ads-pro'); ?></button>
             </form>
+
+            <?php else: ?>
+
+            <hr>
+
+            <h2><?php esc_html_e('Upload Banner', 'geo-ads-pro'); ?></h2>
+
+            <div class="gap-dropzone gap-dropzone-disabled" aria-disabled="true">
+                <div class="gap-dropzone-icon">+</div>
+                <div class="gap-dropzone-title"><?php esc_html_e('Add or select a region to upload banners.', 'geo-ads-pro'); ?></div>
+                <div class="gap-dropzone-text"><?php esc_html_e('The drag and drop upload area will appear here after a region is selected.', 'geo-ads-pro'); ?></div>
+            </div>
 
             <?php endif; ?>
 

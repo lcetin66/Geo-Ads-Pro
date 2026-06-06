@@ -72,6 +72,17 @@ input[type="text"].widefat {
     pointer-events: none;
 }
 
+.gap-dropzone-disabled {
+    cursor: default;
+    opacity: .75;
+}
+
+.gap-dropzone-disabled:hover,
+.gap-dropzone-disabled:focus {
+    border-color: #8c8f94;
+    background: #fff;
+}
+
 .gap-upload-file-list {
     margin: 8px 0 14px;
     padding-left: 20px;

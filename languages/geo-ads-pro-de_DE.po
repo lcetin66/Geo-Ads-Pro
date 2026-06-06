@@ -259,6 +259,15 @@ msgstr "Aktualisieren"
 msgid "Upload"
 msgstr "Hochladen"
 
+msgid "Upload Banner"
+msgstr "Banner hochladen"
+
+msgid "Add or select a region to upload banners."
+msgstr "Fügen Sie eine Region hinzu oder wählen Sie eine Region aus, um Banner hochzuladen."
+
+msgid "The drag and drop upload area will appear here after a region is selected."
+msgstr "Der Drag-and-Drop-Uploadbereich erscheint hier, nachdem eine Region ausgewählt wurde."
+
 msgid "Upload error."
 msgstr "Upload-Fehler."
 

@@ -259,6 +259,15 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
+msgid "Upload Banner"
+msgstr ""
+
+msgid "Add or select a region to upload banners."
+msgstr ""
+
+msgid "The drag and drop upload area will appear here after a region is selected."
+msgstr ""
+
 msgid "Upload error."
 msgstr ""
 

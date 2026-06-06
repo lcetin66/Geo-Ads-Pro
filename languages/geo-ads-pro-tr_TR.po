@@ -259,6 +259,15 @@ msgstr "Güncelle"
 msgid "Upload"
 msgstr "Yükle"
 
+msgid "Upload Banner"
+msgstr "Banner Yükle"
+
+msgid "Add or select a region to upload banners."
+msgstr "Banner yüklemek için bir bölge ekleyin veya seçin."
+
+msgid "The drag and drop upload area will appear here after a region is selected."
+msgstr "Bir bölge seçildikten sonra drag & drop yükleme alanı burada görünecek."
+
 msgid "Upload error."
 msgstr "Yükleme hatası."
 
