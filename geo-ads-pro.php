@@ -1,4 +1,5 @@
 <?php
+// Date: 20260606
 /**
  * Plugin Name: Geo Ads Pro
  * Description: Bölge bazlı banner yönetimi, şehir → bölge eşleştirme ve widget gösterimi.
