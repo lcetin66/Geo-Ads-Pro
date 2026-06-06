@@ -1,0 +1,10 @@
+/* Author: Levent Cetin - 3CCS.com */
+
+table.widefat img {
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+input[type="text"].widefat {
+    padding: 6px;
+}
