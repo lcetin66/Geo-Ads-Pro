@@ -18,8 +18,8 @@ class Geo_Ads_Pro_ABTest {
 
         add_submenu_page(
             'geo-ads-pro',
-            'A/B Test',
-            'A/B Test',
+            __('A/B Test', 'geo-ads-pro'),
+            __('A/B Test', 'geo-ads-pro'),
             'manage_options',
             'geo-ads-pro-abtest',
             [$this, 'render_page']
@@ -29,24 +29,24 @@ class Geo_Ads_Pro_ABTest {
     public function render_page() {
 
         if (!current_user_can('manage_options')) {
-            wp_die('Yetkin yok.');
+            wp_die(esc_html__('You do not have permission.', 'geo-ads-pro'));
         }
 
         $regions = $this->regions->get_all();
 
         ?>
         <div class="wrap">
-            <h1>Geo Ads Pro – A/B Test Sistemi</h1>
+            <h1><?php esc_html_e('Geo Ads Pro – A/B Test System', 'geo-ads-pro'); ?></h1>
 
-            <p>Aynı boyuttaki banner’lar otomatik varyant olarak gruplanır.</p>
+            <p><?php esc_html_e('Banners with the same size are automatically grouped as variants.', 'geo-ads-pro'); ?></p>
 
             <table class="widefat">
                 <thead>
                     <tr>
-                        <th>Bölge</th>
-                        <th>Boyut</th>
-                        <th>Varyantlar</th>
-                        <th>Kazanan</th>
+                        <th><?php esc_html_e('Region', 'geo-ads-pro'); ?></th>
+                        <th><?php esc_html_e('Size', 'geo-ads-pro'); ?></th>
+                        <th><?php esc_html_e('Variants', 'geo-ads-pro'); ?></th>
+                        <th><?php esc_html_e('Winner', 'geo-ads-pro'); ?></th>
                     </tr>
                 </thead>
                 <tbody>

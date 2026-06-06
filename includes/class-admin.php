@@ -60,7 +60,7 @@ class Geo_Ads_Pro_Admin {
     public function render_page() {
 
         if (!current_user_can('manage_options')) {
-            wp_die('Yetkin yok.');
+            wp_die(esc_html__('You do not have permission.', 'geo-ads-pro'));
         }
 
         $regions  = $this->regions->get_all();
@@ -72,7 +72,7 @@ class Geo_Ads_Pro_Admin {
         // Bölge silme
         if (isset($_POST['gap_delete_region'])) {
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_delete_region_nonce')) {
-                wp_die('Geçersiz istek.');
+                wp_die(esc_html__('Invalid request.', 'geo-ads-pro'));
             }
             $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
             if ($this->region_exists($region, $regions)) {
@@ -80,19 +80,19 @@ class Geo_Ads_Pro_Admin {
                 $this->regions->delete_region($region);
                 $this->citymap->remove_region_mappings($region);
                 GAP()->analytics->delete_region($region);
-                echo '<div class="updated"><p>Bölge silindi: ' . esc_html($region) . '</p></div>';
+                echo '<div class="updated"><p>' . esc_html(sprintf(__('Region deleted: %s', 'geo-ads-pro'), $region)) . '</p></div>';
                 $regions = $this->regions->get_all();
                 $city_map = $this->citymap->get_all();
                 $_POST['gap_selected_region'] = '';
             } else {
-                echo '<div class="error"><p>Bölge bulunamadı.</p></div>';
+                echo '<div class="error"><p>' . esc_html__('Region not found.', 'geo-ads-pro') . '</p></div>';
             }
         }
 
         // Banner silme
         if (isset($_POST['gap_delete_banner'])) {
             if (!isset($_POST['gap_delete_banner_nonce']) || !wp_verify_nonce($_POST['gap_delete_banner_nonce'], 'gap_delete_banner_nonce')) {
-                wp_die('Geçersiz istek.');
+                wp_die(esc_html__('Invalid request.', 'geo-ads-pro'));
             }
             $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
             $banner_id = intval($_POST['gap_delete_banner_id'] ?? 0);
@@ -114,10 +114,10 @@ class Geo_Ads_Pro_Admin {
                 }
                 $this->regions->delete_banner($region, $banner_id);
                 GAP()->analytics->delete_banner($banner_id);
-                echo '<div class="updated"><p>Banner silindi.</p></div>';
+                echo '<div class="updated"><p>' . esc_html__('Banner deleted.', 'geo-ads-pro') . '</p></div>';
                 $regions = $this->regions->get_all();
             } else {
-                echo '<div class="error"><p>Banner silinemedi.</p></div>';
+                echo '<div class="error"><p>' . esc_html__('Banner could not be deleted.', 'geo-ads-pro') . '</p></div>';
             }
         }
 
@@ -125,7 +125,7 @@ class Geo_Ads_Pro_Admin {
         if (isset($_POST['gap_add_region'])) {
 
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_add_region_nonce')) {
-                wp_die('Geçersiz istek.');
+                wp_die(esc_html__('Invalid request.', 'geo-ads-pro'));
             }
 
             $region = sanitize_text_field($_POST['gap_region_name'] ?? '');
@@ -134,7 +134,7 @@ class Geo_Ads_Pro_Admin {
                 $this->regions->add_region($region);
                 $region_dir = trailingslashit($base_dir) . gap_region_folder_name($region);
                 if (!file_exists($region_dir)) wp_mkdir_p($region_dir);
-                echo '<div class="updated"><p>Bölge eklendi: ' . esc_html($region) . '</p></div>';
+                echo '<div class="updated"><p>' . esc_html(sprintf(__('Region added: %s', 'geo-ads-pro'), $region)) . '</p></div>';
                 $regions = $this->regions->get_all();
             }
         }
@@ -143,12 +143,12 @@ class Geo_Ads_Pro_Admin {
         if (isset($_POST['gap_upload_banner']) && !empty($_POST['gap_selected_region'])) {
 
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_upload_banner_nonce')) {
-                wp_die('Geçersiz istek.');
+                wp_die(esc_html__('Invalid request.', 'geo-ads-pro'));
             }
 
             $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
             if (!$this->region_exists($region, $regions)) {
-                echo '<div class="error"><p>Bölge seçilmedi.</p></div>';
+                echo '<div class="error"><p>' . esc_html__('No region selected.', 'geo-ads-pro') . '</p></div>';
             } else {
 
                 $region_dir = trailingslashit($base_dir) . gap_region_folder_name($region);
@@ -173,7 +173,7 @@ class Geo_Ads_Pro_Admin {
                         $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
                         if (!in_array($uploaded['type'], $allowed_types, true)) {
                             @unlink($uploaded['file']);
-                            echo '<div class="error"><p>Geçersiz dosya türü.</p></div>';
+                            echo '<div class="error"><p>' . esc_html__('Invalid file type.', 'geo-ads-pro') . '</p></div>';
                         } else {
 
                             $filename = basename($uploaded['file']);
@@ -196,11 +196,11 @@ class Geo_Ads_Pro_Admin {
                                 'url'      => ''
                             ]);
 
-                            echo '<div class="updated"><p>Banner yüklendi.</p></div>';
+                            echo '<div class="updated"><p>' . esc_html__('Banner uploaded.', 'geo-ads-pro') . '</p></div>';
                             $regions = $this->regions->get_all();
                         }
                     } else {
-                        echo '<div class="error"><p>Yükleme hatası.</p></div>';
+                        echo '<div class="error"><p>' . esc_html__('Upload error.', 'geo-ads-pro') . '</p></div>';
                     }
                 }
             }
@@ -210,7 +210,7 @@ class Geo_Ads_Pro_Admin {
         if (isset($_POST['gap_save_selection']) && !empty($_POST['gap_selected_region'])) {
 
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_save_selection_nonce')) {
-                wp_die('Geçersiz istek.');
+                wp_die(esc_html__('Invalid request.', 'geo-ads-pro'));
             }
 
             $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
@@ -233,7 +233,7 @@ class Geo_Ads_Pro_Admin {
             }
 
             $this->regions->update_banners($region, $banners);
-            echo '<div class="updated"><p>Seçimler ve URL’ler kaydedildi.</p></div>';
+            echo '<div class="updated"><p>' . esc_html__('Selections and URLs saved.', 'geo-ads-pro') . '</p></div>';
             $regions = $this->regions->get_all();
         }
 
@@ -241,7 +241,7 @@ class Geo_Ads_Pro_Admin {
         if (isset($_POST['gap_update_city_map'])) {
 
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_update_city_map_nonce')) {
-                wp_die('Geçersiz istek.');
+                wp_die(esc_html__('Invalid request.', 'geo-ads-pro'));
             }
 
             $city = sanitize_text_field($_POST['gap_city_name'] ?? '');
@@ -249,24 +249,24 @@ class Geo_Ads_Pro_Admin {
 
             if ($city !== '' && $this->region_exists($region_for_city, $regions)) {
                 $this->citymap->map_city($city, $region_for_city);
-                echo '<div class="updated"><p>Şehir eşleştirmesi güncellendi: ' . esc_html($city) . '</p></div>';
+                echo '<div class="updated"><p>' . esc_html(sprintf(__('City mapping updated: %s', 'geo-ads-pro'), $city)) . '</p></div>';
                 $city_map = $this->citymap->get_all();
             } else {
-                echo '<div class="error"><p>Şehir eşleştirmesi güncellenemedi.</p></div>';
+                echo '<div class="error"><p>' . esc_html__('City mapping could not be updated.', 'geo-ads-pro') . '</p></div>';
             }
         }
 
         if (isset($_POST['gap_delete_city_map'])) {
 
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_delete_city_map_nonce')) {
-                wp_die('Geçersiz istek.');
+                wp_die(esc_html__('Invalid request.', 'geo-ads-pro'));
             }
 
             $city = sanitize_text_field($_POST['gap_city_name'] ?? '');
 
             if ($city !== '') {
                 $this->citymap->delete_city($city);
-                echo '<div class="updated"><p>Şehir eşleştirmesi silindi: ' . esc_html($city) . '</p></div>';
+                echo '<div class="updated"><p>' . esc_html(sprintf(__('City mapping deleted: %s', 'geo-ads-pro'), $city)) . '</p></div>';
                 $city_map = $this->citymap->get_all();
             }
         }
@@ -274,7 +274,7 @@ class Geo_Ads_Pro_Admin {
         if (isset($_POST['gap_add_city_map'])) {
 
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_add_city_map_nonce')) {
-                wp_die('Geçersiz istek.');
+                wp_die(esc_html__('Invalid request.', 'geo-ads-pro'));
             }
 
             $city = sanitize_text_field($_POST['gap_city_name'] ?? '');
@@ -282,7 +282,7 @@ class Geo_Ads_Pro_Admin {
 
             if ($city !== '' && $this->region_exists($region_for_city, $regions)) {
                 $this->citymap->map_city($city, $region_for_city);
-                echo '<div class="updated"><p>Şehir eşleştirildi: ' . esc_html($city) . ' → ' . esc_html($region_for_city) . '</p></div>';
+                echo '<div class="updated"><p>' . esc_html(sprintf(__('City mapped: %1$s → %2$s', 'geo-ads-pro'), $city, $region_for_city)) . '</p></div>';
                 $city_map = $this->citymap->get_all();
             }
         }
@@ -291,21 +291,21 @@ class Geo_Ads_Pro_Admin {
 
         ?>
         <div class="wrap">
-            <h1>Geo Ads Pro – Bölgeler & Banner Yönetimi</h1>
+            <h1><?php esc_html_e('Geo Ads Pro – Regions & Banner Management', 'geo-ads-pro'); ?></h1>
 
-            <h2>Bölge Ekle</h2>
+            <h2><?php esc_html_e('Add Region', 'geo-ads-pro'); ?></h2>
             <form method="post">
                 <?php wp_nonce_field('gap_add_region_nonce'); ?>
-                <input type="text" name="gap_region_name" placeholder="Örn: NRW, Istanbul, Bayern" required>
-                <button class="button button-primary" name="gap_add_region">Ekle</button>
+                <input type="text" name="gap_region_name" placeholder="<?php echo esc_attr__('Example: NRW, Istanbul, Bayern', 'geo-ads-pro'); ?>" required>
+                <button class="button button-primary" name="gap_add_region"><?php esc_html_e('Add', 'geo-ads-pro'); ?></button>
             </form>
 
             <hr>
 
-            <h2>Bölge Seç</h2>
+            <h2><?php esc_html_e('Select Region', 'geo-ads-pro'); ?></h2>
             <form method="post" enctype="multipart/form-data" style="display:inline-block; margin-bottom:15px;">
                 <select name="gap_selected_region" onchange="this.form.submit()">
-                    <option value="">Bölge seçin</option>
+                    <option value=""><?php esc_html_e('Select a region', 'geo-ads-pro'); ?></option>
                     <?php foreach ($regions as $region => $data): ?>
                         <option value="<?php echo esc_attr($region); ?>" <?php selected($selected_region, $region); ?>>
                             <?php echo esc_html($region); ?>
@@ -315,10 +315,10 @@ class Geo_Ads_Pro_Admin {
             </form>
 
             <?php if ($selected_region !== ''): ?>
-                <form method="post" style="display:inline-block; margin-left: 10px;" onsubmit="return confirm('Bu bölgeyi ve tüm banner\'larını silmek istediğinize emin misiniz?')">
+                <form method="post" style="display:inline-block; margin-left: 10px;" onsubmit="return confirm('<?php echo esc_js(__('Are you sure you want to delete this region and all its banners?', 'geo-ads-pro')); ?>')">
                     <?php wp_nonce_field('gap_delete_region_nonce'); ?>
                     <input type="hidden" name="gap_selected_region" value="<?php echo esc_attr($selected_region); ?>">
-                    <button class="button button-link-delete" name="gap_delete_region" style="color: #bc0b0b; cursor: pointer;">Bu Bölgeyi Sil</button>
+                    <button class="button button-link-delete" name="gap_delete_region" style="color: #bc0b0b; cursor: pointer;"><?php esc_html_e('Delete This Region', 'geo-ads-pro'); ?></button>
                 </form>
             <?php endif; ?>
 
@@ -334,18 +334,18 @@ class Geo_Ads_Pro_Admin {
 
             <hr>
 
-            <h2><?php echo esc_html($region); ?> Bölgesi – Banner Yükle</h2>
+            <h2><?php echo esc_html(sprintf(__('%s Region – Upload Banner', 'geo-ads-pro'), $region)); ?></h2>
 
             <form method="post" enctype="multipart/form-data">
                 <?php wp_nonce_field('gap_upload_banner_nonce'); ?>
                 <input type="hidden" name="gap_selected_region" value="<?php echo esc_attr($region); ?>">
                 <input type="file" name="gap_banner_file" required>
-                <button class="button button-primary" name="gap_upload_banner">Yükle</button>
+                <button class="button button-primary" name="gap_upload_banner"><?php esc_html_e('Upload', 'geo-ads-pro'); ?></button>
             </form>
 
             <hr>
 
-            <h2>Banner Listesi</h2>
+            <h2><?php esc_html_e('Banner List', 'geo-ads-pro'); ?></h2>
 
             <form method="post">
                 <?php wp_nonce_field('gap_save_selection_nonce'); ?>
@@ -354,13 +354,13 @@ class Geo_Ads_Pro_Admin {
                 <table class="widefat">
                     <thead>
                         <tr>
-                            <th>Önizleme</th>
-                            <th>Boyut</th>
-                            <th>Dosya</th>
+                            <th><?php esc_html_e('Preview', 'geo-ads-pro'); ?></th>
+                            <th><?php esc_html_e('Size', 'geo-ads-pro'); ?></th>
+                            <th><?php esc_html_e('File', 'geo-ads-pro'); ?></th>
                             <th>ID</th>
-                            <th>Seç</th>
-                            <th>Tıklama URL</th>
-                            <th>İşlem</th>
+                            <th><?php esc_html_e('Select', 'geo-ads-pro'); ?></th>
+                            <th><?php esc_html_e('Click URL', 'geo-ads-pro'); ?></th>
+                            <th><?php esc_html_e('Action', 'geo-ads-pro'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -392,14 +392,14 @@ class Geo_Ads_Pro_Admin {
                                             value="1"
                                             class="button button-link-delete"
                                             style="color: #bc0b0b; cursor: pointer;"
-                                            onclick="if(confirm('Bu banner\'ı silmek istediğinize emin misiniz?')) { jQuery('#gap_delete_banner_id').val('<?php echo esc_attr($banner['id']); ?>'); return true; } return false;">
-                                        Sil
+                                            onclick="if(confirm('<?php echo esc_js(__('Are you sure you want to delete this banner?', 'geo-ads-pro')); ?>')) { jQuery('#gap_delete_banner_id').val('<?php echo esc_attr($banner['id']); ?>'); return true; } return false;">
+                                        <?php esc_html_e('Delete', 'geo-ads-pro'); ?>
                                     </button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <tr><td colspan="7">Bu bölge için henüz banner yok.</td></tr>
+                        <tr><td colspan="7"><?php esc_html_e('There are no banners for this region yet.', 'geo-ads-pro'); ?></td></tr>
                     <?php endif; ?>
                     </tbody>
                 </table>
@@ -408,35 +408,35 @@ class Geo_Ads_Pro_Admin {
                 <input type="hidden" name="gap_delete_banner_nonce" value="<?php echo esc_attr(wp_create_nonce('gap_delete_banner_nonce')); ?>">
 
                 <br>
-                <button class="button button-primary" name="gap_save_selection">Seçimleri Kaydet</button>
+                <button class="button button-primary" name="gap_save_selection"><?php esc_html_e('Save Selections', 'geo-ads-pro'); ?></button>
             </form>
 
             <?php endif; ?>
 
             <hr>
-            <h2>Şehir → Bölge Eşleştirme</h2>
+            <h2><?php esc_html_e('City → Region Mapping', 'geo-ads-pro'); ?></h2>
 
             <form method="post">
                 <?php wp_nonce_field('gap_add_city_map_nonce'); ?>
-                <input type="text" name="gap_city_name" placeholder="Şehir adı (örn: Düsseldorf)" required>
+                <input type="text" name="gap_city_name" placeholder="<?php echo esc_attr__('City name (example: Düsseldorf)', 'geo-ads-pro'); ?>" required>
 
                 <select name="gap_city_region" required>
-                    <option value="">Bölge seçin</option>
+                    <option value=""><?php esc_html_e('Select a region', 'geo-ads-pro'); ?></option>
                     <?php foreach ($regions as $r => $data): ?>
                         <option value="<?php echo esc_attr($r); ?>"><?php echo esc_html($r); ?></option>
                     <?php endforeach; ?>
                 </select>
 
-                <button class="button button-primary" name="gap_add_city_map">Ekle</button>
+                <button class="button button-primary" name="gap_add_city_map"><?php esc_html_e('Add', 'geo-ads-pro'); ?></button>
             </form>
 
-            <h3>Mevcut Eşleştirmeler</h3>
+            <h3><?php esc_html_e('Current Mappings', 'geo-ads-pro'); ?></h3>
             <table class="widefat">
                 <thead>
                     <tr>
-                        <th>Şehir</th>
-                        <th>Bölge</th>
-                        <th>İşlem</th>
+                        <th><?php esc_html_e('City', 'geo-ads-pro'); ?></th>
+                        <th><?php esc_html_e('Region', 'geo-ads-pro'); ?></th>
+                        <th><?php esc_html_e('Action', 'geo-ads-pro'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -455,20 +455,20 @@ class Geo_Ads_Pro_Admin {
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <button class="button" name="gap_update_city_map">Güncelle</button>
+                                        <button class="button" name="gap_update_city_map"><?php esc_html_e('Update', 'geo-ads-pro'); ?></button>
                                     </form>
                                 </td>
                                 <td>
-                                    <form method="post" onsubmit="return confirm('Bu şehir eşleştirmesi silinsin mi?')">
+                                    <form method="post" onsubmit="return confirm('<?php echo esc_js(__('Delete this city mapping?', 'geo-ads-pro')); ?>')">
                                         <?php wp_nonce_field('gap_delete_city_map_nonce'); ?>
                                         <input type="hidden" name="gap_city_name" value="<?php echo esc_attr($city); ?>">
-                                        <button class="button button-link-delete" name="gap_delete_city_map" style="color:#bc0b0b;">Sil</button>
+                                        <button class="button button-link-delete" name="gap_delete_city_map" style="color:#bc0b0b;"><?php esc_html_e('Delete', 'geo-ads-pro'); ?></button>
                                     </form>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <tr><td colspan="3">Henüz eşleştirme yok.</td></tr>
+                        <tr><td colspan="3"><?php esc_html_e('There are no mappings yet.', 'geo-ads-pro'); ?></td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

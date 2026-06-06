@@ -27,8 +27,8 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
     public function __construct() {
         parent::__construct(
             'geo_ads_pro_widget',
-            'Geo Ads Pro Widget',
-            ['description' => 'Bölge bazlı banner gösterimi sağlar.']
+            __('Geo Ads Pro Widget', 'geo-ads-pro'),
+            ['description' => __('Displays region-based banners.', 'geo-ads-pro')]
         );
     }
 
@@ -42,24 +42,24 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         ?>
 
         <p>
-            <label>Başlık:</label>
+            <label><?php esc_html_e('Title:', 'geo-ads-pro'); ?></label>
             <input class="widefat"
                    name="<?php echo esc_attr($this->get_field_name('title')); ?>"
                    value="<?php echo $title; ?>">
         </p>
 
         <p>
-            <label>Konum Modu:</label>
+            <label><?php esc_html_e('Location Mode:', 'geo-ads-pro'); ?></label>
             <select name="<?php echo esc_attr($this->get_field_name('mode')); ?>">
                 <option value="global" <?php selected($mode, 'global'); ?>>Global</option>
-                <option value="local"  <?php selected($mode, 'local');  ?>>Local (IP)</option>
+                <option value="local"  <?php selected($mode, 'local');  ?>><?php esc_html_e('Local (IP)', 'geo-ads-pro'); ?></option>
             </select>
         </p>
 
         <p>
-            <label>Global Modda Bölge:</label>
+            <label><?php esc_html_e('Region in Global Mode:', 'geo-ads-pro'); ?></label>
             <select name="<?php echo esc_attr($this->get_field_name('region')); ?>">
-                <option value="">Seçin</option>
+                <option value=""><?php esc_html_e('Select', 'geo-ads-pro'); ?></option>
                 <?php foreach ($regions as $r => $data): ?>
                     <option value="<?php echo esc_attr($r); ?>" <?php selected($region, $r); ?>>
                         <?php echo esc_html($r); ?>

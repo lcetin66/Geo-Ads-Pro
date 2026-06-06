@@ -114,8 +114,8 @@ class Geo_Ads_Pro_Analytics {
 
         add_submenu_page(
             'geo-ads-pro',
-            'Analytics',
-            'Analytics',
+            __('Analytics', 'geo-ads-pro'),
+            __('Analytics', 'geo-ads-pro'),
             'manage_options',
             'geo-ads-pro-analytics',
             [$this, 'render_page']
@@ -125,16 +125,16 @@ class Geo_Ads_Pro_Analytics {
     public function render_page() {
 
         if (!current_user_can('manage_options')) {
-            wp_die('Yetkin yok.');
+            wp_die(esc_html__('You do not have permission.', 'geo-ads-pro'));
         }
 
         $regions = $this->get_regions_with_stats();
 
         ?>
         <div class="wrap">
-            <h1>Geo Ads Pro – Analytics</h1>
+            <h1><?php esc_html_e('Geo Ads Pro – Analytics', 'geo-ads-pro'); ?></h1>
 
-            <p>Bu ekran tıklama ve gösterim istatistiklerini gösterir.</p>
+            <p><?php esc_html_e('This screen displays click and impression statistics.', 'geo-ads-pro'); ?></p>
 
             <canvas id="gapChart" width="800" height="400"></canvas>
 

@@ -2,10 +2,11 @@
 // Date: 20260606
 /**
  * Plugin Name: Geo Ads Pro
- * Description: Bölge bazlı banner yönetimi, şehir → bölge eşleştirme ve widget gösterimi.
- * Version: 1.0.3
+ * Description: Region-based banner management, city → region mapping, and widget display.
+ * Version: 1.0.4
  * Author: Levent Cetin - 3CCS.com
  * Text Domain: geo-ads-pro
+ * Domain Path: /languages
  */
 
 if (!defined('ABSPATH')) exit;
@@ -13,8 +14,8 @@ if (!defined('ABSPATH')) exit;
 define('GAP_PLUGIN_FILE', __FILE__);
 define('GAP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GAP_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('GAP_VERSION', '1.0.3');
-define('GAP_SCHEMA_VERSION', '2026060603');
+define('GAP_VERSION', '1.0.4');
+define('GAP_SCHEMA_VERSION', '2026060604');
 
 require_once GAP_PLUGIN_DIR . 'includes/helpers.php';
 require_once GAP_PLUGIN_DIR . 'includes/class-regions.php';
@@ -181,7 +182,7 @@ function gap_maybe_upgrade($force = false) {
     gap_protected_json_path('city-map');
     gap_protected_json_path('analytics');
 
-    if (version_compare($installed_version, '1.0.3', '<')) {
+    if (version_compare($installed_version, '1.0.4', '<')) {
         delete_option('gap_upgrade_required');
     }
 

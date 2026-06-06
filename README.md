@@ -76,6 +76,7 @@ Geo Ads Pro is a professional GEO-targeted banner and advertisement management p
 - **Public Endpoint Throttling:** AJAX, REST, impression, and click flows include nonce/rate-limit/throttle protections where appropriate.
 - **Protected Data Files:** JSON runtime data is written as executable `.json.php` files with an immediate `exit` guard.
 - **Safe Uninstall:** Upload data is preserved by default unless cleanup is explicitly enabled in settings.
+- **Multilingual Ready:** Ships with a `geo-ads-pro` text domain plus TR, DE, and EN translation files.
 
 ---
 
@@ -108,6 +109,14 @@ geo-ads-pro/
 │   ├── class-settings.php
 │   ├── class-shortcode.php
 │   └── class-widget.php
+├── languages/
+│   ├── geo-ads-pro.pot
+│   ├── geo-ads-pro-tr_TR.po
+│   ├── geo-ads-pro-tr_TR.mo
+│   ├── geo-ads-pro-de_DE.po
+│   ├── geo-ads-pro-de_DE.mo
+│   ├── geo-ads-pro-en_US.po
+│   └── geo-ads-pro-en_US.mo
 └── public/
     ├── css/
     │   └── geo-ads-pro.css
@@ -162,6 +171,19 @@ Geo Ads Pro tracks both release and schema versions:
 - `gap_upgraded_at`: Last successful upgrade timestamp.
 
 `gap_maybe_upgrade()` runs on activation and early `plugins_loaded`. It prepares upload protection files, migrates legacy `.json` runtime data to protected `.json.php` files, ensures default options exist, and records the current version/schema state.
+
+---
+
+## 🌐 Languages
+
+Geo Ads Pro uses the `geo-ads-pro` text domain and loads translation files from `/languages`.
+
+- `geo-ads-pro.pot`: Translation template.
+- `geo-ads-pro-tr_TR.po/.mo`: Turkish.
+- `geo-ads-pro-de_DE.po/.mo`: German.
+- `geo-ads-pro-en_US.po/.mo`: English.
+
+New user-facing PHP strings should use WordPress gettext helpers such as `__()`, `esc_html__()`, `esc_html_e()`, and `esc_attr__()` with the `geo-ads-pro` text domain.
 
 ---
 

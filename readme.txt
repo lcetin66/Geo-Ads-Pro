@@ -5,7 +5,7 @@ Tags: ads, geo ads, banner, advertising, widget, shortcode, rest api
 Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -36,6 +36,7 @@ Bölge bazlı banner yönetimi, şehir eşleştirme, tıklama ve gösterim takib
 * JSON dosyaları için .htaccess koruması
 * Admin tarafında CSRF + capability kontrolü
 * Varsayılan olarak veriyi koruyan uninstall davranışı
+* TR, DE ve EN dil dosyaları için hazır i18n yapısı
 
 === Shortcode ===
 [geo_ads_pro mode="global" region="NRW"]
@@ -78,12 +79,29 @@ Geo Ads Pro hem release hem de schema versiyonu takip eder.
 
 gap_maybe_upgrade() activation ve erken plugins_loaded sırasında çalışır; upload korumalarını hazırlar, legacy .json verileri korumalı .json.php dosyalarına taşır, varsayılan option değerlerini tamamlar ve sürüm/schema durumunu kaydeder.
 
+=== Languages ===
+Eklenti geo-ads-pro text domain kullanır ve languages klasöründen çeviri yükler.
+
+* geo-ads-pro.pot: Ana çeviri şablonu
+* geo-ads-pro-tr_TR.po / .mo: Türkçe
+* geo-ads-pro-de_DE.po / .mo: Almanca
+* geo-ads-pro-en_US.po / .mo: İngilizce
+
+Yeni arayüz metinleri __(), esc_html__(), esc_html_e() veya esc_attr__() ile çevrilebilir hale getirilmelidir.
+
 === Installation ===
 1. Eklentiyi yükleyin
 2. Etkinleştirin
 3. Geo Ads Pro menüsünden bölgeleri ve banner’ları yönetin
 
 === Changelog ===
+= 1.0.4 =
+* Text Domain ve Domain Path plugin header bilgileri tamamlandı
+* Admin, settings, analytics, A/B test ve widget metinleri gettext fonksiyonlarına bağlandı
+* TR, DE ve EN için PO/MO dil dosyaları eklendi
+* Ana POT şablonu eklendi
+* Asset/schema sürümü 1.0.4 / 2026060604 olarak güncellendi
+
 = 1.0.3 =
 * GAP_VERSION ve GAP_SCHEMA_VERSION sabitleri eklendi
 * gap_maybe_upgrade() ile kontrollü activation/plugins_loaded upgrade akışı eklendi

@@ -29,7 +29,7 @@ class Geo_Ads_Pro_REST {
 
     public function get_banner($request) {
         if (!gap_rate_limit('rest_banner', 120, MINUTE_IN_SECONDS)) {
-            return new WP_Error('gap_rate_limited', 'Rate limit exceeded.', ['status' => 429]);
+            return new WP_Error('gap_rate_limited', __('Rate limit exceeded.', 'geo-ads-pro'), ['status' => 429]);
         }
 
         $mode   = sanitize_text_field($request->get_param('mode') ?? 'global');
