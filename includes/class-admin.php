@@ -29,6 +29,34 @@ class Geo_Ads_Pro_Admin {
         );
     }
 
+    private function region_exists($region, $regions = null) {
+        $regions = is_array($regions) ? $regions : $this->regions->get_all();
+        return $region !== '' && array_key_exists($region, $regions);
+    }
+
+    private function delete_region_directory($region, $base_dir) {
+        $base_real = realpath($base_dir);
+        $region_dir = trailingslashit($base_dir) . gap_region_folder_name($region);
+        $region_real = realpath($region_dir);
+
+        if (!$base_real || !$region_real || strpos($region_real, $base_real . DIRECTORY_SEPARATOR) !== 0) {
+            return false;
+        }
+
+        $iterator = new RecursiveDirectoryIterator($region_real, RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach ($files as $file) {
+            if ($file->isDir()) {
+                @rmdir($file->getRealPath());
+            } else {
+                @unlink($file->getRealPath());
+            }
+        }
+
+        return @rmdir($region_real);
+    }
+
     public function render_page() {
 
         if (!current_user_can('manage_options')) {
@@ -41,6 +69,58 @@ class Geo_Ads_Pro_Admin {
         $base_dir = gap_upload_base_dir();
         $base_url = gap_upload_base_url();
 
+        // Bölge silme
+        if (isset($_POST['gap_delete_region'])) {
+            if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_delete_region_nonce')) {
+                wp_die('Geçersiz istek.');
+            }
+            $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
+            if ($this->region_exists($region, $regions)) {
+                $this->delete_region_directory($region, $base_dir);
+                $this->regions->delete_region($region);
+                $this->citymap->remove_region_mappings($region);
+                GAP()->analytics->delete_region($region);
+                echo '<div class="updated"><p>Bölge silindi: ' . esc_html($region) . '</p></div>';
+                $regions = $this->regions->get_all();
+                $city_map = $this->citymap->get_all();
+                $_POST['gap_selected_region'] = '';
+            } else {
+                echo '<div class="error"><p>Bölge bulunamadı.</p></div>';
+            }
+        }
+
+        // Banner silme
+        if (isset($_POST['gap_delete_banner'])) {
+            if (!isset($_POST['gap_delete_banner_nonce']) || !wp_verify_nonce($_POST['gap_delete_banner_nonce'], 'gap_delete_banner_nonce')) {
+                wp_die('Geçersiz istek.');
+            }
+            $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
+            $banner_id = intval($_POST['gap_delete_banner_id'] ?? 0);
+            
+            if ($this->region_exists($region, $regions) && $banner_id > 0) {
+                $region_data = $this->regions->get_region($region);
+                $banners = $region_data['banners'] ?? [];
+                foreach ($banners as $b) {
+                    if ($b['id'] == $banner_id) {
+                        $banner_file = trailingslashit($base_dir) . gap_region_folder_name($region) . '/' . basename($b['file']);
+                        $banner_real = realpath($banner_file);
+                        $region_real = realpath(trailingslashit($base_dir) . gap_region_folder_name($region));
+
+                        if ($banner_real && $region_real && strpos($banner_real, $region_real . DIRECTORY_SEPARATOR) === 0) {
+                            @unlink($banner_real);
+                        }
+                        break;
+                    }
+                }
+                $this->regions->delete_banner($region, $banner_id);
+                GAP()->analytics->delete_banner($banner_id);
+                echo '<div class="updated"><p>Banner silindi.</p></div>';
+                $regions = $this->regions->get_all();
+            } else {
+                echo '<div class="error"><p>Banner silinemedi.</p></div>';
+            }
+        }
+
         // Bölge ekleme
         if (isset($_POST['gap_add_region'])) {
 
@@ -52,7 +132,7 @@ class Geo_Ads_Pro_Admin {
 
             if ($region !== '') {
                 $this->regions->add_region($region);
-                $region_dir = $base_dir . '/' . $region;
+                $region_dir = trailingslashit($base_dir) . gap_region_folder_name($region);
                 if (!file_exists($region_dir)) wp_mkdir_p($region_dir);
                 echo '<div class="updated"><p>Bölge eklendi: ' . esc_html($region) . '</p></div>';
                 $regions = $this->regions->get_all();
@@ -67,11 +147,11 @@ class Geo_Ads_Pro_Admin {
             }
 
             $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
-            if ($region === '') {
+            if (!$this->region_exists($region, $regions)) {
                 echo '<div class="error"><p>Bölge seçilmedi.</p></div>';
             } else {
 
-                $region_dir = $base_dir . '/' . $region;
+                $region_dir = trailingslashit($base_dir) . gap_region_folder_name($region);
                 if (!file_exists($region_dir)) wp_mkdir_p($region_dir);
 
                 if (!empty($_FILES['gap_banner_file']['name'])) {
@@ -148,7 +228,7 @@ class Geo_Ads_Pro_Admin {
                 $id = (string) $banner['id'];
                 $banner['selected'] = in_array($id, $selected_ids, true);
                 if (isset($urls[$id])) {
-                    $banner['url'] = esc_url_raw($urls[$id]);
+                    $banner['url'] = gap_validate_click_url($urls[$id]);
                 }
             }
 
@@ -158,6 +238,39 @@ class Geo_Ads_Pro_Admin {
         }
 
         // Şehir → bölge eşleştirme
+        if (isset($_POST['gap_update_city_map'])) {
+
+            if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_update_city_map_nonce')) {
+                wp_die('Geçersiz istek.');
+            }
+
+            $city = sanitize_text_field($_POST['gap_city_name'] ?? '');
+            $region_for_city = sanitize_text_field($_POST['gap_city_region'] ?? '');
+
+            if ($city !== '' && $this->region_exists($region_for_city, $regions)) {
+                $this->citymap->map_city($city, $region_for_city);
+                echo '<div class="updated"><p>Şehir eşleştirmesi güncellendi: ' . esc_html($city) . '</p></div>';
+                $city_map = $this->citymap->get_all();
+            } else {
+                echo '<div class="error"><p>Şehir eşleştirmesi güncellenemedi.</p></div>';
+            }
+        }
+
+        if (isset($_POST['gap_delete_city_map'])) {
+
+            if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_delete_city_map_nonce')) {
+                wp_die('Geçersiz istek.');
+            }
+
+            $city = sanitize_text_field($_POST['gap_city_name'] ?? '');
+
+            if ($city !== '') {
+                $this->citymap->delete_city($city);
+                echo '<div class="updated"><p>Şehir eşleştirmesi silindi: ' . esc_html($city) . '</p></div>';
+                $city_map = $this->citymap->get_all();
+            }
+        }
+
         if (isset($_POST['gap_add_city_map'])) {
 
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_add_city_map_nonce')) {
@@ -167,7 +280,7 @@ class Geo_Ads_Pro_Admin {
             $city = sanitize_text_field($_POST['gap_city_name'] ?? '');
             $region_for_city = sanitize_text_field($_POST['gap_city_region'] ?? '');
 
-            if ($city !== '' && $region_for_city !== '') {
+            if ($city !== '' && $this->region_exists($region_for_city, $regions)) {
                 $this->citymap->map_city($city, $region_for_city);
                 echo '<div class="updated"><p>Şehir eşleştirildi: ' . esc_html($city) . ' → ' . esc_html($region_for_city) . '</p></div>';
                 $city_map = $this->citymap->get_all();
@@ -190,7 +303,7 @@ class Geo_Ads_Pro_Admin {
             <hr>
 
             <h2>Bölge Seç</h2>
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" style="display:inline-block; margin-bottom:15px;">
                 <select name="gap_selected_region" onchange="this.form.submit()">
                     <option value="">Bölge seçin</option>
                     <?php foreach ($regions as $region => $data): ?>
@@ -201,12 +314,20 @@ class Geo_Ads_Pro_Admin {
                 </select>
             </form>
 
+            <?php if ($selected_region !== ''): ?>
+                <form method="post" style="display:inline-block; margin-left: 10px;" onsubmit="return confirm('Bu bölgeyi ve tüm banner\'larını silmek istediğinize emin misiniz?')">
+                    <?php wp_nonce_field('gap_delete_region_nonce'); ?>
+                    <input type="hidden" name="gap_selected_region" value="<?php echo esc_attr($selected_region); ?>">
+                    <button class="button button-link-delete" name="gap_delete_region" style="color: #bc0b0b; cursor: pointer;">Bu Bölgeyi Sil</button>
+                </form>
+            <?php endif; ?>
+
             <?php
             if ($selected_region !== ''):
 
                 $region = $selected_region;
-                $region_dir = $base_dir . '/' . $region;
-                $region_url = $base_url . '/' . $region;
+                $region_dir = trailingslashit($base_dir) . gap_region_folder_name($region);
+                $region_url = trailingslashit($base_url) . rawurlencode(gap_region_folder_name($region));
                 $region_data = $this->regions->get_region($region);
                 $banners = $region_data['banners'] ?? [];
             ?>
@@ -239,6 +360,7 @@ class Geo_Ads_Pro_Admin {
                             <th>ID</th>
                             <th>Seç</th>
                             <th>Tıklama URL</th>
+                            <th>İşlem</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -246,7 +368,7 @@ class Geo_Ads_Pro_Admin {
                         <?php foreach ($banners as $banner): ?>
                             <tr>
                                 <td>
-                                    <img src="<?php echo esc_url($region_url . '/' . $banner['file']); ?>" width="120" alt="">
+                                    <img src="<?php echo esc_url($region_url . '/' . rawurlencode(basename($banner['file']))); ?>" width="120" alt="">
                                 </td>
                                 <td><?php echo esc_html((int)$banner['width'] . 'x' . (int)$banner['height']); ?></td>
                                 <td><?php echo esc_html($banner['file']); ?></td>
@@ -264,13 +386,26 @@ class Geo_Ads_Pro_Admin {
                                            value="<?php echo esc_attr($banner['url'] ?? ''); ?>"
                                            placeholder="https://...">
                                 </td>
+                                <td>
+                                    <button type="submit"
+                                            name="gap_delete_banner"
+                                            value="1"
+                                            class="button button-link-delete"
+                                            style="color: #bc0b0b; cursor: pointer;"
+                                            onclick="if(confirm('Bu banner\'ı silmek istediğinize emin misiniz?')) { jQuery('#gap_delete_banner_id').val('<?php echo esc_attr($banner['id']); ?>'); return true; } return false;">
+                                        Sil
+                                    </button>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <tr><td colspan="6">Bu bölge için henüz banner yok.</td></tr>
+                        <tr><td colspan="7">Bu bölge için henüz banner yok.</td></tr>
                     <?php endif; ?>
                     </tbody>
                 </table>
+
+                <input type="hidden" name="gap_delete_banner_id" id="gap_delete_banner_id" value="0">
+                <input type="hidden" name="gap_delete_banner_nonce" value="<?php echo esc_attr(wp_create_nonce('gap_delete_banner_nonce')); ?>">
 
                 <br>
                 <button class="button button-primary" name="gap_save_selection">Seçimleri Kaydet</button>
@@ -301,6 +436,7 @@ class Geo_Ads_Pro_Admin {
                     <tr>
                         <th>Şehir</th>
                         <th>Bölge</th>
+                        <th>İşlem</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -308,11 +444,31 @@ class Geo_Ads_Pro_Admin {
                         <?php foreach ($city_map as $city => $region_name): ?>
                             <tr>
                                 <td><?php echo esc_html($city); ?></td>
-                                <td><?php echo esc_html($region_name); ?></td>
+                                <td>
+                                    <form method="post" style="display:flex; gap:8px; align-items:center;">
+                                        <?php wp_nonce_field('gap_update_city_map_nonce'); ?>
+                                        <input type="hidden" name="gap_city_name" value="<?php echo esc_attr($city); ?>">
+                                        <select name="gap_city_region">
+                                            <?php foreach ($regions as $r => $data): ?>
+                                                <option value="<?php echo esc_attr($r); ?>" <?php selected($region_name, $r); ?>>
+                                                    <?php echo esc_html($r); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <button class="button" name="gap_update_city_map">Güncelle</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form method="post" onsubmit="return confirm('Bu şehir eşleştirmesi silinsin mi?')">
+                                        <?php wp_nonce_field('gap_delete_city_map_nonce'); ?>
+                                        <input type="hidden" name="gap_city_name" value="<?php echo esc_attr($city); ?>">
+                                        <button class="button button-link-delete" name="gap_delete_city_map" style="color:#bc0b0b;">Sil</button>
+                                    </form>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <tr><td colspan="2">Henüz eşleştirme yok.</td></tr>
+                        <tr><td colspan="3">Henüz eşleştirme yok.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

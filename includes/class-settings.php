@@ -25,10 +25,15 @@ class Geo_Ads_Pro_Settings {
 
     public function register_settings() {
 
-        register_setting('gap_settings_group', 'gap_enable_local_mode');
-        register_setting('gap_settings_group', 'gap_default_region');
-        register_setting('gap_settings_group', 'gap_rotation_mode');
-        register_setting('gap_settings_group', 'gap_abtest_auto');
+        register_setting('gap_settings_group', 'gap_enable_local_mode', ['sanitize_callback' => 'absint']);
+        register_setting('gap_settings_group', 'gap_default_region', ['sanitize_callback' => 'sanitize_text_field']);
+        register_setting('gap_settings_group', 'gap_rotation_mode', ['sanitize_callback' => [$this, 'sanitize_rotation_mode']]);
+        register_setting('gap_settings_group', 'gap_abtest_auto', ['sanitize_callback' => 'absint']);
+        register_setting('gap_settings_group', 'gap_delete_data_on_uninstall', ['sanitize_callback' => 'absint']);
+    }
+
+    public function sanitize_rotation_mode($mode) {
+        return in_array($mode, ['random', 'sequential'], true) ? $mode : 'random';
     }
 
     public function render_page() {
@@ -42,16 +47,8 @@ class Geo_Ads_Pro_Settings {
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_reset_analytics_nonce')) {
                 wp_die('Geçersiz istek.');
             }
-            $regions = GAP()->regions->get_all();
-            foreach ($regions as $region => $data) {
-                if (isset($data['banners']) && is_array($data['banners'])) {
-                    foreach ($data['banners'] as &$b) {
-                        $b['impressions'] = 0;
-                        $b['clicks'] = 0;
-                    }
-                    GAP()->regions->update_banners($region, $data['banners']);
-                }
-            }
+            GAP()->analytics->reset();
+            delete_option('gap_rotation_state');
             echo '<div class="updated"><p>Analytics verileri sıfırlandı.</p></div>';
         }
 
@@ -60,6 +57,23 @@ class Geo_Ads_Pro_Settings {
 
         <div class="wrap gap-settings-page">
             <h1>Geo Ads Pro – Settings</h1>
+
+            <table class="widefat striped" style="max-width: 760px; margin: 16px 0;">
+                <tbody>
+                    <tr>
+                        <th scope="row">Plugin Version</th>
+                        <td><?php echo esc_html(defined('GAP_VERSION') ? GAP_VERSION : get_option('gap_version', '')); ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Schema Version</th>
+                        <td><?php echo esc_html(get_option('gap_schema_version', '0')); ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Last Upgrade</th>
+                        <td><?php echo esc_html(get_option('gap_upgraded_at', '-')); ?></td>
+                    </tr>
+                </tbody>
+            </table>
 
             <form method="post" action="options.php">
                 <?php settings_fields('gap_settings_group'); ?>
@@ -107,6 +121,15 @@ class Geo_Ads_Pro_Settings {
                             <input type="checkbox" name="gap_abtest_auto"
                                    value="1" <?php checked(get_option('gap_abtest_auto'), 1); ?>>
                             <label>En yüksek CTR’a sahip banner’ı otomatik seç</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Uninstall Temizliği</th>
+                        <td>
+                            <input type="checkbox" name="gap_delete_data_on_uninstall"
+                                   value="1" <?php checked(get_option('gap_delete_data_on_uninstall'), 1); ?>>
+                            <label>Eklenti silinince banner dosyalarını, JSON verilerini ve ayarları kaldır</label>
                         </td>
                     </tr>
 

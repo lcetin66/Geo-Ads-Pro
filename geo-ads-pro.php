@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Geo Ads Pro
  * Description: Bölge bazlı banner yönetimi, şehir → bölge eşleştirme ve widget gösterimi.
- * Version: 1.0.0
+ * Version: 1.0.3
  * Author: Levent Cetin - 3CCS.com
  * Text Domain: geo-ads-pro
  */
@@ -13,10 +13,13 @@ if (!defined('ABSPATH')) exit;
 define('GAP_PLUGIN_FILE', __FILE__);
 define('GAP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GAP_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('GAP_VERSION', '1.0.3');
+define('GAP_SCHEMA_VERSION', '2026060603');
 
 require_once GAP_PLUGIN_DIR . 'includes/helpers.php';
 require_once GAP_PLUGIN_DIR . 'includes/class-regions.php';
 require_once GAP_PLUGIN_DIR . 'includes/class-citymap.php';
+require_once GAP_PLUGIN_DIR . 'includes/class-banner-service.php';
 require_once GAP_PLUGIN_DIR . 'includes/class-admin.php';
 require_once GAP_PLUGIN_DIR . 'includes/class-widget.php';
 require_once GAP_PLUGIN_DIR . 'includes/class-ajax.php';
@@ -35,6 +38,8 @@ class Geo_Ads_Pro {
     public $admin;
     public $widget_manager;
     public $ajax;
+    public $analytics;
+    public $banner_service;
 
     private static $instance = null;
 
@@ -47,13 +52,14 @@ class Geo_Ads_Pro {
 
         $this->regions        = new Geo_Ads_Pro_Regions();
         $this->citymap        = new Geo_Ads_Pro_CityMap();
+        $this->analytics      = new Geo_Ads_Pro_Analytics($this->regions);
+        $this->banner_service = new Geo_Ads_Pro_Banner_Service($this->regions, $this->citymap, $this->analytics);
         $this->admin          = new Geo_Ads_Pro_Admin($this->regions, $this->citymap);
         $this->widget_manager = new Geo_Ads_Pro_Widget_Manager($this->regions, $this->citymap);
-        $this->ajax           = new Geo_Ads_Pro_Ajax($this->regions, $this->citymap);
-        $this->analytics      = new Geo_Ads_Pro_Analytics($this->regions);
+        $this->ajax           = new Geo_Ads_Pro_Ajax($this->regions, $this->citymap, $this->analytics, $this->banner_service);
         $this->abtest         = new Geo_Ads_Pro_ABTest($this->regions);
         $this->shortcode      = new Geo_Ads_Pro_Shortcode($this->regions, $this->citymap);
-        $this->rest           = new Geo_Ads_Pro_REST($this->regions, $this->citymap);
+        $this->rest           = new Geo_Ads_Pro_REST($this->regions, $this->citymap, $this->banner_service);
         $this->settings       = new Geo_Ads_Pro_Settings();
 
 
@@ -71,19 +77,20 @@ class Geo_Ads_Pro {
             'geo-ads-pro-public',
             GAP_PLUGIN_URL . 'public/css/geo-ads-pro.css',
             [],
-            '1.0.0'
+            GAP_VERSION
         );
 
         wp_enqueue_script(
             'geo-ads-pro-public',
             GAP_PLUGIN_URL . 'public/js/geo-ads-pro.js',
             ['jquery'],
-            '1.0.0',
+            GAP_VERSION,
             true
         );
 
         wp_localize_script('geo-ads-pro-public', 'GAP_AJAX', [
-            'url' => admin_url('admin-ajax.php')
+            'url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('gap_public_nonce')
         ]);
     }
 
@@ -99,7 +106,7 @@ class Geo_Ads_Pro {
             'geo-ads-pro-admin',
             GAP_PLUGIN_URL . 'assets/css/admin.css',
             [],
-            '1.0.0'
+            GAP_VERSION
         );
 
         // Modern UI redesign CSS
@@ -107,7 +114,7 @@ class Geo_Ads_Pro {
             'geo-ads-pro-admin-ui',
             GAP_PLUGIN_URL . 'assets/css/admin-ui.css',
             [],
-            '1.0.0'
+            GAP_VERSION
         );
 
         // Analytics sayfası için özel CSS + JS
@@ -117,7 +124,7 @@ class Geo_Ads_Pro {
                 'geo-ads-pro-analytics',
                 GAP_PLUGIN_URL . 'assets/css/analytics.css',
                 [],
-                '1.0.0'
+                GAP_VERSION
             );
 
             wp_enqueue_script(
@@ -132,7 +139,7 @@ class Geo_Ads_Pro {
                 'geo-ads-pro-analytics',
                 GAP_PLUGIN_URL . 'assets/js/analytics.js',
                 ['jquery', 'chart-js'],
-                '1.0.0',
+                GAP_VERSION,
                 true
             );
         }
@@ -142,7 +149,7 @@ class Geo_Ads_Pro {
             'geo-ads-pro-admin',
             GAP_PLUGIN_URL . 'assets/js/admin.js',
             ['jquery'],
-            '1.0.0',
+            GAP_VERSION,
             true
         );
     }
@@ -151,4 +158,39 @@ class Geo_Ads_Pro {
 }
 
 function GAP() { return Geo_Ads_Pro::instance(); }
+
+function gap_activate() {
+    gap_maybe_upgrade(true);
+}
+
+function gap_maybe_upgrade($force = false) {
+    $installed_schema = (string) get_option('gap_schema_version', '0');
+    $installed_version = (string) get_option('gap_version', '0.0.0');
+
+    if (!$force && $installed_schema === GAP_SCHEMA_VERSION && $installed_version === GAP_VERSION) {
+        return;
+    }
+
+    gap_upload_base_dir();
+    add_option('gap_enable_local_mode', 0);
+    add_option('gap_rotation_mode', 'random');
+    add_option('gap_abtest_auto', 0);
+    add_option('gap_delete_data_on_uninstall', 0);
+
+    gap_protected_json_path('regions');
+    gap_protected_json_path('city-map');
+    gap_protected_json_path('analytics');
+
+    if (version_compare($installed_version, '1.0.3', '<')) {
+        delete_option('gap_upgrade_required');
+    }
+
+    update_option('gap_version', GAP_VERSION, false);
+    update_option('gap_schema_version', GAP_SCHEMA_VERSION, false);
+    update_option('gap_upgraded_at', current_time('mysql'), false);
+}
+
+register_activation_hook(__FILE__, 'gap_activate');
+add_action('plugins_loaded', 'gap_maybe_upgrade', 1);
+
 GAP();

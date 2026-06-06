@@ -8,10 +8,12 @@ class Geo_Ads_Pro_REST {
 
     private $regions;
     private $citymap;
+    private $banner_service;
 
-    public function __construct($regions, $citymap) {
+    public function __construct($regions, $citymap, $banner_service) {
         $this->regions = $regions;
         $this->citymap = $citymap;
+        $this->banner_service = $banner_service;
 
         add_action('rest_api_init', [$this, 'register_routes']);
     }
@@ -26,40 +28,22 @@ class Geo_Ads_Pro_REST {
     }
 
     public function get_banner($request) {
+        if (!gap_rate_limit('rest_banner', 120, MINUTE_IN_SECONDS)) {
+            return new WP_Error('gap_rate_limited', 'Rate limit exceeded.', ['status' => 429]);
+        }
 
         $mode   = sanitize_text_field($request->get_param('mode') ?? 'global');
         $region = sanitize_text_field($request->get_param('region') ?? '');
         $city   = sanitize_text_field($request->get_param('city') ?? '');
 
-        if ($mode === 'local') {
-            $region = $this->citymap->city_to_region($city);
-        }
+        $result = $this->banner_service->get_banner($mode, $region, $city);
+        $banner = $result['banner'];
 
-        if (!$region) {
+        if (!$banner) {
             return ['html' => ''];
         }
 
-        $region_data = $this->regions->get_region($region);
-        $banners = $region_data['banners'] ?? [];
-
-        $banners = array_filter($banners, fn($b) => !empty($b['selected']));
-
-        if (empty($banners)) {
-            return ['html' => ''];
-        }
-
-        // Boyut bazlı grupla
-        $groups = [];
-        foreach ($banners as $b) {
-            $key = intval($b['width']) . 'x' . intval($b['height']);
-            $groups[$key][] = $b;
-        }
-
-        $first_group = reset($groups);
-        $banner = $first_group[array_rand($first_group)];
-
-        $base_url = gap_upload_base_url();
-        $src = esc_url($base_url . '/' . $region . '/' . $banner['file']);
+        $src = $this->banner_service->banner_image_url($result['region'], $banner['file']);
 
         return [
             'id'         => $banner['id'],
@@ -67,7 +51,7 @@ class Geo_Ads_Pro_REST {
             'width'      => intval($banner['width']),
             'height'     => intval($banner['height']),
             'click_url'  => home_url('/?gap_click=' . intval($banner['id'])),
-            'region'     => $region
+            'region'     => $result['region']
         ];
     }
 }

@@ -23,6 +23,7 @@ jQuery(function($){
 
             $.post(GAP_AJAX.url, {
                 action: 'gap_get_banner',
+                nonce: GAP_AJAX.nonce,
                 mode: mode,
                 region: region,
                 city: userCity
@@ -39,6 +40,7 @@ jQuery(function($){
                     if (bannerId && resolvedRegion) {
                         $.post(GAP_AJAX.url, {
                             action: 'gap_track_impression',
+                            nonce: GAP_AJAX.nonce,
                             banner_id: bannerId,
                             region: resolvedRegion
                         });

@@ -27,8 +27,7 @@ class Geo_Ads_Pro_Shortcode {
         $region = sanitize_text_field($atts['region']);
 
         // AJAX çağrısı yerine direkt backend banner seçimi
-        $ajax = GAP()->ajax;
-        $result = $ajax->generate_banner_html($mode, $region, '');
+        $result = GAP()->banner_service->get_banner_html($mode, $region, '');
 
         if (!empty($result['html'])) {
             return $result['html'];

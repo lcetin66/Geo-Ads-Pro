@@ -69,8 +69,10 @@ class Geo_Ads_Pro_ABTest {
                         $best_ctr = 0;
 
                         foreach ($banners as $b) {
-                            $imp = $b['impressions'] ?? 0;
-                            $clk = $b['clicks'] ?? 0;
+                            $stats = GAP()->analytics->get_banner_stats($b['id']);
+                            $has_stats = !empty($stats['region']) || !empty($stats['impressions']) || !empty($stats['clicks']);
+                            $imp = $has_stats ? ($stats['impressions'] ?? 0) : ($b['impressions'] ?? 0);
+                            $clk = $has_stats ? ($stats['clicks'] ?? 0) : ($b['clicks'] ?? 0);
                             $ctr = ($imp > 0) ? ($clk / $imp) : 0;
 
                             if ($ctr > $best_ctr) {
@@ -86,9 +88,13 @@ class Geo_Ads_Pro_ABTest {
                             <td>
                                 <?php foreach ($banners as $b): ?>
                                     <div>
+                                        <?php $stats = GAP()->analytics->get_banner_stats($b['id']); ?>
+                                        <?php $has_stats = !empty($stats['region']) || !empty($stats['impressions']) || !empty($stats['clicks']); ?>
+                                        <?php $imp = $has_stats ? ($stats['impressions'] ?? 0) : ($b['impressions'] ?? 0); ?>
+                                        <?php $clk = $has_stats ? ($stats['clicks'] ?? 0) : ($b['clicks'] ?? 0); ?>
                                         ID: <?php echo intval($b['id']); ?> —
-                                        CTR: <?php echo isset($b['impressions']) && $b['impressions'] > 0
-                                            ? round(($b['clicks'] ?? 0) / $b['impressions'] * 100, 2) . '%'
+                                        CTR: <?php echo !empty($imp)
+                                            ? round($clk / $imp * 100, 2) . '%'
                                             : '0%'; ?>
                                     </div>
                                 <?php endforeach; ?>

@@ -33,17 +33,20 @@ Geo Ads Pro is a professional GEO-targeted banner and advertisement management p
 - **Auto-Dimension Detection:** Automatically detects banner width and height.
 - **Selective Display:** Easily toggle active/inactive banners.
 - **Click Tracking URLs:** Assign custom redirection links to each banner.
-- **Smart Banner Rotation:** Automatically rotates banners of the same size.
+- **Smart Banner Rotation:** Supports random and sequential rotation for selected banners of the same size.
+- **Delete Management:** Remove regions, banners, and city mappings from the admin panel.
 
 ### 🌍 GEO Targeting
 - **City-to-Region Mapping:** Map individual cities to broader regions.
-- **Local (IP-based) Mode:** Auto-detects visitor cities and displays localized banners.
+- **Local (IP-based) Mode:** Auto-detects visitor cities and displays localized banners when local mode is enabled.
 - **Global fallback mode:** Serves fallback regional banners globally.
 - **Secure Backend IP Lookup:** Reliable server-side visitor city mapping.
 
 ### 📊 Analytics
 - **Click Tracking:** Records every time a banner is clicked.
 - **Impression Tracking:** Counts views for individual banners.
+- **Separate Analytics Store:** Keeps tracking counters in a protected `analytics.json.php` file instead of mutating banner configuration on every view.
+- **Impression Throttling:** Prevents rapid duplicate impression writes per visitor/banner for a short interval.
 - **CTR Calculation:** Automatically calculates Click-Through Rates.
 - **Visual Analytics:** Interactive charts representing performance across regions (Chart.js integration).
 
@@ -51,6 +54,7 @@ Geo Ads Pro is a professional GEO-targeted banner and advertisement management p
 - **Variant Grouping:** Banners of the same size are automatically grouped as variants.
 - **Performance Evaluation:** Monitors and displays the CTR performance of each variant.
 - **Winner Declaration:** Identifies the highest-performing variant.
+- **Auto Optimization:** Optional setting can prefer the highest-CTR banner in a variant group.
 
 ### 🧩 Integrations
 - **Widget Support:** Custom WordPress Widget for drag-and-drop integration.
@@ -69,6 +73,9 @@ Geo Ads Pro is a professional GEO-targeted banner and advertisement management p
 - **Upload Restrictions:** Restricts uploader to authorized image formats.
 - **Access Control:** `.htaccess` rules generated to deny direct HTTP access to JSON files.
 - **Secure Redirection:** Safe redirect endpoint validation.
+- **Public Endpoint Throttling:** AJAX, REST, impression, and click flows include nonce/rate-limit/throttle protections where appropriate.
+- **Protected Data Files:** JSON runtime data is written as executable `.json.php` files with an immediate `exit` guard.
+- **Safe Uninstall:** Upload data is preserved by default unless cleanup is explicitly enabled in settings.
 
 ---
 
@@ -94,6 +101,7 @@ geo-ads-pro/
 │   ├── class-admin.php
 │   ├── class-ajax.php
 │   ├── class-analytics.php
+│   ├── class-banner-service.php
 │   ├── class-citymap.php
 │   ├── class-regions.php
 │   ├── class-rest.php
@@ -113,6 +121,57 @@ geo-ads-pro/
 - **WordPress:** 5.0+
 - **PHP:** 7.4+
 - **Writable Directories:** File permissions allowing JSON file storage in the uploads directory.
+
+---
+
+## 🧠 Runtime Data
+
+Geo Ads Pro stores runtime data under the WordPress uploads directory:
+
+```text
+wp-content/uploads/geo-ads-pro/
+├── regions.json.php
+├── city-map.json.php
+├── analytics.json.php
+└── <region-folder>/
+    └── banner-image files
+```
+
+`regions.json.php` stores region and banner configuration, `city-map.json.php` stores city-to-region mappings, and `analytics.json.php` stores click/impression counters. These files contain a PHP `exit` guard before the JSON payload so direct web requests cannot read the data on PHP-enabled servers. Legacy `.json` files are migrated automatically. The shared banner selection logic lives in `includes/class-banner-service.php` and is used by AJAX, shortcode, widget, and REST rendering.
+
+---
+
+## ⚙️ Settings Notes
+
+- **Local Mode:** Local city mapping is only applied when `gap_enable_local_mode` is enabled.
+- **Default Region:** Used as fallback when no explicit or local region resolves.
+- **Rotation Mode:** `random` picks a random selected banner; `sequential` rotates selected banners in order per region/size group.
+- **A/B Auto Optimization:** When enabled, the highest-CTR banner in the selected size group is preferred.
+- **Uninstall Cleanup:** Data is preserved by default. Enable uninstall cleanup only when banner files and JSON data should be deleted with the plugin.
+
+---
+
+## 🧭 Versioning
+
+Geo Ads Pro tracks both release and schema versions:
+
+- `GAP_VERSION`: Current plugin release version.
+- `GAP_SCHEMA_VERSION`: Current runtime data/schema version.
+- `gap_version`: Installed plugin version stored in WordPress options.
+- `gap_schema_version`: Installed schema version stored in WordPress options.
+- `gap_upgraded_at`: Last successful upgrade timestamp.
+
+`gap_maybe_upgrade()` runs on activation and early `plugins_loaded`. It prepares upload protection files, migrates legacy `.json` runtime data to protected `.json.php` files, ensures default options exist, and records the current version/schema state.
+
+---
+
+## 🔒 Security Notes
+
+- Admin mutations require `manage_options` plus WordPress nonces.
+- Public AJAX banner and impression endpoints require the localized frontend nonce.
+- REST banner requests are public by design but IP-throttled.
+- Click and impression counters are throttled per visitor/banner to reduce counter manipulation.
+- Upload runtime data is protected by `.htaccess`, `web.config`, `index.php`, and `.json.php` PHP exit guards.
 
 ---
 

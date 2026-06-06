@@ -11,19 +11,16 @@ class Geo_Ads_Pro_Regions {
     private $data = [];
 
     public function __construct() {
-        $this->file = gap_upload_base_dir() . '/regions.json';
-        if (!file_exists($this->file)) file_put_contents($this->file, json_encode([]));
+        $this->file = gap_protected_json_path('regions');
         $this->load();
     }
 
     private function load() {
-        $json = @file_get_contents($this->file);
-        $this->data = $json ? json_decode($json, true) : [];
-        if (!is_array($this->data)) $this->data = [];
+        $this->data = gap_read_json_file($this->file);
     }
 
     private function save() {
-        @file_put_contents($this->file, json_encode($this->data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        gap_write_json_file($this->file, $this->data);
     }
 
     public function get_all() {
@@ -55,5 +52,22 @@ class Geo_Ads_Pro_Regions {
         if (!isset($this->data[$region])) $this->data[$region] = ['banners' => []];
         $this->data[$region]['banners'] = array_values($banners);
         $this->save();
+    }
+
+    public function delete_banner($region, $banner_id) {
+        $region = (string) $region;
+        if (isset($this->data[$region])) {
+            $banners = $this->data[$region]['banners'] ?? [];
+            $this->data[$region]['banners'] = array_values(array_filter($banners, fn($b) => $b['id'] != $banner_id));
+            $this->save();
+        }
+    }
+
+    public function delete_region($region) {
+        $region = (string) $region;
+        if (isset($this->data[$region])) {
+            unset($this->data[$region]);
+            $this->save();
+        }
     }
 }
