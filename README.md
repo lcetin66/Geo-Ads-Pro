@@ -38,18 +38,22 @@ Geo Ads Pro is a professional GEO-targeted banner and advertisement management p
 - **Delete Management:** Remove regions, banners, and city mappings from the admin panel.
 
 ### 🌍 GEO Targeting
-- **City-to-Region Mapping:** Map individual cities to broader regions.
+- **Region-Based Banner Assignment:** Assign banners to regions and review which banner belongs to which region.
 - **Local (IP-based) Mode:** Auto-detects visitor cities and displays localized banners when local mode is enabled.
+- **Local Targeting Methods:** Choose city-map matching or nearest radius-configured region matching for local banner resolution.
 - **Global fallback mode:** Serves fallback regional banners globally.
 - **Secure Backend IP Lookup:** Reliable server-side visitor city mapping.
 
 ### 📊 Analytics
 - **Click Tracking:** Records every time a banner is clicked.
 - **Impression Tracking:** Counts views for individual banners.
+- **City-Level Insights:** Stores visitor city data for impressions and clicks.
 - **Separate Analytics Store:** Keeps tracking counters in a protected `analytics.json.php` file instead of mutating banner configuration on every view.
 - **Impression Throttling:** Prevents rapid duplicate impression writes per visitor/banner for a short interval.
 - **CTR Calculation:** Automatically calculates Click-Through Rates.
 - **Visual Analytics:** Native canvas charts plus a PHP fallback table for clicks, impressions, and CTR.
+- **Monthly CSV Reports:** Export per-banner monthly reports as CSV or send grouped customer reports automatically via WP-Cron, with related banner images attached and HTML download links in the email body.
+- **Automatic Report History:** Review the last automatic monthly report sent to each customer email in the Analytics screen.
 
 ### 🧪 A/B Testing System
 - **Variant Grouping:** Banners of the same size are automatically grouped as variants.
@@ -138,12 +142,12 @@ geo-ads-pro/
 
 Download the installable plugin package from this repository:
 
-- `dist/geo-ads-pro-1.0.7.zip`
+- `dist/geo-ads-pro-1.0.8.zip`
 
 Then install it in WordPress:
 
 1. Open **WordPress Admin → Plugins → Add New → Upload Plugin**.
-2. Select `geo-ads-pro-1.0.7.zip`.
+2. Select `geo-ads-pro-1.0.8.zip`.
 3. Click **Install Now** and activate **Geo Ads Pro**.
 
 The zip contains a single `geo-ads-pro/` plugin folder, ready for WordPress upload installation.
@@ -170,9 +174,11 @@ wp-content/uploads/geo-ads-pro/
 ## ⚙️ Settings Notes
 
 - **Local Mode:** Local city mapping is only applied when `gap_enable_local_mode` is enabled.
+- **Local Targeting Method:** `city_map` uses IP → city → city-map matching; `radius` resolves region centers from region names, then uses the nearest region, preferring regions whose radius contains the visitor.
 - **Default Region:** Used as fallback when no explicit or local region resolves.
 - **Rotation Mode:** `random` picks a random selected banner; `sequential` rotates selected banners in order per region/size group.
 - **A/B Auto Optimization:** When enabled, the highest-CTR banner in the selected size group is preferred.
+- **Monthly Reports:** When automatic monthly reports are enabled, WP-Cron sends a single grouped previous-month CSV report to each unique customer email.
 - **Uninstall Cleanup:** Data is preserved by default. Enable uninstall cleanup only when banner files and JSON data should be deleted with the plugin.
 
 ---

@@ -32,12 +32,35 @@ class Geo_Ads_Pro_Regions {
         return $this->data[$region] ?? ['banners' => []];
     }
 
-    public function add_region($region) {
+    public function add_region($region, $meta = []) {
         $region = (string) $region;
         if (!isset($this->data[$region])) {
-            $this->data[$region] = ['banners' => []];
+            $this->data[$region] = array_merge([
+                'banners' => [],
+            ], $this->sanitize_targeting_meta($meta));
             $this->save();
         }
+    }
+
+    private function sanitize_targeting_meta($meta) {
+        return [
+            'latitude'  => isset($meta['latitude']) ? floatval($meta['latitude']) : 0,
+            'longitude' => isset($meta['longitude']) ? floatval($meta['longitude']) : 0,
+            'radius_km' => isset($meta['radius_km']) ? max(0, floatval($meta['radius_km'])) : 0,
+        ];
+    }
+
+    public function update_region_targeting($region, $meta) {
+        $region = (string) $region;
+        if (!isset($this->data[$region])) {
+            return;
+        }
+
+        $this->data[$region] = array_merge($this->data[$region], $this->sanitize_targeting_meta($meta));
+        if (!isset($this->data[$region]['banners']) || !is_array($this->data[$region]['banners'])) {
+            $this->data[$region]['banners'] = [];
+        }
+        $this->save();
     }
 
     public function add_banner($region, $banner) {

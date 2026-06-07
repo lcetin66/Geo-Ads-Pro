@@ -1,6 +1,7 @@
 <?php
-// Date: 20260606
-// Author: Levent Cetin - 3CCS.com
+/* Plugin Name: Geo Ads Pro - shortcode.php */
+/* Date: 20260606 */
+/* Author: Levent Cetin - 3CCS.com */
 
 if (!defined('ABSPATH')) exit;
 

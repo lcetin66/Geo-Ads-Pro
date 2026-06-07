@@ -35,8 +35,10 @@ class Geo_Ads_Pro_REST {
         $mode   = sanitize_text_field($request->get_param('mode') ?? 'global');
         $region = sanitize_text_field($request->get_param('region') ?? '');
         $city   = sanitize_text_field($request->get_param('city') ?? '');
+        $latitude = $request->get_param('latitude');
+        $longitude = $request->get_param('longitude');
 
-        $result = $this->banner_service->get_banner($mode, $region, $city);
+        $result = $this->banner_service->get_banner($mode, $region, $city, $latitude, $longitude);
         $banner = $result['banner'];
 
         if (!$banner) {

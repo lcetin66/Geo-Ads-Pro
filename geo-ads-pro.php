@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Geo Ads Pro
  * Description: Region-based banner management, city → region mapping, and widget display.
- * Version: 1.0.7
+ * Version: 1.0.8
  * Author: Levent Cetin - 3CCS.com
  * Text Domain: geo-ads-pro
  * Domain Path: /languages
@@ -14,8 +14,8 @@ if (!defined('ABSPATH')) exit;
 define('GAP_PLUGIN_FILE', __FILE__);
 define('GAP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GAP_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('GAP_VERSION', '1.0.7');
-define('GAP_SCHEMA_VERSION', '2026060607');
+define('GAP_VERSION', '1.0.8');
+define('GAP_SCHEMA_VERSION', '2026060701');
 
 require_once GAP_PLUGIN_DIR . 'includes/helpers.php';
 require_once GAP_PLUGIN_DIR . 'includes/class-regions.php';
@@ -91,7 +91,9 @@ class Geo_Ads_Pro {
 
         wp_localize_script('geo-ads-pro-public', 'GAP_AJAX', [
             'url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('gap_public_nonce')
+            'nonce' => wp_create_nonce('gap_public_nonce'),
+            'view_ad' => __('View ad', 'geo-ads-pro'),
+            'no_banner' => __('No banner available.', 'geo-ads-pro')
         ]);
     }
 
@@ -154,6 +156,25 @@ function GAP() { return Geo_Ads_Pro::instance(); }
 
 function gap_activate() {
     gap_maybe_upgrade(true);
+    gap_schedule_monthly_reports_cron();
+}
+
+function gap_deactivate() {
+    gap_unschedule_monthly_reports_cron();
+}
+
+function gap_schedule_monthly_reports_cron() {
+    if (!wp_next_scheduled('gap_monthly_report_cron')) {
+        wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', 'gap_monthly_report_cron');
+    }
+}
+
+function gap_unschedule_monthly_reports_cron() {
+    $timestamp = wp_next_scheduled('gap_monthly_report_cron');
+    while ($timestamp) {
+        wp_unschedule_event($timestamp, 'gap_monthly_report_cron');
+        $timestamp = wp_next_scheduled('gap_monthly_report_cron');
+    }
 }
 
 function gap_maybe_upgrade($force = false) {
@@ -166,9 +187,14 @@ function gap_maybe_upgrade($force = false) {
 
     gap_upload_base_dir();
     add_option('gap_enable_local_mode', 0);
+    add_option('gap_local_targeting_method', 'city_map');
     add_option('gap_rotation_mode', 'random');
     add_option('gap_abtest_auto', 0);
     add_option('gap_delete_data_on_uninstall', 0);
+    add_option('gap_auto_monthly_reports', 0);
+    add_option('gap_monthly_report_start_month', current_time('Y-m'), '', false);
+    add_option('gap_monthly_report_history', [], '', false);
+    add_option('gap_monthly_report_log', [], '', false);
 
     gap_protected_json_path('regions');
     gap_protected_json_path('city-map');
@@ -183,7 +209,42 @@ function gap_maybe_upgrade($force = false) {
     update_option('gap_upgraded_at', current_time('mysql'), false);
 }
 
+function gap_redirect_legacy_admin_paths() {
+    if (is_admin()) {
+        return;
+    }
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
+        return;
+    }
+
+    $request_uri = (string) ($_SERVER['REQUEST_URI'] ?? '');
+    if ($request_uri === '' || strpos($request_uri, '/wp-admin/') === false || strpos($request_uri, 'admin.php') !== false) {
+        return;
+    }
+
+    $path = wp_parse_url($request_uri, PHP_URL_PATH) ?: '';
+    $slug = basename(rtrim($path, '/'));
+
+    $pages = [
+        'geo-ads-pro' => 'geo-ads-pro',
+        'geo-ads-pro-analytics' => 'geo-ads-pro-analytics',
+        'geo-ads-pro-abtest' => 'geo-ads-pro-abtest',
+        'geo-ads-pro-settings' => 'geo-ads-pro-settings',
+    ];
+
+    if (!isset($pages[$slug])) {
+        return;
+    }
+
+    wp_safe_redirect(admin_url('admin.php?page=' . $pages[$slug]));
+    exit;
+}
+
 register_activation_hook(__FILE__, 'gap_activate');
+register_deactivation_hook(__FILE__, 'gap_deactivate');
+add_action('plugins_loaded', 'gap_schedule_monthly_reports_cron', 2);
 add_action('plugins_loaded', 'gap_maybe_upgrade', 1);
+add_action('init', 'gap_redirect_legacy_admin_paths', 0);
 
 GAP();

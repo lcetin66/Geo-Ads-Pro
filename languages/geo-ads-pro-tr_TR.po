@@ -50,6 +50,9 @@ msgstr "Banner Listesi"
 msgid "Banner Rotation Mode"
 msgstr "Banner Rotasyon Modu"
 
+msgid "Banner → Region Assignment"
+msgstr "Banner → Bölge Ataması"
+
 msgid "Banner could not be deleted."
 msgstr "Banner silinemedi."
 
@@ -112,6 +115,9 @@ msgstr "Bu şehir eşleştirmesi silinsin mi?"
 msgid "Displays region-based banners."
 msgstr "Bölge bazlı banner gösterimi sağlar."
 
+msgid "Edit Region Banners"
+msgstr "Bölge Bannerlarını Düzenle"
+
 msgid "Enable IP-based city → region mapping"
 msgstr "IP tabanlı şehir → bölge eşleştirmeyi aktif et"
 
@@ -159,6 +165,9 @@ msgstr "Konum Modu:"
 
 msgid "No region selected."
 msgstr "Bölge seçilmedi."
+
+msgid "No"
+msgstr "Hayır"
 
 msgid "No analytics data yet."
 msgstr "Henüz analytics verisi yok."
@@ -211,6 +220,9 @@ msgstr "Schema Sürümü"
 msgid "Select"
 msgstr "Seçin"
 
+msgid "Selected"
+msgstr "Seçili"
+
 msgid "Select Region"
 msgstr "Bölge Seç"
 
@@ -234,6 +246,9 @@ msgstr "Boyut"
 
 msgid "There are no banners for this region yet."
 msgstr "Bu bölge için henüz banner yok."
+
+msgid "There are no banners uploaded yet."
+msgstr "Henüz yüklenmiş banner yok."
 
 msgid "Drop banner images here"
 msgstr "Banner görsellerini buraya bırakın"
@@ -282,3 +297,6 @@ msgstr "Kazanan"
 
 msgid "You do not have permission."
 msgstr "Yetkin yok."
+
+msgid "Yes"
+msgstr "Evet"

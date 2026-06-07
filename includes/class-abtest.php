@@ -11,7 +11,7 @@ class Geo_Ads_Pro_ABTest {
     public function __construct($regions) {
         $this->regions = $regions;
 
-        add_action('admin_menu', [$this, 'register_page']);
+        add_action('admin_menu', [$this, 'register_page'], 20);
     }
 
     public function register_page() {

@@ -16,15 +16,29 @@ class Geo_Ads_Pro_Banner_Service {
         $this->analytics = $analytics;
     }
 
-    public function resolve_region($mode, $region, $city) {
+    public function resolve_region($mode, $region, $city, $latitude = null, $longitude = null) {
         $mode = in_array($mode, ['global', 'local'], true) ? $mode : 'global';
         $region = sanitize_text_field($region);
         $city = sanitize_text_field($city);
+        $latitude = is_numeric($latitude) ? floatval($latitude) : null;
+        $longitude = is_numeric($longitude) ? floatval($longitude) : null;
+        $regions = $this->regions->get_all();
 
         if ($mode === 'local' && get_option('gap_enable_local_mode')) {
-            $mapped_region = $this->citymap->city_to_region($city);
-            if ($mapped_region !== '') {
-                $region = $mapped_region;
+            $targeting_method = get_option('gap_local_targeting_method', 'city_map');
+
+            if ($targeting_method === 'radius') {
+                $radius_region = $this->region_by_radius($regions, $latitude, $longitude);
+                if ($radius_region !== '') {
+                    $region = $radius_region;
+                }
+            } else {
+                $mapped_region = $this->citymap->city_to_region($city);
+                if ($mapped_region !== '') {
+                    $region = $mapped_region;
+                } elseif ($city !== '' && isset($regions[$city])) {
+                    $region = $city;
+                }
             }
         }
 
@@ -32,12 +46,70 @@ class Geo_Ads_Pro_Banner_Service {
             $region = sanitize_text_field(get_option('gap_default_region', ''));
         }
 
-        $regions = $this->regions->get_all();
         return isset($regions[$region]) ? $region : '';
     }
 
-    public function get_banner($mode, $region, $city) {
-        $region = $this->resolve_region($mode, $region, $city);
+    private function region_by_radius($regions, $latitude, $longitude) {
+        if ($latitude === null || $longitude === null) {
+            return '';
+        }
+
+        $best_region = '';
+        $best_distance = null;
+        $best_inside_region = '';
+        $best_inside_distance = null;
+
+        foreach ($regions as $region => $data) {
+            $region_latitude = $data['latitude'] ?? null;
+            $region_longitude = $data['longitude'] ?? null;
+            $radius_km = floatval($data['radius_km'] ?? 0);
+
+            if ((!is_numeric($region_latitude) || !is_numeric($region_longitude)) && $radius_km > 0) {
+                $coords = gap_geocode_region_center($region);
+                if ($coords) {
+                    $region_latitude = $coords['latitude'];
+                    $region_longitude = $coords['longitude'];
+                    $this->regions->update_region_targeting($region, [
+                        'latitude'  => $region_latitude,
+                        'longitude' => $region_longitude,
+                        'radius_km' => $radius_km,
+                    ]);
+                }
+            }
+
+            if (!is_numeric($region_latitude) || !is_numeric($region_longitude) || $radius_km <= 0) {
+                continue;
+            }
+
+            $distance = $this->distance_km($latitude, $longitude, floatval($region_latitude), floatval($region_longitude));
+            if ($best_distance === null || $distance < $best_distance) {
+                $best_region = (string) $region;
+                $best_distance = $distance;
+            }
+
+            if ($distance <= $radius_km && ($best_inside_distance === null || $distance < $best_inside_distance)) {
+                $best_inside_region = (string) $region;
+                $best_inside_distance = $distance;
+            }
+        }
+
+        return $best_inside_region !== '' ? $best_inside_region : $best_region;
+    }
+
+    private function distance_km($lat1, $lon1, $lat2, $lon2) {
+        $earth_radius_km = 6371;
+        $dlat = deg2rad($lat2 - $lat1);
+        $dlon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dlat / 2) * sin($dlat / 2)
+           + cos(deg2rad($lat1)) * cos(deg2rad($lat2))
+           * sin($dlon / 2) * sin($dlon / 2);
+
+        return $earth_radius_km * (2 * atan2(sqrt($a), sqrt(1 - $a)));
+    }
+
+    public function get_banner($mode, $region, $city, $latitude = null, $longitude = null) {
+        $region = $this->resolve_region($mode, $region, $city, $latitude, $longitude);
         if ($region === '') {
             return ['banner' => null, 'region' => ''];
         }
@@ -64,8 +136,8 @@ class Geo_Ads_Pro_Banner_Service {
         ];
     }
 
-    public function get_banner_html($mode, $region, $city) {
-        $result = $this->get_banner($mode, $region, $city);
+    public function get_banner_html($mode, $region, $city, $latitude = null, $longitude = null) {
+        $result = $this->get_banner($mode, $region, $city, $latitude, $longitude);
         $banner = $result['banner'];
 
         if (!$banner) {
@@ -73,7 +145,13 @@ class Geo_Ads_Pro_Banner_Service {
         }
 
         $src = $this->banner_image_url($result['region'], $banner['file']);
-        $click_url = home_url('/?gap_click=' . intval($banner['id']));
+        $click_args = [
+            'gap_click' => intval($banner['id']),
+        ];
+        if ($city !== '') {
+            $click_args['gap_city'] = $city;
+        }
+        $click_url = add_query_arg($click_args, home_url('/'));
         $html = '<a href="' . esc_url($click_url) . '" target="_blank" rel="noopener noreferrer">'
               . '<img class="gap-banner" data-banner-id="' . intval($banner['id']) . '" '
               . 'src="' . esc_url($src) . '" width="' . intval($banner['width']) . '" height="' . intval($banner['height']) . '" alt="">'
@@ -82,6 +160,7 @@ class Geo_Ads_Pro_Banner_Service {
         return [
             'html' => $html,
             'region' => $result['region'],
+            'click_url' => $click_url,
             'banner' => $banner,
         ];
     }

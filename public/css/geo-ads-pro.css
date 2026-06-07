@@ -6,3 +6,53 @@
     height: auto;
     display: block;
 }
+
+.geo-ads-pro-widget {
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.geo-ads-pro-widget .gap-widget-content {
+    display: block;
+}
+
+.geo-ads-pro-widget .gap-widget-caption {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.geo-ads-pro-widget .gap-widget-caption a {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.geo-ads-pro-widget .gap-widget-caption a:hover {
+    text-decoration: underline;
+}
+
+.geo-ads-pro-widget .gap-widget-empty {
+    font-size: 13px;
+    opacity: 0.85;
+}
+
+.geo-ads-pro-widget.gap-manual-ad {
+    display: block;
+}
+
+.geo-ads-pro-widget .gap-manual-ad-title {
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.75;
+}
+
+.geo-ads-pro-widget .gap-manual-ad-link {
+    display: inline-block;
+    max-width: 100%;
+}
+
+.geo-ads-pro-widget .gap-manual-ad-code {
+    max-width: 100%;
+}

@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) exit;
 class Geo_Ads_Pro_Settings {
 
     public function __construct() {
-        add_action('admin_menu', [$this, 'register_page']);
+        add_action('admin_menu', [$this, 'register_page'], 20);
         add_action('admin_init', [$this, 'register_settings']);
     }
 
@@ -26,14 +26,20 @@ class Geo_Ads_Pro_Settings {
     public function register_settings() {
 
         register_setting('gap_settings_group', 'gap_enable_local_mode', ['sanitize_callback' => 'absint']);
+        register_setting('gap_settings_group', 'gap_local_targeting_method', ['sanitize_callback' => [$this, 'sanitize_local_targeting_method']]);
         register_setting('gap_settings_group', 'gap_default_region', ['sanitize_callback' => 'sanitize_text_field']);
         register_setting('gap_settings_group', 'gap_rotation_mode', ['sanitize_callback' => [$this, 'sanitize_rotation_mode']]);
         register_setting('gap_settings_group', 'gap_abtest_auto', ['sanitize_callback' => 'absint']);
         register_setting('gap_settings_group', 'gap_delete_data_on_uninstall', ['sanitize_callback' => 'absint']);
+        register_setting('gap_settings_group', 'gap_auto_monthly_reports', ['sanitize_callback' => 'absint']);
     }
 
     public function sanitize_rotation_mode($mode) {
         return in_array($mode, ['random', 'sequential'], true) ? $mode : 'random';
+    }
+
+    public function sanitize_local_targeting_method($method) {
+        return in_array($method, ['city_map', 'radius'], true) ? $method : 'city_map';
     }
 
     public function render_page() {
@@ -91,6 +97,30 @@ class Geo_Ads_Pro_Settings {
                     </tr>
 
                     <tr>
+                        <th scope="row"><?php esc_html_e('Local Targeting Method', 'geo-ads-pro'); ?></th>
+                        <td>
+                            <?php $local_targeting_method = get_option('gap_local_targeting_method', 'city_map'); ?>
+                            <fieldset>
+                                <label style="display:block; margin-bottom:8px;">
+                                    <input type="radio"
+                                           name="gap_local_targeting_method"
+                                           value="city_map" <?php checked($local_targeting_method, 'city_map'); ?>>
+                                    <?php esc_html_e('IP → city → city-map match → region banner', 'geo-ads-pro'); ?>
+                                </label>
+                                <label style="display:block;">
+                                    <input type="radio"
+                                           name="gap_local_targeting_method"
+                                           value="radius" <?php checked($local_targeting_method, 'radius'); ?>>
+                                    <?php esc_html_e('IP → nearest radius-configured region → region banner', 'geo-ads-pro'); ?>
+                                </label>
+                                <p class="description">
+                                    <?php esc_html_e('Radius mode resolves each region center automatically from the region name. If the visitor is outside every radius, the nearest configured region is used.', 'geo-ads-pro'); ?>
+                                </p>
+                            </fieldset>
+                        </td>
+                    </tr>
+
+                    <tr>
                         <th scope="row"><?php esc_html_e('Default Region', 'geo-ads-pro'); ?></th>
                         <td>
                             <select name="gap_default_region">
@@ -105,35 +135,50 @@ class Geo_Ads_Pro_Settings {
                         </td>
                     </tr>
 
-                    <tr>
-                        <th scope="row"><?php esc_html_e('Banner Rotation Mode', 'geo-ads-pro'); ?></th>
-                        <td>
-                            <select name="gap_rotation_mode">
-                                <option value="random" <?php selected(get_option('gap_rotation_mode'), 'random'); ?>><?php esc_html_e('Random', 'geo-ads-pro'); ?></option>
-                                <option value="sequential" <?php selected(get_option('gap_rotation_mode'), 'sequential'); ?>><?php esc_html_e('Sequential', 'geo-ads-pro'); ?></option>
-                            </select>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row"><?php esc_html_e('A/B Test Auto Optimization', 'geo-ads-pro'); ?></th>
-                        <td>
-                            <input type="checkbox" name="gap_abtest_auto"
-                                   value="1" <?php checked(get_option('gap_abtest_auto'), 1); ?>>
-                            <label><?php esc_html_e('Automatically select the banner with the highest CTR', 'geo-ads-pro'); ?></label>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row"><?php esc_html_e('Uninstall Cleanup', 'geo-ads-pro'); ?></th>
-                        <td>
-                            <input type="checkbox" name="gap_delete_data_on_uninstall"
-                                   value="1" <?php checked(get_option('gap_delete_data_on_uninstall'), 1); ?>>
-                            <label><?php esc_html_e('Remove banner files, JSON data, and settings when the plugin is deleted', 'geo-ads-pro'); ?></label>
-                        </td>
-                    </tr>
-
                 </table>
+
+                <details class="gap-settings-advanced">
+                    <summary><?php esc_html_e('Advanced Settings', 'geo-ads-pro'); ?></summary>
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row"><?php esc_html_e('Banner Rotation Mode', 'geo-ads-pro'); ?></th>
+                            <td>
+                                <select name="gap_rotation_mode">
+                                    <option value="random" <?php selected(get_option('gap_rotation_mode'), 'random'); ?>><?php esc_html_e('Random', 'geo-ads-pro'); ?></option>
+                                    <option value="sequential" <?php selected(get_option('gap_rotation_mode'), 'sequential'); ?>><?php esc_html_e('Sequential', 'geo-ads-pro'); ?></option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><?php esc_html_e('A/B Test Auto Optimization', 'geo-ads-pro'); ?></th>
+                            <td>
+                                <input type="checkbox" name="gap_abtest_auto"
+                                       value="1" <?php checked(get_option('gap_abtest_auto'), 1); ?>>
+                                <label><?php esc_html_e('Automatically select the banner with the highest CTR', 'geo-ads-pro'); ?></label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><?php esc_html_e('Uninstall Cleanup', 'geo-ads-pro'); ?></th>
+                            <td>
+                                <input type="checkbox" name="gap_delete_data_on_uninstall"
+                                       value="1" <?php checked(get_option('gap_delete_data_on_uninstall'), 1); ?>>
+                                <label><?php esc_html_e('Remove banner files, JSON data, and settings when the plugin is deleted', 'geo-ads-pro'); ?></label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row"><?php esc_html_e('Automatic Monthly Reports', 'geo-ads-pro'); ?></th>
+                            <td>
+                                <input type="checkbox" name="gap_auto_monthly_reports"
+                                       value="1" <?php checked(get_option('gap_auto_monthly_reports'), 1); ?>>
+                                <label><?php esc_html_e('Send one grouped previous-month CSV report automatically to each unique customer email using WP-Cron.', 'geo-ads-pro'); ?></label>
+                            </td>
+                        </tr>
+                    </table>
+                </details>
 
                 <hr>
 

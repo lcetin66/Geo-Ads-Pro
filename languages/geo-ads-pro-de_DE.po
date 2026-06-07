@@ -50,6 +50,9 @@ msgstr "Bannerliste"
 msgid "Banner Rotation Mode"
 msgstr "Banner-Rotationsmodus"
 
+msgid "Banner → Region Assignment"
+msgstr "Banner → Region Zuordnung"
+
 msgid "Banner could not be deleted."
 msgstr "Banner konnte nicht gelöscht werden."
 
@@ -112,6 +115,9 @@ msgstr "Diese Stadtzuordnung löschen?"
 msgid "Displays region-based banners."
 msgstr "Zeigt regionsbasierte Banner an."
 
+msgid "Edit Region Banners"
+msgstr "Region-Banner bearbeiten"
+
 msgid "Enable IP-based city → region mapping"
 msgstr "IP-basierte Stadt → Region Zuordnung aktivieren"
 
@@ -159,6 +165,9 @@ msgstr "Standortmodus:"
 
 msgid "No region selected."
 msgstr "Keine Region ausgewählt."
+
+msgid "No"
+msgstr "Nein"
 
 msgid "No analytics data yet."
 msgstr "Noch keine Analytics-Daten."
@@ -211,6 +220,9 @@ msgstr "Schema-Version"
 msgid "Select"
 msgstr "Auswählen"
 
+msgid "Selected"
+msgstr "Ausgewählt"
+
 msgid "Select Region"
 msgstr "Region auswählen"
 
@@ -234,6 +246,9 @@ msgstr "Größe"
 
 msgid "There are no banners for this region yet."
 msgstr "Für diese Region gibt es noch keine Banner."
+
+msgid "There are no banners uploaded yet."
+msgstr "Es wurden noch keine Banner hochgeladen."
 
 msgid "Drop banner images here"
 msgstr "Bannerbilder hier ablegen"
@@ -282,3 +297,6 @@ msgstr "Gewinner"
 
 msgid "You do not have permission."
 msgstr "Sie haben keine Berechtigung."
+
+msgid "Yes"
+msgstr "Ja"

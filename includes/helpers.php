@@ -102,6 +102,55 @@ function gap_validate_click_url($url) {
     return $url;
 }
 
+function gap_sanitize_customer_email($email) {
+    $email = sanitize_email((string) $email);
+    return is_email($email) ? $email : '';
+}
+
+function gap_geocode_region_center($region) {
+    $region = trim((string) $region);
+    if ($region === '') {
+        return null;
+    }
+
+    $cache_key = 'gap_geo_' . md5(mb_strtolower($region));
+    $cached = get_transient($cache_key);
+    if (is_array($cached) && isset($cached['latitude'], $cached['longitude'])) {
+        return $cached;
+    }
+
+    $url = add_query_arg([
+        'format' => 'json',
+        'limit'  => 1,
+        'q'      => $region,
+    ], 'https://nominatim.openstreetmap.org/search');
+
+    $response = wp_remote_get($url, [
+        'timeout' => 8,
+        'headers' => [
+            'User-Agent' => 'Geo Ads Pro/' . (defined('GAP_VERSION') ? GAP_VERSION : '1.0') . '; ' . home_url('/'),
+        ],
+    ]);
+
+    if (is_wp_error($response)) {
+        return null;
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+    if (!is_array($data) || empty($data[0]['lat']) || empty($data[0]['lon'])) {
+        return null;
+    }
+
+    $coords = [
+        'latitude'  => floatval($data[0]['lat']),
+        'longitude' => floatval($data[0]['lon']),
+    ];
+
+    set_transient($cache_key, $coords, WEEK_IN_SECONDS);
+    return $coords;
+}
+
 function gap_rate_limit($bucket, $limit, $window) {
     $ip = sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? 'unknown');
     $key = 'gap_rate_' . md5($bucket . '|' . $ip);

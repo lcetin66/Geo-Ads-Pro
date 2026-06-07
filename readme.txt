@@ -5,7 +5,7 @@ Tags: ads, geo ads, banner, advertising, widget, shortcode, rest api
 Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -21,6 +21,8 @@ Bölge bazlı banner yönetimi, şehir eşleştirme, tıklama ve gösterim takib
 * Banner yükleme, seçme ve silme
 * Banner boyutlarını otomatik algılama
 * Korumalı analytics.json.php dosyasında tıklama ve gösterim takibi
+* Şehir bazlı gösterim/tıklama takibi
+* Local targeting için city-map veya en yakın radius tanımlı region eşleşmesi seçimi
 * Kısa süreli duplicate impression engelleme
 * Public AJAX ve REST endpointleri için nonce/rate limit sertleştirmesi
 * Click tracking için kısa süreli IP+banner throttle
@@ -28,6 +30,10 @@ Bölge bazlı banner yönetimi, şehir eşleştirme, tıklama ve gösterim takib
 * Random veya sequential banner rotasyonu
 * A/B test sistemi ve opsiyonel en yüksek CTR optimizasyonu
 * Analytics dashboard (Chart.js)
+* Aylık CSV raporu oluşturma ve müşteri e-postalarına gruplanmış şekilde otomatik gönderme
+* Rapor maillerine ilgili banner görselleri de eklenir
+* Rapor maillerinde HTML download linki bulunur
+* Otomatik rapor geçmişi ve son gönderim tarihi analytics ekranında gösterilir
 * Şehir eşleştirme ekleme, güncelleme ve silme
 * Widget desteği
 * Shortcode desteği
@@ -64,9 +70,12 @@ Veri dosyaları PHP exit guard ile yazılır; doğrudan web isteği geldiğinde 
 
 === Settings Notes ===
 * Local mode sadece gap_enable_local_mode aktifken şehir eşleştirmesi uygular.
+* Local targeting yöntemi city-map seçilirse IP -> şehir -> city-map eşleşmesi kullanılır. Radius seçilirse region merkezi isimden otomatik çözülür; kullanıcı hiçbir radius içinde değilse en yakın region kullanılır.
 * Varsayılan bölge, local/global çözüm bulunamadığında fallback olarak kullanılır.
 * Sequential rotation, aynı bölge ve boyut grubu içinde sırayla banner seçer.
 * A/B otomatik optimizasyon aktifse en yüksek CTR değerine sahip varyant tercih edilir.
+* Aylık raporlar etkinse WP-Cron, her benzersiz müşteri e-postasına önceki ayın tek bir gruplanmış CSV raporunu gönderir, ilgili banner görsellerini ekler ve HTML download linki oluşturur.
+* Analytics ekranında otomatik rapor geçmişi, son gönderim tarihi ve müşteri grubu bazlı log görünür.
 * Uninstall sırasında veri varsayılan olarak korunur; tam temizlik için ayardan ayrıca etkinleştirmek gerekir.
 
 === Versioning ===
@@ -77,6 +86,7 @@ Geo Ads Pro hem release hem de schema versiyonu takip eder.
 * gap_version: WordPress options içindeki kurulu plugin sürümü
 * gap_schema_version: WordPress options içindeki kurulu schema sürümü
 * gap_upgraded_at: Son başarılı upgrade zamanı
+* gap_auto_monthly_reports: Aylık CSV raporlarının gruplanmış otomatik e-posta gönderimi
 
 gap_maybe_upgrade() activation ve erken plugins_loaded sırasında çalışır; upload korumalarını hazırlar, legacy .json verileri korumalı .json.php dosyalarına taşır, varsayılan option değerlerini tamamlar ve sürüm/schema durumunu kaydeder.
 
@@ -91,17 +101,35 @@ Eklenti geo-ads-pro text domain kullanır ve languages klasöründen çeviri yü
 Yeni arayüz metinleri __(), esc_html__(), esc_html_e() veya esc_attr__() ile çevrilebilir hale getirilmelidir.
 
 === Installation ===
-1. GitHub reposundaki dist/geo-ads-pro-1.0.7.zip dosyasını indirin
+1. GitHub reposundaki dist/geo-ads-pro-1.0.8.zip dosyasını indirin
 2. WordPress Admin -> Plugins -> Add New -> Upload Plugin ekranını açın
-3. geo-ads-pro-1.0.7.zip dosyasını seçip Install Now ile yükleyin
+3. geo-ads-pro-1.0.8.zip dosyasını seçip Install Now ile yükleyin
 4. Eklentiyi etkinleştirin
 5. Geo Ads Pro menüsünden bölgeleri ve banner’ları yönetin
 
 === Changelog ===
+= 1.0.8 =
+* Widget görünüm renkleri düzeltildi: Hintergrundfarbe, Textfarbe, Link-Farbe ve Active Links Color gerçek renk seçici ve hex değeriyle çalışır.
+* Widgetten Hintergrundfarbe 2 ve Hintergrundbild alanları kaldırıldı.
+* Geo Ads Pro admin sayfaları için yetki kontrolü dayanıklı hale getirildi.
+* Local targeting için city-map/radius radio seçimi ve region radius alanı eklendi; region merkezi isimden otomatik çözülür.
+* Asset/schema sürümü 1.0.8 / 2026060701 olarak güncellendi.
+
 = 1.0.7 =
+* Admin ekranındaki manuel Stadt/City -> Region formu kaldırıldı
+* Yerine hangi bannerın hangi region altında olduğunu gösteren Banner -> Region Assignment tablosu eklendi
 * Bölge seçilmediğinde banner upload alanının nerede açılacağını gösteren bilgilendirme paneli eklendi
 * Yeni bölge eklendikten sonra bölge otomatik seçiliyor ve drag & drop upload alanı hemen görünüyor
 * Drag & drop görünürlük metinleri TR/DE/EN dil dosyalarına eklendi
+* Banner kayıtlarına müşteri e-postası alanı eklendi
+* Analytics veri modeline şehir bazlı tıklama/gösterim takibi eklendi
+* Analytics sayfasına manuel CSV indirme, e-posta gönderme ve otomatik aylık rapor desteği eklendi
+* Otomatik aylık raporlar aynı müşteri e-postası altındaki banner’ları tek gruplanmış CSV halinde gönderir
+* Otomatik rapor geçmişi ve son gönderim tarihi analytics ekranında gösterilmeye başladı
+* Rapor maillerine ilgili banner görselleri eklenmeye başladı
+* Rapor maillerine HTML download linki eklendi
+* Settings ekranına local targeting yöntemi için city-map/radius radio seçimi eklendi
+* Region ekranına radius modu için latitude, longitude ve radius km alanları eklendi
 * Asset/schema sürümü 1.0.7 / 2026060607 olarak güncellendi
 
 = 1.0.6 =

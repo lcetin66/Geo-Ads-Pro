@@ -29,8 +29,8 @@ class Geo_Ads_Pro_Ajax {
     /**
      * Banner HTML ve bölge bilgisini üretir (AJAX ve Kısa kod için ortak)
      */
-    public function generate_banner_html($mode, $region, $city) {
-        return $this->banner_service->get_banner_html($mode, $region, $city);
+    public function generate_banner_html($mode, $region, $city, $latitude = null, $longitude = null) {
+        return $this->banner_service->get_banner_html($mode, $region, $city, $latitude, $longitude);
     }
 
     /**
@@ -48,8 +48,10 @@ class Geo_Ads_Pro_Ajax {
         $mode   = sanitize_text_field($_POST['mode'] ?? 'global');
         $region = sanitize_text_field($_POST['region'] ?? '');
         $city   = sanitize_text_field($_POST['city'] ?? '');
+        $latitude = isset($_POST['latitude']) && is_numeric($_POST['latitude']) ? floatval($_POST['latitude']) : null;
+        $longitude = isset($_POST['longitude']) && is_numeric($_POST['longitude']) ? floatval($_POST['longitude']) : null;
 
-        $result = $this->generate_banner_html($mode, $region, $city);
+        $result = $this->generate_banner_html($mode, $region, $city, $latitude, $longitude);
         wp_send_json($result);
     }
 
@@ -67,6 +69,7 @@ class Geo_Ads_Pro_Ajax {
 
         $banner_id = intval($_POST['banner_id'] ?? 0);
         $region    = sanitize_text_field($_POST['region'] ?? '');
+        $city      = sanitize_text_field($_POST['city'] ?? '');
 
         if (!$banner_id || !$region) wp_send_json(['ok' => false]);
 
@@ -77,7 +80,7 @@ class Geo_Ads_Pro_Ajax {
         }
 
         set_transient($key, 1, MINUTE_IN_SECONDS);
-        $this->analytics->record_impression($banner_id, $region);
+        $this->analytics->record_impression($banner_id, $region, $city);
 
         wp_send_json(['ok' => true]);
     }
@@ -90,6 +93,7 @@ class Geo_Ads_Pro_Ajax {
         if (!isset($_GET['gap_click'])) return;
 
         $banner_id = intval($_GET['gap_click']);
+        $city = sanitize_text_field($_GET['gap_city'] ?? '');
 
         $found = $this->banner_service->find_banner($banner_id);
 
@@ -99,7 +103,7 @@ class Geo_Ads_Pro_Ajax {
             $key = 'gap_click_' . md5($ip . '|' . $banner_id);
             if (!get_transient($key) && gap_rate_limit('click_redirect', 60, MINUTE_IN_SECONDS)) {
                 set_transient($key, 1, MINUTE_IN_SECONDS);
-                $this->analytics->record_click($banner_id, $found['region']);
+                $this->analytics->record_click($banner_id, $found['region'], $city);
             }
 
             $target = gap_validate_click_url($banner['url'] ?? '');
