@@ -1,7 +1,7 @@
 <?php
-// Plugin Name: Geo Ads Pro - class-citymap.php
-// 06062026
-// Author: Levent Cetin - 3CCS.com
+/* Plugin Name: Geo Ads Pro - class-citymap.php */
+/* Date: 20260606 */
+/* Author: Levent Cetin - 3CCS.com */
 
 if (!defined('ABSPATH')) exit;
 

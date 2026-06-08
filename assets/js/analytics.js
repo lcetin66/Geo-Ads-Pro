@@ -1,4 +1,5 @@
-// Date: 20260606
+/* Plugin Name: Geo Ads Pro - analytics.js */
+/* Date: 20260606 */
 /* Author: Levent Cetin - 3CCS.com */
 
 jQuery(function($){

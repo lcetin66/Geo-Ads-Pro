@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 
+Copyright (c) 2026-2027
 Author: Levent Cetin - 3CCS.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
