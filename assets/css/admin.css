@@ -6,6 +6,27 @@ table.widefat img {
     border: 1px solid #ddd;
 }
 
+/* Banner listesi satır ayırıcı */
+table.widefat tbody tr {
+    border-top: 2px solid #c3c4c7;
+}
+
+table.widefat tbody tr:first-child {
+    border-top: none;
+}
+
+/* Shortcode satırı — banner satırıyla aynı grup, ince ayırıcı */
+table.widefat tbody tr.gap-shortcode-row {
+    border-top: 1px dashed #e0e0e0;
+}
+
+table.widefat tbody tr.gap-shortcode-row td {
+    padding-top: 2px;
+    padding-bottom: 6px;
+    color: #646970;
+    font-size: 12px;
+}
+
 input[type="text"].widefat {
     padding: 6px;
 }
@@ -90,4 +111,63 @@ input[type="text"].widefat {
 
 .gap-upload-file-list:empty {
     display: none;
+}
+
+/* Dropzone içi önizleme */
+.gap-dropzone-preview {
+    display: inline-block;
+    text-align: center;
+    padding: 4px;
+}
+
+.gap-dropzone-preview img {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Şehir Autocomplete Dropdown */
+.gap-city-dropdown {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    margin: 0;
+    padding: 0;
+    min-width: 280px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    list-style: none;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.gap-city-dropdown li {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #1d2327;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.1s;
+}
+
+.gap-city-dropdown li:last-child {
+    border-bottom: none;
+}
+
+.gap-city-dropdown li:hover {
+    background: #f0f6fc;
+    color: #2271b1;
+}
+
+.gap-city-coords-info {
+    margin-top: 4px;
+    color: #2271b1;
+    font-size: 12px;
+}
+
+/* Bölge adı input'u position:relative yap ki dropdown altına düşsün */
+input[name="gap_region_name"] {
+    position: relative;
 }

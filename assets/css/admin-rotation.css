@@ -1,0 +1,178 @@
+/* Geo Ads Pro – Rotation Page Styles */
+
+/* Layout */
+.gap-rotation-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 16px;
+}
+
+@media (max-width: 1200px) {
+    .gap-rotation-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Sol sütun */
+.gap-rotation-left label,
+.gap-rotation-right label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1d2327;
+}
+
+/* Banner grid */
+.gap-rotation-banner-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+/* Tek banner kartı */
+.gap-rotation-banner-item {
+    position: relative;
+    cursor: grab;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    width: calc(33% - 6px);
+    min-width: 90px;
+    padding: 4px;
+    user-select: none;
+}
+
+.gap-rotation-banner-item:hover {
+    border-color: #0073aa;
+    box-shadow: 0 2px 8px rgba(0,115,170,.15);
+}
+
+.gap-rotation-banner-item:active {
+    cursor: grabbing;
+}
+
+.gap-rotation-banner-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 3px;
+}
+
+.gap-rotation-banner-label {
+    font-size: 11px;
+    color: #646970;
+    text-align: center;
+    padding: 4px 0 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Sağ sütun dropzone */
+.gap-rotation-dropzone {
+    min-height: 200px;
+    border: 2px dashed #c3c4c6;
+    border-radius: 8px;
+    padding: 12px;
+    background: #f6f7f7;
+    transition: border-color .15s ease, background .15s ease;
+}
+
+.gap-rotation-dropzone-active {
+    border-color: #0073aa;
+    background: #f0f6fc !important;
+    box-shadow: 0 0 0 3px rgba(0,115,170,.12);
+}
+
+/* Düşürülen banner'ların listesi — sol köşeye hizalı */
+.gap-rotation-dropzone-items {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Seçili banner (dropzone içinde) — sol hizalı */
+.gap-rotation-drop-item {
+    position: relative;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 36px 8px 8px;
+    font-size: 13px;
+    color: #1d2327;
+    transition: box-shadow .15s ease;
+    margin-right: 0;
+}
+
+.gap-rotation-drop-item:first-child {
+    margin-right: auto !important;
+}
+
+.gap-rotation-drop-item:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,.1);
+}
+
+.gap-rotation-drop-item img {
+    width: 44px;
+    height: auto;
+    border-radius: 2px;
+}
+
+/* Kaldır butonu */
+.gap-remove-banner {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+    font-size: 14px;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 50%;
+    transition: color .15s ease, background .15s ease;
+}
+
+.gap-remove-banner:hover {
+    color: #dc3232;
+    background: #f0f0f1;
+}
+
+/* Boş dropzone placeholder — varsayılan gizli, .is-visible ile gösterilir */
+#gap_rotation_dropzone_empty {
+    display: none;
+}
+
+#gap_rotation_dropzone_empty.is-visible {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Drag-and-drop ikon */
+.gap-dnd-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    color: #c3c4c6;
+    transition: color .15s ease, transform .15s ease;
+}
+
+/* İkon vurgusu — dropzone aktif olduğunda */
+.gap-rotation-dropzone-active .gap-dnd-icon {
+    color: #0073aa;
+    transform: scale(1.1);
+}

@@ -269,7 +269,20 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         $instance['padding_left'] = absint($new['padding_left'] ?? 0);
         $instance['image_alt'] = sanitize_text_field($new['image_alt'] ?? '');
         $instance['ad_url'] = esc_url_raw($new['ad_url'] ?? '');
-        $instance['ad_code'] = wp_kses_post($new['ad_code'] ?? '');
+        // Sanitize ad code: allow safe HTML (for Google Adsense etc) but preserve shortcode brackets
+        // wp_kses_post strips <script> OK but we also need to allow <ins>, <div>, <span>, etc.
+        $allowed = array(
+            'a'         => array('href' => true, 'title' => true, 'target' => true, 'rel' => true),
+            'img'       => array('src' => true, 'alt' => true, 'width' => true, 'height' => true),
+            'div'       => array(),
+            'span'      => array(),
+            'p'         => array(),
+            'br'        => array(),
+            'ins'       => array('class' => true, 'style' => true, 'data-ad-slot' => true, 'data-full-width-responsive' => true),
+            'script'    => array(),
+            'iframe'    => array('src' => true, 'width' => true, 'height' => true, 'frameborder' => true, 'allow' => true, 'loading' => true),
+        );
+        $instance['ad_code'] = wp_kses($new['ad_code'] ?? '', $allowed);
 
         $default_mode   = get_option('gap_enable_local_mode') ? 'local' : 'global';
         $default_region = sanitize_text_field(get_option('gap_default_region', ''));
@@ -334,6 +347,8 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         }
 
         if ($ad_code !== '') {
+            // Process shortcodes in user-submitted ad code
+            $ad_code = do_shortcode($ad_code);
             echo '<div class="gap-manual-ad-code">' . $ad_code . '</div>';
             echo '</div>';
             return;

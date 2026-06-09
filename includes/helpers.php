@@ -114,3 +114,91 @@ function gap_rate_limit($bucket, $limit, $window) {
     set_transient($key, $count + 1, $window);
     return true;
 }
+
+/**
+ * Geocode a region name to lat/lon coordinates.
+ */
+function gap_geocode_region_center($region) {
+    // Build a local lookup of well-known German/Turkish regions
+    $known = [
+        'NRW'                 => ['latitude' => 51.434,  'longitude' => 7.128],
+        'Nordrhein-Westfalen' => ['latitude' => 51.434,  'longitude' => 7.128],
+        'Bayern'              => ['latitude' => 48.790,  'longitude' => 11.496],
+        'Bavaria'             => ['latitude' => 48.790,  'longitude' => 11.496],
+        'Berlin'              => ['latitude' => 52.520,  'longitude' => 13.405],
+        'Hamburg'             => ['latitude' => 53.551,  'longitude' => 9.993],
+        'Hessen'              => ['latitude' => 50.652,  'longitude' => 9.166],
+        'Istanbul'            => ['latitude' => 41.008,  'longitude' => 28.978],
+        'Antalya'             => ['latitude' => 36.897,  'longitude' => 30.713],
+        'Izmir'               => ['latitude' => 38.419,  'longitude' => 27.128],
+        // Almanya şehirleri
+        'Stuttgart'           => ['latitude' => 48.775,  'longitude' => 9.182],
+        'Stuttgard'           => ['latitude' => 48.775,  'longitude' => 9.182],
+        'Düsseldorf'          => ['latitude' => 51.227,  'longitude' => 6.773],
+        'Dusseldorf'          => ['latitude' => 51.227,  'longitude' => 6.773],
+        'Duisburg'            => ['latitude' => 51.435,  'longitude' => 6.762],
+        'München'             => ['latitude' => 48.137,  'longitude' => 11.576],
+        'Munich'              => ['latitude' => 48.137,  'longitude' => 11.576],
+        'Köln'                => ['latitude' => 50.938,  'longitude' => 6.960],
+        'Cologne'             => ['latitude' => 50.938,  'longitude' => 6.960],
+        'Frankfurt'           => ['latitude' => 50.110,  'longitude' => 8.682],
+        'Dortmund'            => ['latitude' => 51.514,  'longitude' => 7.468],
+        'Essen'               => ['latitude' => 51.456,  'longitude' => 7.012],
+        'Leipzig'             => ['latitude' => 51.340,  'longitude' => 12.374],
+        'Bremen'              => ['latitude' => 53.075,  'longitude' => 8.808],
+        'Dresden'             => ['latitude' => 51.050,  'longitude' => 13.738],
+        'Hannover'            => ['latitude' => 52.374,  'longitude' => 9.738],
+        'Nürnberg'            => ['latitude' => 49.452,  'longitude' => 11.077],
+        'Nuremberg'           => ['latitude' => 49.452,  'longitude' => 11.077],
+        'Bochum'              => ['latitude' => 51.482,  'longitude' => 7.216],
+        'Wuppertal'           => ['latitude' => 51.256,  'longitude' => 7.150],
+        'Bielefeld'           => ['latitude' => 52.021,  'longitude' => 8.532],
+        'Bonn'                => ['latitude' => 50.735,  'longitude' => 7.099],
+        'Mannheim'            => ['latitude' => 49.487,  'longitude' => 8.466],
+        'Karlsruhe'           => ['latitude' => 49.006,  'longitude' => 8.404],
+        'Gelsenkirchen'       => ['latitude' => 51.517,  'longitude' => 7.085],
+        'Münster'             => ['latitude' => 51.960,  'longitude' => 7.626],
+        'Augsburg'            => ['latitude' => 48.370,  'longitude' => 10.898],
+        'Aachen'              => ['latitude' => 50.776,  'longitude' => 6.084],
+    ];
+
+    $region = trim($region);
+    if (! empty($known[$region])) {
+        return $known[$region];
+    }
+
+    // Fallback: try WordPress geocoder via wp_remote_get to a free API (Almanya ile sınırlı)
+    $result = wp_remote_get(
+        'https://nominatim.openstreetmap.org/search?format=json&q=' . rawurlencode($region) . '&countrycodes=de&limit=1',
+        ['timeout' => 5, 'headers' => ['User-Agent' => 'GeoAdsPro/1.0']]
+    );
+
+    if (is_wp_error($result)) {
+        return ['latitude' => 0, 'longitude' => 0];
+    }
+
+    $body = wp_remote_retrieve_body($result);
+    $data = json_decode($body, true);
+    if (! empty($data[0]['lat']) && ! empty($data[0]['lon'])) {
+        return [
+            'latitude'  => (float) $data[0]['lat'],
+            'longitude' => (float) $data[0]['lon'],
+        ];
+    }
+
+    return ['latitude' => 0, 'longitude' => 0];
+}
+
+/**
+ * Sanitize customer email for storage.
+ */
+function gap_sanitize_customer_email($email) {
+    if ($email === '') {
+        return '';
+    }
+    $email = sanitize_email($email);
+    if (is_wp_error($email)) {
+        return '';
+    }
+    return strtolower($email);
+}

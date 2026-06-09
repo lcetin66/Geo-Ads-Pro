@@ -854,7 +854,7 @@ class Geo_Ads_Pro_Analytics {
     public function register_page() {
 
         add_submenu_page(
-            'geo-ads-pro',
+            'geo-ads-pro-upload',
             __('Analytics', 'geo-ads-pro'),
             __('Analytics', 'geo-ads-pro'),
             'manage_options',

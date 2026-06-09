@@ -1,5 +1,4 @@
 <?php
-// Date: 20260606
 /**
  * Plugin Name: Geo Ads Pro
  * Description: Region-based banner management, city → region mapping, and widget display.
@@ -139,6 +138,25 @@ class Geo_Ads_Pro {
             );
         }
 
+        // Rotation sayfası için özel CSS + JS
+        if (strpos($hook, 'geo-ads-pro-rotation') !== false || (strpos($hook, 'toplevel_page_geo-ads-pro-upload') !== false && isset($_GET['page']) && $_GET['page'] === 'geo-ads-pro-rotation')) {
+
+            wp_enqueue_style(
+                'geo-ads-pro-admin-rotation',
+                GAP_PLUGIN_URL . 'assets/css/admin-rotation.css',
+                ['geo-ads-pro-admin'],
+                GAP_VERSION
+            );
+
+            wp_enqueue_script(
+                'geo-ads-pro-admin-rotation',
+                GAP_PLUGIN_URL . 'assets/js/rotation.js',
+                ['jquery'],
+                GAP_VERSION,
+                true
+            );
+        }
+
         // Genel admin JS
         wp_enqueue_script(
             'geo-ads-pro-admin',
@@ -196,6 +214,8 @@ function gap_maybe_upgrade($force = false) {
     add_option('gap_monthly_report_history', [], '', false);
     add_option('gap_monthly_report_log', [], '', false);
 
+    add_option('gap_rotation_groups', [], '', false);
+
     gap_protected_json_path('regions');
     gap_protected_json_path('city-map');
     gap_protected_json_path('analytics');
@@ -246,5 +266,58 @@ register_deactivation_hook(__FILE__, 'gap_deactivate');
 add_action('plugins_loaded', 'gap_schedule_monthly_reports_cron', 2);
 add_action('plugins_loaded', 'gap_maybe_upgrade', 1);
 add_action('init', 'gap_redirect_legacy_admin_paths', 0);
+
+// Enable shortcodes in ALL theme custom code/text fields
+add_filter('the_content', 'do_shortcode');
+add_filter('the_excerpt', 'do_shortcode');
+add_filter('term_description', 'do_shortcode');
+add_filter('comment_text', 'do_shortcode');
+add_filter('widget_description', 'do_shortcode');
+add_filter('list_table_pages', 'do_shortcode');
+
+// Enable shortcodes in ALL widget output (Text, Custom HTML, custom theme widgets)
+add_filter('widget_text', 'do_shortcode');                    // Legacy Text widgets
+add_filter('widget_custom_html_content', 'do_shortcode');     // WordPress 5.8+ Custom HTML widgets
+add_filter('widget_content', 'do_shortcode');                 // Universal (WP 6.7+) catch-all
+
+// Debug: Test shortcode registration
+add_shortcode('gap_test', function() {
+    return '<!-- GAP PLUGIN LOADED AND WORKING -->';
+});
+
+// Debug: List all regions and banners
+add_shortcode('gap_debug_regions', function() {
+    if (!current_user_can('manage_options')) {
+        return '<!-- Only admins can see this -->';
+    }
+
+    $regions = GAP()->regions->get_all();
+    $output = '<pre style="background:#f5f5f5;padding:15px;border:1px solid #ddd;overflow-x:auto;">';
+    $output .= "<strong>Tüm Bölgeler ve Banner'lar:</strong>\n\n";
+    $output .= print_r($regions, true);
+    $output .= '</pre>';
+    return $output;
+});
+
+// Jannah / TieLabs ad code fields: ensure shortcode runs on theme's custom ad output
+add_filter('TieLabs/custom_ad_code', function($code) {
+    return do_shortcode($code);
+}, 20);
+
+// Cover WordPress Gutenberg Custom HTML blocks explicitly
+add_filter('render_block', function($block_content, $block) {
+    if ($block['blockName'] === 'core/html') {
+        return do_shortcode($block_content);
+    }
+    return $block_content;
+}, 10, 2 );
+
+// Catch theme custom code fields that sanitize with wp_kses_post before output
+add_filter('wp_kses_post', function($data) {
+    if (is_string($data) && strpos($data, '[') !== false && strpos($data, ']') !== false) {
+        return do_shortcode($data);
+    }
+    return $data;
+}, 5, 1 );
 
 GAP();
