@@ -280,25 +280,6 @@ add_filter('widget_text', 'do_shortcode');                    // Legacy Text wid
 add_filter('widget_custom_html_content', 'do_shortcode');     // WordPress 5.8+ Custom HTML widgets
 add_filter('widget_content', 'do_shortcode');                 // Universal (WP 6.7+) catch-all
 
-// Debug: Test shortcode registration
-add_shortcode('gap_test', function() {
-    return '<!-- GAP PLUGIN LOADED AND WORKING -->';
-});
-
-// Debug: List all regions and banners
-add_shortcode('gap_debug_regions', function() {
-    if (!current_user_can('manage_options')) {
-        return '<!-- Only admins can see this -->';
-    }
-
-    $regions = GAP()->regions->get_all();
-    $output = '<pre style="background:#f5f5f5;padding:15px;border:1px solid #ddd;overflow-x:auto;">';
-    $output .= "<strong>Tüm Bölgeler ve Banner'lar:</strong>\n\n";
-    $output .= print_r($regions, true);
-    $output .= '</pre>';
-    return $output;
-});
-
 // Jannah / TieLabs ad code fields: ensure shortcode runs on theme's custom ad output
 add_filter('TieLabs/custom_ad_code', function($code) {
     return do_shortcode($code);

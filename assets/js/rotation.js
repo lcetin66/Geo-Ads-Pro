@@ -35,8 +35,8 @@ jQuery(function($){
             renderDropzoneItems();
         }
 
-        // Sol taraftaki kartı gizle
-        dragged.hide();
+        // Sol taraftaki kartı seçili olarak işaretle (gizleme)
+        dragged.addClass('gap-banner-in-group');
         dragged = null;
     });
 
@@ -60,8 +60,7 @@ jQuery(function($){
                      + '</div>';
             $items.append(html);
 
-            // Sol tarafa geri dönmek için data-store ekle
-            $('.gap-rotation-banner-item[data-id="' + b.id + '"]').show();
+            $('.gap-rotation-banner-item[data-id="' + b.id + '"]').addClass('gap-banner-in-group');
         });
     }
 
@@ -70,7 +69,7 @@ jQuery(function($){
         var id = $(this).data('id');
         selectedBanners = selectedBanners.filter(function(b){ return b.id !== id; });
         renderDropzoneItems();
-        $('.gap-rotation-banner-item[data-id="' + id + '"]').show();
+        $('.gap-rotation-banner-item[data-id="' + id + '"]').removeClass('gap-banner-in-group');
     });
 
     // Bölge filtresi
@@ -125,7 +124,19 @@ jQuery(function($){
         $form.append('<input type="hidden" name="gap_save_rotation_group" value="1">');
         $form.append('<input type="hidden" name="_wpnonce" value="' + nonceVal + '">');
         $form.append('<input type="hidden" name="gap_group_name" value="' + name.replace(/"/g, '&quot;') + '">');
-        $form.append('<input type="hidden" name="gap_group_region" value="mixed">');
+        // Seçili bölgeleri al
+        var selectedRegions = [];
+        $('#gap_region_multi_dropdown .gap-region-checkbox:checked').each(function(){
+            selectedRegions.push($(this).val());
+        });
+
+        if (selectedRegions.length === 0) {
+            alert('Bitte wählen Sie mindestens eine Region aus. / Please select at least one region.');
+            return;
+        }
+
+        var regionVal = selectedRegions.join(',');
+        $form.append('<input type="hidden" name="gap_group_region" value="' + regionVal.replace(/"/g, '&quot;') + '">');
         $form.append('<input type="hidden" name="gap_group_id" value="">');
 
         $.each(selectedBanners, function(i, b){
@@ -138,6 +149,71 @@ jQuery(function($){
         setTimeout(function(){
             $form.submit();
         }, 100);
+    });
+
+    // =========================================================================
+    // Region Multi-Select Dropdown
+    // =========================================================================
+    var $toggle = $('#gap_region_multi_toggle');
+    var $dropdown = $('#gap_region_multi_dropdown');
+
+    $toggle.on('click', function(){
+        $toggle.toggleClass('is-open');
+        $dropdown.toggleClass('is-open');
+    });
+
+    // Dışarı tıklayınca kapat
+    $(document).on('click', function(e){
+        if (!$(e.target).closest('.gap-region-multi-select').length) {
+            $toggle.removeClass('is-open');
+            $dropdown.removeClass('is-open');
+        }
+    });
+
+    // Checkbox değişince toggle metnini güncelle + banner grid'i filtrele
+    $dropdown.on('change', '.gap-region-checkbox', function(){
+        var selected = [];
+        $dropdown.find('.gap-region-checkbox:checked').each(function(){
+            selected.push($(this).val());
+        });
+
+        // Toggle metnini güncelle
+        var $placeholder = $toggle.find('.gap-region-multi-placeholder');
+        if (selected.length === 0) {
+            $placeholder.text($placeholder.data('default') || $placeholder.text());
+            $placeholder.css('color', '#8c8f94');
+        } else {
+            $placeholder.text(selected.join(', '));
+            $placeholder.css('color', '#1d2327');
+        }
+
+        // Banner grid'i seçili bölgelere göre filtrele
+        if (selected.length === 0) {
+            $('.gap-rotation-banner-item').show();
+        } else {
+            $('.gap-rotation-banner-item').hide();
+            selected.forEach(function(region){
+                $('.gap-rotation-banner-item[data-region="' + region + '"]').show();
+            });
+        }
+    });
+
+    // Placeholder orijinal metnini sakla
+    (function(){
+        var $ph = $toggle.find('.gap-region-multi-placeholder');
+        $ph.data('default', $ph.text());
+    })();
+
+    // Form submit'de seçili bölgeleri ekle
+    var origClickHandler = $('#gap_create_rotation_btn').data('events');
+    $('#gap_create_rotation_btn').on('click.regions', function(){
+        // gap_group_region alanını güncelle — seçili bölgeleri virgülle birleştir
+        var selected = [];
+        $dropdown.find('.gap-region-checkbox:checked').each(function(){
+            selected.push($(this).val());
+        });
+        // Mevcut form submit'te kullanılacak
+        window._gap_selected_regions = selected;
     });
 
     // Shortcode kopyalama desteği

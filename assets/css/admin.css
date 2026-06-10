@@ -6,25 +6,30 @@ table.widefat img {
     border: 1px solid #ddd;
 }
 
-/* Banner listesi satır ayırıcı */
+/* Banner tablosu — tüm satır border'ları sıfırla */
 table.widefat tbody tr {
-    border-top: 2px solid #c3c4c7;
+    border: none !important;
 }
 
-table.widefat tbody tr:first-child {
-    border-top: none;
+table.widefat tbody tr td {
+    border-top: none !important;
 }
 
-/* Shortcode satırı — banner satırıyla aynı grup, ince ayırıcı */
-table.widefat tbody tr.gap-shortcode-row {
-    border-top: 1px dashed #e0e0e0;
+/* Ana banner satırı — üstüne 2px çizgi */
+table.widefat tbody tr.gap-banner-main {
+    border-top: 2px solid #c3c4c7 !important;
 }
 
-table.widefat tbody tr.gap-shortcode-row td {
+/* İlk banner'da çizgi olmasın */
+table.widefat tbody tr.gap-banner-main:first-child {
+    border-top: none !important;
+}
+
+/* Shortcode satırı — banner ile aynı grup, ayrıcı yok */
+table.widefat tbody tr.gap-banner-shortcode td {
     padding-top: 2px;
-    padding-bottom: 6px;
-    color: #646970;
-    font-size: 12px;
+    padding-bottom: 8px;
+    background: #f6f6f7;
 }
 
 input[type="text"].widefat {

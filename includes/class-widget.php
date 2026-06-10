@@ -32,8 +32,16 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         );
     }
 
-    private function info_icon($text) {
-        return '<span tabindex="0" title="' . esc_attr($text) . '" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#2271b1;color:#fff;font-size:11px;font-weight:700;line-height:1;cursor:help;">i</span>';
+    private function info_icon($text, $key = '') {
+        $id = 'gap-tip-' . ($key ? $key : uniqid());
+        return sprintf(
+            '<span class="gap-tooltip-wrap"><span class="gap-tooltip-icon" data-gap-tip="%s" tabindex="0" role="button" aria-label="%s">i</span><span id="%s" class="gap-tooltip-box"><div class="gap-tooltip-box-inner"><span class="gap-tooltip-box-label">%s</span>%s</div></span></span>',
+            esc_attr($text),
+            __('Hilfe', 'geo-ads-pro'),
+            $id,
+            esc_html__('Hilfe', 'geo-ads-pro'),
+            esc_html($text)
+        );
     }
 
     public function form($instance) {
@@ -75,7 +83,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         <p style="margin:0 0 14px;">
             <label for="<?php echo esc_attr($this->get_field_id('ad_title')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
                 <?php esc_html_e('Anzeigentitel', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Optionaler sichtbarer Hinweis über der Anzeige, z. B. Werbung.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Optionaler sichtbarer Hinweis über der Anzeige, z. B. Werbung.', 'geo-ads-pro'), 'ad_title'); ?>
             </label>
             <input class="widefat"
                    id="<?php echo esc_attr($this->get_field_id('ad_title')); ?>"
@@ -89,7 +97,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         <p style="margin:0 0 14px;">
             <label for="<?php echo esc_attr($this->get_field_id('link_title')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
                 <?php esc_html_e('Link Anzeigentitel', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Optionaler title-Text für den Anzeigenlink.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Optionaler title-Text für den Anzeigenlink.', 'geo-ads-pro'), 'link_title'); ?>
             </label>
             <input class="widefat"
                    id="<?php echo esc_attr($this->get_field_id('link_title')); ?>"
@@ -103,7 +111,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
                        name="<?php echo esc_attr($this->get_field_name('show_ad_only')); ?>"
                        value="1" <?php checked($show_ad_only); ?>>
                 <?php esc_html_e('Nur Werbeanzeige anzeigen?', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Blendet Widget-Titel und Anzeigenkennzeichnung aus.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Blendet Widget-Titel und Anzeigenkennzeichnung aus.', 'geo-ads-pro'), 'show_ad_only'); ?>
             </label>
         </p>
 
@@ -113,7 +121,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
                        name="<?php echo esc_attr($this->get_field_name('new_window')); ?>"
                        value="1" <?php checked($new_window); ?>>
                 <?php esc_html_e('Links in einem neuen Fenster öffnen?', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Öffnet die Anzeigen-URL in einem neuen Browserfenster oder Tab.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Öffnet die Anzeigen-URL in einem neuen Browserfenster oder Tab.', 'geo-ads-pro'), 'new_window'); ?>
             </label>
         </p>
 
@@ -123,14 +131,14 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
                        name="<?php echo esc_attr($this->get_field_name('nofollow')); ?>"
                        value="1" <?php checked($nofollow); ?>>
                 <?php esc_html_e('Nofollow? (Link nicht folgen)', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Fügt rel="nofollow" zum Anzeigenlink hinzu.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Fügt rel="nofollow" zum Anzeigenlink hinzu.', 'geo-ads-pro'), 'nofollow'); ?>
             </label>
         </p>
 
         <p style="margin:0 0 14px;">
             <label for="<?php echo esc_attr($this->get_field_id('image_url')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
                 <?php esc_html_e('Bildpfad:', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('URL zum Anzeigenbild. Wird genutzt, wenn kein Code eingetragen ist.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('URL zum Anzeigenbild. Wird genutzt, wenn kein Code eingetragen ist.', 'geo-ads-pro'), 'image_url'); ?>
             </label>
             <input class="widefat"
                    id="<?php echo esc_attr($this->get_field_id('image_url')); ?>"
@@ -142,7 +150,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         <p style="margin:0 0 14px; display:flex; align-items:center; gap:10px;">
             <label for="<?php echo esc_attr($this->get_field_id('image_width')); ?>" style="min-width:180px; font-weight:600;">
                 <?php esc_html_e('Bild Breite hinzufügen', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Optionale Bildbreite in Pixeln.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Optionale Bildbreite in Pixeln.', 'geo-ads-pro'), 'image_width'); ?>
             </label>
             <input type="number"
                    min="0"
@@ -156,7 +164,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         <p style="margin:0 0 14px; display:flex; align-items:center; gap:10px;">
             <label for="<?php echo esc_attr($this->get_field_id('image_height')); ?>" style="min-width:180px; font-weight:600;">
                 <?php esc_html_e('Bildhöhe hinzufügen', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Optionale Bildhöhe in Pixeln.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Optionale Bildhöhe in Pixeln.', 'geo-ads-pro'), 'image_height'); ?>
             </label>
             <input type="number"
                    min="0"
@@ -170,7 +178,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         <div style="margin:0 0 14px;">
             <div style="font-weight:600; margin:0 0 8px;">
                 <?php esc_html_e('Padding', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Innenabstand der manuellen Anzeige in Pixeln.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Innenabstand der manuellen Anzeige in Pixeln.', 'geo-ads-pro'), 'padding'); ?>
             </div>
             <div style="display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px;">
                 <label style="display:block; font-weight:600;">
@@ -215,7 +223,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         <p style="margin:0 0 14px;">
             <label for="<?php echo esc_attr($this->get_field_id('image_alt')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
                 <?php esc_html_e('Alternativer Text für das Bild', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Beschreibt das Anzeigenbild für Barrierefreiheit und SEO.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Beschreibt das Anzeigenbild für Barrierefreiheit und SEO.', 'geo-ads-pro'), 'image_alt'); ?>
             </label>
             <input class="widefat"
                    id="<?php echo esc_attr($this->get_field_id('image_alt')); ?>"
@@ -226,7 +234,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         <p style="margin:0 0 14px;">
             <label for="<?php echo esc_attr($this->get_field_id('ad_url')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
                 <?php esc_html_e('Anzeigen-URL', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Zieladresse, die beim Klick auf das Anzeigenbild geöffnet wird.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('Zieladresse, die beim Klick auf das Anzeigenbild geöffnet wird.', 'geo-ads-pro'), 'ad_url'); ?>
             </label>
             <input class="widefat"
                    id="<?php echo esc_attr($this->get_field_id('ad_url')); ?>"
@@ -238,7 +246,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         <p style="margin:0;">
             <label for="<?php echo esc_attr($this->get_field_id('ad_code')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
                 <?php esc_html_e('- ODER - Code:', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('HTML- oder Embed-Code. Wenn Code eingetragen ist, hat er Vorrang vor dem Bildpfad.', 'geo-ads-pro')); ?>
+                <?php echo $this->info_icon(__('HTML- oder Embed-Code. Wenn Code eingetragen ist, hat er Vorrang vor dem Bildpfad.', 'geo-ads-pro'), 'ad_code'); ?>
             </label>
             <textarea class="widefat"
                       rows="8"
@@ -246,6 +254,56 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
                       name="<?php echo esc_attr($this->get_field_name('ad_code')); ?>"><?php echo $ad_code; ?></textarea>
         </p>
         </div>
+
+        <style>
+.gap-tooltip-wrap { position: relative; display: inline-block; vertical-align: middle; }
+
+.gap-tooltip-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #2271b1; color: #fff; font-size: 11px; font-weight: 700; line-height: 1;
+    cursor: pointer; user-select: none; margin-left: 6px;
+    transition: all .2s ease; box-shadow: 0 0 0 0 rgba(34,113,177,.5);
+}
+.gap-tooltip-icon:hover {
+    background: #135e96; transform: scale(1.25);
+    box-shadow: 0 0 0 4px rgba(34,113,177,.25), 0 0 12px rgba(34,113,177,.35);
+}
+.gap-tooltip-icon.active {
+    background: #d63638; box-shadow: 0 0 0 4px rgba(214,54,56,.2);
+    animation: gap-icon-pulse .6s ease;
+}
+@keyframes gap-icon-pulse {
+    0%   { transform: scale(1.25); }
+    50%  { transform: scale(.9); }
+    100% { transform: scale(1); }
+}
+
+.gap-tooltip-box {
+    display: block; position: absolute; z-index: 99999; left: -40px; bottom: calc(100% + 8px);
+    min-width: 260px; max-width: 340px; padding: 0;
+    background: #fff; border: 1px solid #ddd; border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.18);
+    opacity: 0; transform: translateY(6px) scale(.97); pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    overflow: hidden;
+}
+.gap-tooltip-box.show {
+    opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+}
+.gap-tooltip-box-inner { padding: 14px 18px; font-size: 13.5px; line-height: 1.6; color: #444; }
+.gap-tooltip-box-label {
+    display: block; margin-bottom: 6px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .6px; color: #2271b1;
+}
+.gap-tooltip-box::after {
+    content: ""; position: absolute; top: 100%; left: 24px;
+    border: 8px solid transparent; border-top-color: #fff;
+}
+</style>
+<script>
+(function(){var active=null;function open(box,icon){if(active&&active!==box)closeActive();box.style.display="block";requestAnimationFrame(function(){box.classList.add("show")});icon.classList.add("active");active=box}function closeAll(){document.querySelectorAll(".gap-tooltip-box.show").forEach(function(b){b.classList.remove("show");setTimeout(function(){b.style.display="none"},200)});document.querySelectorAll(".gap-tooltip-icon.active").forEach(function(i){i.classList.remove("active")});active=null}document.addEventListener("click",function(e){var i=e.target.closest(".gap-tooltip-icon");if(i){var b=document.getElementById(i.getAttribute("data-gap-tip"));if(b)open(b,i);return}if(!e.target.closest(".gap-tooltip-wrap"))closeActive()});function closeActive(){closeAll()}document.addEventListener("keydown",function(e){if(e.key==="Escape")closeActive()})})();
+</script>
 
         <?php
     }

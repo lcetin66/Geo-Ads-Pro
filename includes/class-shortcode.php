@@ -1,6 +1,6 @@
 <?php
 /* Plugin Name: Geo Ads Pro - shortcode.php */
-/* Date: 20260606 */
+/* Date: 20260609 */
 /* Author: Levent Cetin - 3CCS.com */
 
 if (!defined('ABSPATH')) exit;
@@ -18,6 +18,7 @@ class Geo_Ads_Pro_Shortcode {
     }
 
     private function get_visitor_ip() {
+        // Önce public IP dene
         foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'REMOTE_ADDR'] as $key) {
             if (!empty($_SERVER[$key])) {
                 $ip = trim(explode(',', $_SERVER[$key])[0]);
@@ -26,10 +27,29 @@ class Geo_Ads_Pro_Shortcode {
                 }
             }
         }
+        // Fallback: private IP de olsa döndür (localhost/dev ortamı için)
+        if (!empty($_SERVER['REMOTE_ADDR'])) {
+            return trim($_SERVER['REMOTE_ADDR']);
+        }
         return '';
     }
 
     private function get_visitor_city_from_ip($ip) {
+        if (!$ip) return '';
+
+        // Localhost/private IP kontrolü
+        if (in_array($ip, ['127.0.0.1', '::1']) ||
+            filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+            // Private IP — external API ile gerçek IP'yi bul
+            $ext = wp_remote_get('https://api.ipify.org?format=json', ['timeout' => 3]);
+            if (!is_wp_error($ext)) {
+                $data = json_decode(wp_remote_retrieve_body($ext), true);
+                if (!empty($data['ip'])) {
+                    $ip = $data['ip'];
+                }
+            }
+        }
+
         if (!$ip) return '';
 
         // Önce transient cache'e bak
@@ -62,51 +82,51 @@ class Geo_Ads_Pro_Shortcode {
             'mode'      => 'global',
             'region'    => '',
             'banner_id' => 0,
-            'group_id'  => 0
+            'group_id'  => ''
         ], $atts);
 
         $mode       = sanitize_text_field($atts['mode']);
         $region     = sanitize_text_field($atts['region']);
         $banner_id  = intval($atts['banner_id']);
-        $group_id   = intval($atts['group_id']);
+        $group_id   = sanitize_text_field($atts['group_id']);
+        $has_group  = ($group_id !== '' && $group_id !== '0');
 
         // Local mode: ziyaretçinin IP'sinden şehri tespit et
         $city = '';
+        $ip = '';
+        $visitor_region = '';
+
         if ($mode === 'local' && get_option('gap_enable_local_mode')) {
             $ip = $this->get_visitor_ip();
             $city = $this->get_visitor_city_from_ip($ip);
 
             if ($city !== '') {
-                // Ziyaretçinin şehrine göre bölgesini tespit et (sadece radius/citymap ile, fallback yok)
                 $visitor_region = GAP()->banner_service->resolve_region_strict($city);
 
-                // Hiçbir bölgeye eşleşmediyse veya başka bölgeye eşleştiyse boş dön
-                if ($visitor_region !== $region) {
-                    return '';
+                if ($has_group) {
+                    // Grup shortcode'u → bölge kontrolünü banner_service'e bırak
+                    $region = $visitor_region;
+                } else {
+                    // Tekli banner: bölge eşleşmiyorsa boş dön
+                    if ($visitor_region !== $region) {
+                        return '';
+                    }
                 }
             } else {
-                // IP tespiti başarısız — local modda banner gösterme
-                return '';
+                // IP'den şehir tespit edilemedi — fallback: default region kullan
+                if ($has_group) {
+                    $region = sanitize_text_field(get_option('gap_default_region', ''));
+                } else {
+                    return '';
+                }
             }
         }
 
-        // AJAX çağrısı yerine direkt backend banner seçimi
+        // Global mode veya local mode sonrası: banner seçimi
         $result = GAP()->banner_service->get_banner_html($mode, $region, $city, $banner_id, $group_id);
 
         if (!empty($result['html'])) {
             return $result['html'];
-        }
-
-        // Debug: Eğer HTML boşsa neden olduğunu göster (geliştirme ortamında)
-        if (defined('WP_DEBUG') && WP_DEBUG && current_user_can('manage_options')) {
-            $debug_info = sprintf(
-                '<!-- GAP DEBUG: mode=%s, region=%s, banner_id=%d, found=%s -->',
-                esc_attr($mode),
-                esc_attr($region),
-                $banner_id,
-                !empty($result) ? 'true' : 'false'
-            );
-            return $debug_info;
         }
 
         return '';

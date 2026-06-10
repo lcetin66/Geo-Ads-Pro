@@ -105,24 +105,44 @@ class Geo_Ads_Pro_Banner_Service {
         return $R * 2 * atan2(sqrt($a), sqrt(1-$a));
     }
 
-    public function get_banner($mode, $region, $city, $banner_id = 0, $group_id = 0) {
+    public function get_banner($mode, $region, $city, $banner_id = 0, $group_id = '') {
+        $group_id = (string) $group_id;
+
         $region = $this->resolve_region($mode, $region, $city);
         if ($region === '') {
             return ['banner' => null, 'region' => ''];
         }
 
         // Rotasyon grubu varsa — o gruptan banner seç
-        if ($group_id > 0) {
+        if ($group_id !== '' && $group_id !== '0') {
             $group = $this->find_rotation_group($group_id);
             if ($group && !empty($group['banner_ids'])) {
-                $region_banners = array_filter(
-                    $this->regions->get_region($group['region'])['banners'] ?? [],
-                    fn($b) => in_array(intval($b['id']), $group['banner_ids'], true)
-                );
-                if (!empty($region_banners)) {
+                // Çoklu bölge desteği — ziyaretçinin bölgesi grubun bölgelerinden biriyse göster
+                $group_regions = $group['regions'] ?? [];
+                // Eski format uyumu: tek string "region" alanı varsa array'e çevir
+                if (empty($group_regions) && !empty($group['region']) && $group['region'] !== 'mixed') {
+                    $group_regions = [$group['region']];
+                }
+
+                // Bölge kontrolü: ziyaretçinin bölgesi seçili bölgelerden biri olmalı
+                if (!empty($group_regions) && !in_array($region, $group_regions, true)) {
+                    return ['banner' => null, 'region' => $region];
+                }
+
+                // Sadece ziyaretçinin bölgesindeki banner'ları göster
+                $all_banners = [];
+                $region_data = $this->regions->get_region($region);
+                foreach ($region_data['banners'] ?? [] as $b) {
+                    if (in_array(intval($b['id']), $group['banner_ids'], true)) {
+                        $all_banners[] = ['banner' => $b, 'region' => $region];
+                    }
+                }
+
+                if (!empty($all_banners)) {
+                    $pick = $all_banners[array_rand($all_banners)];
                     return [
-                        'banner' => $region_banners[array_rand($region_banners)],
-                        'region' => $group['region'],
+                        'banner' => $pick['banner'],
+                        'region' => $pick['region'],
                     ];
                 }
             }
@@ -168,7 +188,7 @@ class Geo_Ads_Pro_Banner_Service {
         ];
     }
 
-    public function get_banner_html($mode, $region, $city, $banner_id = 0, $group_id = 0) {
+    public function get_banner_html($mode, $region, $city, $banner_id = 0, $group_id = '') {
         $result = $this->get_banner($mode, $region, $city, $banner_id, $group_id);
         $banner = $result['banner'];
 
@@ -178,7 +198,8 @@ class Geo_Ads_Pro_Banner_Service {
 
         $src = $this->banner_image_url($result['region'], $banner['file']);
         $click_url = home_url('/?gap_click=' . intval($banner['id']));
-        $html = '<a href="' . esc_url($click_url) . '" target="_blank" rel="noopener noreferrer">'
+        $target = isset($banner['link_target']) && $banner['link_target'] === '_self' ? '_self' : '_blank';
+        $html = '<a href="' . esc_url($click_url) . '" target="' . esc_attr($target) . '" rel="noopener noreferrer">'
               . '<img class="gap-banner" data-banner-id="' . intval($banner['id']) . '" '
               . 'src="' . esc_url($src) . '" width="' . intval($banner['width']) . '" height="' . intval($banner['height']) . '" alt="">'
               . '</a>';

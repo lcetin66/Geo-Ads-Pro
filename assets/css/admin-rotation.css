@@ -52,6 +52,29 @@
     box-shadow: 0 2px 8px rgba(0,115,170,.15);
 }
 
+/* Gruba eklenmiş banner — soldaki listede seçili görünüm */
+.gap-rotation-banner-item.gap-banner-in-group {
+    opacity: 0.4;
+    border-color: #2271b1;
+    pointer-events: none;
+    position: relative;
+}
+
+.gap-rotation-banner-item.gap-banner-in-group::after {
+    content: '✓';
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    background: #2271b1;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+}
+
 .gap-rotation-banner-item:active {
     cursor: grabbing;
 }
@@ -175,4 +198,95 @@
 .gap-rotation-dropzone-active .gap-dnd-icon {
     color: #0073aa;
     transform: scale(1.1);
+}
+
+/* Region Multi-Select Dropdown */
+.gap-region-multi-select {
+    position: relative;
+    max-width: 100%;
+}
+
+.gap-region-multi-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #1d2327;
+    min-height: 36px;
+    transition: border-color .15s ease;
+}
+
+.gap-region-multi-toggle:hover {
+    border-color: #2271b1;
+}
+
+.gap-region-multi-toggle.is-open {
+    border-color: #2271b1;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.gap-region-multi-placeholder {
+    color: #8c8f94;
+}
+
+.gap-region-multi-arrow {
+    font-size: 14px;
+    color: #8c8f94;
+    transition: transform .2s ease;
+}
+
+.gap-region-multi-toggle.is-open .gap-region-multi-arrow {
+    transform: rotate(180deg);
+}
+
+.gap-region-multi-dropdown {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #2271b1;
+    border-top: none;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.gap-region-multi-dropdown.is-open {
+    display: block;
+}
+
+.gap-region-multi-option {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 400 !important;
+    color: #1d2327;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background .1s ease;
+    margin: 0 !important;
+}
+
+.gap-region-multi-option:last-child {
+    border-bottom: none;
+}
+
+.gap-region-multi-option:hover {
+    background: #f0f6fc;
+}
+
+.gap-region-multi-option input[type="checkbox"] {
+    margin: 0;
 }
