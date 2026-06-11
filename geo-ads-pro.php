@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Geo Ads Pro
+ * Plugin Name: die1-Geo Ads Pro
  * Description: Region-based banner management, city → region mapping, and widget display.
- * Version: 1.0.8
+ * Version: 1.0.9
  * Author: Levent Cetin - 3CCS.com
  * Text Domain: geo-ads-pro
  * Domain Path: /languages
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) exit;
 define('GAP_PLUGIN_FILE', __FILE__);
 define('GAP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GAP_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('GAP_VERSION', '1.0.8');
+define('GAP_VERSION', '1.0.9');
 define('GAP_SCHEMA_VERSION', '2026060701');
 
 require_once GAP_PLUGIN_DIR . 'includes/helpers.php';
@@ -98,7 +98,7 @@ class Geo_Ads_Pro {
 
     public function enqueue_admin_assets($hook) {
 
-        // Sadece Geo Ads Pro admin sayfalarında çalışsın
+        // Sadece die1-Geo Ads Pro admin sayfalarında çalışsın
         if (strpos($hook, 'geo-ads-pro') === false) {
             return;
         }
@@ -139,7 +139,7 @@ class Geo_Ads_Pro {
         }
 
         // Rotation sayfası için özel CSS + JS
-        if (strpos($hook, 'geo-ads-pro-rotation') !== false || (strpos($hook, 'toplevel_page_geo-ads-pro-upload') !== false && isset($_GET['page']) && $_GET['page'] === 'geo-ads-pro-rotation')) {
+        if (strpos($hook, 'geo-ads-pro-rotation') !== false || (strpos($hook, 'toplevel_page_geo-ads-pro-banners') !== false && isset($_GET['page']) && $_GET['page'] === 'geo-ads-pro-rotation')) {
 
             wp_enqueue_style(
                 'geo-ads-pro-admin-rotation',
@@ -285,20 +285,21 @@ add_filter('TieLabs/custom_ad_code', function($code) {
     return do_shortcode($code);
 }, 20);
 
-// Cover WordPress Gutenberg Custom HTML blocks explicitly
+// SECURITY: Add security headers for uploaded banner images
+add_action('send_headers', function() {
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+});
+
+// Cover WordPress Gutenberg Custom HTML blocks explicitly — only our shortcode
 add_filter('render_block', function($block_content, $block) {
-    if ($block['blockName'] === 'core/html') {
-        return do_shortcode($block_content);
-    }
-    return $block_content;
+    if ($block['blockName'] !== 'core/html') return $block_content;
+    if (strpos($block_content, '[geo_ads_pro') === false) return $block_content;
+    return do_shortcode($block_content);
 }, 10, 2 );
 
-// Catch theme custom code fields that sanitize with wp_kses_post before output
-add_filter('wp_kses_post', function($data) {
-    if (is_string($data) && strpos($data, '[') !== false && strpos($data, ']') !== false) {
-        return do_shortcode($data);
-    }
-    return $data;
-}, 5, 1 );
+// SECURITY: Do NOT hijack wp_kses_post — it strips dangerous HTML.
+// Running do_shortcode on every kses output is a stored-XSS vector.
+// (Removed the dangerous wp_kses_post hook that was processing arbitrary content.)
 
 GAP();

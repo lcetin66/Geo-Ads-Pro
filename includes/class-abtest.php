@@ -17,7 +17,7 @@ class Geo_Ads_Pro_ABTest {
     public function register_page() {
 
         add_submenu_page(
-            'geo-ads-pro-upload',
+            'geo-ads-pro-banners',
             __('A/B Test', 'geo-ads-pro'),
             __('A/B Test', 'geo-ads-pro'),
             'manage_options',

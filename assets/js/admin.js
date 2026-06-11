@@ -1,5 +1,5 @@
 /* Plugin Name: Geo Ads Pro - admin.js */
-/* Date: 20260609 */
+/* Date: 20260610 */
 /* Author: Levent Cetin - 3CCS.com */
 
 jQuery(function($){
@@ -25,7 +25,7 @@ jQuery(function($){
                         const preview = $('<div class="gap-dropzone-preview"></div>');
                         preview.append(
                             '<img src="' + e.target.result + '" style="max-width:100%;max-height:200px;border-radius:4px;margin:4px;">' +
-                            '<div style="font-size:12px;color:#646970;margin-top:2px;">' + file.name + '</div>'
+                            '<div style="font-size:12px;color:#646970;margin-top:2px;">' + $('<span>').text(file.name).html() + '</div>'
                         );
                         dropzone.append(preview);
                     };
@@ -67,96 +67,239 @@ jQuery(function($){
     });
 
     // =========================================================================
-    // Şehir / Bölge Autocomplete (Photon API - OpenStreetMap tabanlı)
+    // Banner List – Delete via JS (fixes duplicate hidden field bug)
     // =========================================================================
-    const regionInput = $('input[name="gap_region_name"]');
-    if (!regionInput.length) return;
+    $(document).on('click', '.gap-delete-banner-btn', function(e){
+        e.preventDefault();
+        var $btn = $(this);
+        var confirmMsg = $btn.data('confirm') || 'Are you sure?';
+        if (!confirm(confirmMsg)) return;
 
-    // Autocomplete dropdown container
-    const dropdown = $('<ul class="gap-city-dropdown"></ul>').insertAfter(regionInput);
-    let searchTimer = null;
+        var form = $('<form method="post"></form>');
+        form.append($('<input type="hidden" name="gap_delete_banner_id">').val($btn.data('id')));
+        form.append($('<input type="hidden" name="gap_delete_banner_region">').val($btn.data('region')));
+        form.append($('<input type="hidden" name="gap_delete_nonce">').val($btn.data('nonce')));
+        $('body').append(form);
+        form.submit();
+    });
 
-    function searchCities(query) {
-        if (query.length < 2) { dropdown.hide().empty(); return; }
+    // =========================================================================
+    // Banner List – Sortable Table Columns
+    // =========================================================================
+    var $table = $('#gap-banner-table');
+    if ($table.length) {
+        var sortState = { key: null, asc: true };
 
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(function(){
-            $.getJSON(
-                'https://photon.komoot.io/api/?q=' + encodeURIComponent(query) + '&lang=de&limit=6&layer=city&layer=district',
-                function(data) {
-                    dropdown.empty();
+        $table.on('click', '.gap-sortable', function(){
+            var $th = $(this);
+            var key = $th.data('sort-key');
+            var type = $th.data('sort-type');
 
-                    if (!data.features || !data.features.length) {
-                        dropdown.hide();
-                        return;
-                    }
+            if (sortState.key === key) {
+                sortState.asc = !sortState.asc;
+            } else {
+                sortState.key = key;
+                sortState.asc = true;
+            }
 
-                    data.features.forEach(function(feature){
-                        const props = feature.properties;
-                        const coords = feature.geometry.coordinates; // [lon, lat]
-                        const city   = props.name || '';
-                        const state  = props.state || '';
-                        const country = props.country || '';
-                        const label  = [city, state, country].filter(Boolean).join(', ');
+            $table.find('.gap-sortable').removeClass('gap-sort-asc gap-sort-desc');
+            $th.addClass(sortState.asc ? 'gap-sort-asc' : 'gap-sort-desc');
 
-                        $('<li></li>')
-                            .text(label)
-                            .data('city', city)
-                            .data('lat', coords[1])
-                            .data('lon', coords[0])
-                            .appendTo(dropdown);
-                    });
+            var $tbody = $table.find('tbody');
+            var $rows = $tbody.find('tr.gap-banner-main').get();
 
-                    dropdown.show();
+            $rows.sort(function(a, b){
+                var va, vb;
+                if (type === 'number') {
+                    va = parseFloat($(a).data(key)) || 0;
+                    vb = parseFloat($(b).data(key)) || 0;
+                } else {
+                    va = ($(a).data(key) || '').toString().toLowerCase();
+                    vb = ($(b).data(key) || '').toString().toLowerCase();
                 }
-            );
-        }, 300);
+                if (va < vb) return sortState.asc ? -1 : 1;
+                if (va > vb) return sortState.asc ? 1 : -1;
+                return 0;
+            });
+
+            $.each($rows, function(i, row){ $tbody.append(row); });
+        });
     }
 
-    regionInput.on('input', function(){
-        searchCities($(this).val());
-    });
+    // =========================================================================
+    // Region Picker – Custom Dropdown with Checkboxes
+    // =========================================================================
+    var $picker = $('#gap_region_picker');
+    if ($picker.length) {
+        var $toggle = $('#gap_region_picker_toggle');
+        var $dropdown = $('#gap_region_picker_dropdown');
 
-    regionInput.on('keydown', function(e){
-        if (e.key === 'Escape') { dropdown.hide().empty(); }
-    });
+        $toggle.on('click', function(e){
+            e.stopPropagation();
+            $picker.toggleClass('is-open');
+        });
 
-    // Bir şehir seçilince
-    dropdown.on('click', 'li', function(){
-        const item = $(this);
-        const cityName = item.data('city');
-        const lat      = item.data('lat');
-        const lon      = item.data('lon');
+        $dropdown.on('click', '.gap-region-item-name', function(e){
+            e.stopPropagation();
+            var region = $(this).closest('.gap-region-picker-item').data('region');
+            $('#gap_selected_region_input').val(region);
+            $picker.removeClass('is-open');
+            $('#gap_select_region_form').submit();
+        });
 
-        regionInput.val(cityName);
-        dropdown.hide().empty();
+        $(document).on('click', function(e){
+            if (!$(e.target).closest('#gap_region_picker').length) {
+                $picker.removeClass('is-open');
+            }
+        });
 
-        // Radius input alanını bul ve koordinat bilgisini gizli alanlara yaz
-        const form = regionInput.closest('form');
+        // Delete button – open modal
+        $('#gap_delete_regions_btn').on('click', function(){
+            var checked = [];
+            $dropdown.find('.gap-region-check:checked').each(function(){
+                checked.push($(this).val());
+            });
 
-        // Gizli koordinat alanları yoksa oluştur
-        if (!form.find('input[name="gap_region_lat"]').length) {
-            form.append('<input type="hidden" name="gap_region_lat" value="">');
-            form.append('<input type="hidden" name="gap_region_lon" value="">');
+            if (checked.length === 0) {
+                alert($picker.data('no-selection') || 'Please select at least one region.');
+                return;
+            }
+
+            $('#gap_regions_to_delete').val(checked.join(','));
+
+            var msg = $('#gap_delete_region_modal').data('msg') || '';
+            msg = msg.replace('{regions}', checked.join(', '));
+            $('#gap_modal_message').text(msg);
+
+            $('#gap_delete_region_modal').fadeIn(200);
+        });
+
+        // Modal cancel
+        $(document).on('click', '.gap-modal-cancel', function(){
+            $('#gap_delete_region_modal').fadeOut(200);
+        });
+
+        // Close modal on overlay click
+        $('#gap_delete_region_modal').on('click', function(e){
+            if ($(e.target).is('.gap-modal-overlay')) {
+                $(this).fadeOut(200);
+            }
+        });
+    }
+
+    // =========================================================================
+    // City/Region Autocomplete (Photon API - OpenStreetMap)
+    // =========================================================================
+    var regionInput = $('input[name="gap_region_name"]');
+    if (regionInput.length) {
+        var dropdown = $('<ul class="gap-city-dropdown"></ul>').insertAfter(regionInput);
+        var searchTimer = null;
+
+        function searchCities(query) {
+            if (query.length < 2) { dropdown.hide().empty(); return; }
+
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function(){
+                $.getJSON(
+                    'https://photon.komoot.io/api/?q=' + encodeURIComponent(query) + '&lang=de&limit=6&layer=city&layer=district',
+                    function(data) {
+                        dropdown.empty();
+
+                        if (!data.features || !data.features.length) {
+                            dropdown.hide();
+                            return;
+                        }
+
+                        data.features.forEach(function(feature){
+                            var props = feature.properties;
+                            var coords = feature.geometry.coordinates;
+                            var city   = props.name || '';
+                            var state  = props.state || '';
+                            var country = props.country || '';
+                            var label  = [city, state, country].filter(Boolean).join(', ');
+
+                            $('<li></li>')
+                                .text(label)
+                                .data('city', city)
+                                .data('lat', coords[1])
+                                .data('lon', coords[0])
+                                .appendTo(dropdown);
+                        });
+
+                        dropdown.show();
+                    }
+                );
+            }, 300);
         }
 
-        form.find('input[name="gap_region_lat"]').val(lat);
-        form.find('input[name="gap_region_lon"]').val(lon);
+        regionInput.on('input', function(){
+            searchCities($(this).val());
+        });
 
-        // Koordinatı kullanıcıya göster
-        let info = form.find('.gap-city-coords-info');
-        if (!info.length) {
-            info = $('<p class="gap-city-coords-info description"></p>').insertAfter(
-                form.find('input[name="gap_region_radius_km"]')
-            );
-        }
-        info.text('📍 ' + cityName + ': ' + lat.toFixed(4) + ', ' + lon.toFixed(4));
-    });
+        regionInput.on('keydown', function(e){
+            if (e.key === 'Escape') { dropdown.hide().empty(); }
+        });
 
-    // Dışarı tıklayınca kapat
-    $(document).on('click', function(e){
-        if (!$(e.target).closest('input[name="gap_region_name"], .gap-city-dropdown').length) {
+        dropdown.on('click', 'li', function(){
+            var item = $(this);
+            var cityName = item.data('city');
+            var lat      = item.data('lat');
+            var lon      = item.data('lon');
+
+            regionInput.val(cityName);
             dropdown.hide().empty();
+
+            var form = regionInput.closest('form');
+
+            if (!form.find('input[name="gap_region_lat"]').length) {
+                form.append('<input type="hidden" name="gap_region_lat" value="">');
+                form.append('<input type="hidden" name="gap_region_lon" value="">');
+            }
+
+            form.find('input[name="gap_region_lat"]').val(lat);
+            form.find('input[name="gap_region_lon"]').val(lon);
+
+            var info = form.find('.gap-city-coords-info');
+            if (!info.length) {
+                info = $('<p class="gap-city-coords-info description"></p>').insertAfter(
+                    form.find('input[name="gap_region_radius_km"]')
+                );
+            }
+            info.text('📍 ' + cityName + ': ' + lat.toFixed(4) + ', ' + lon.toFixed(4));
+        });
+
+        $(document).on('click', function(e){
+            if (!$(e.target).closest('input[name="gap_region_name"], .gap-city-dropdown').length) {
+                dropdown.hide().empty();
+            }
+        });
+    }
+
+    // =========================================================================
+    // Copy shortcode to clipboard
+    // =========================================================================
+    $(document).on('click', '.gap-copy-shortcode', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var text = $(this).attr('data-shortcode');
+        var $btn = $(this);
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(function(){
+                $btn.find('.dashicons').removeClass('dashicons-clipboard').addClass('dashicons-yes');
+                setTimeout(function(){ $btn.find('.dashicons').removeClass('dashicons-yes').addClass('dashicons-clipboard'); }, 1500);
+            });
+        } else {
+            var tmp = document.createElement('textarea');
+            tmp.value = text;
+            tmp.style.position = 'fixed';
+            tmp.style.left = '-9999px';
+            document.body.appendChild(tmp);
+            tmp.select();
+            document.execCommand('copy');
+            document.body.removeChild(tmp);
+            $btn.find('.dashicons').removeClass('dashicons-clipboard').addClass('dashicons-yes');
+            setTimeout(function(){ $btn.find('.dashicons').removeClass('dashicons-yes').addClass('dashicons-clipboard'); }, 1500);
         }
     });
 });

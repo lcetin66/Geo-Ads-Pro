@@ -1,4 +1,4 @@
-# Geo Ads Pro
+# die1-Geo Ads Pro
 
 <p align="center">
   <img src="https://img.shields.io/badge/WordPress-5.0%2B-blue.svg" alt="WordPress Version">
@@ -21,7 +21,7 @@
 
 ---
 
-Geo Ads Pro is a professional GEO-targeted banner and advertisement management plugin for WordPress. It allows you to display area-specific banner advertisements, map cities to regions, perform A/B testing, view interactive analytics, and utilize widgets, shortcodes, and a REST API endpoint.
+die1-Geo Ads Pro is a professional GEO-targeted banner and advertisement management plugin for WordPress. It allows you to display area-specific banner advertisements, map cities to regions, perform A/B testing, view interactive analytics, and utilize widgets, shortcodes, and a REST API endpoint.
 
 ---
 
@@ -138,17 +138,32 @@ geo-ads-pro/
 
 ---
 
+## 📝 1.0.9 Release Notes
+
+- Plugin/project name aligned to **die1-Geo Ads Pro**.
+- Main admin navigation now opens with a dedicated **Banner List** page.
+- Regions and uploads moved into a separate **Regions & Upload** workflow.
+- Banner List now supports sorting by region, size, clicks, and views.
+- Banner URLs, link targets, customer email, shortcode copy, and delete actions can be managed from the central list.
+- Multi-region deletion now offers optional banner archiving into the WordPress Media Library.
+- Analytics gained a responsive two-chart layout with banner performance plus visitor city/region pie chart.
+- Frontend tracking now records shortcode banner impressions and sends resolved region metadata.
+- Local mode can resolve visitor city server-side from IP when browser-side city data is unavailable.
+- Security hardening added for shortcode processing, redirect URLs, IP validation, report downloads, widget HTML, uploaded banner URLs, and path traversal checks.
+
+---
+
 ## 📦 Installation
 
 Download the installable plugin package from this repository:
 
-- `dist/geo-ads-pro-1.0.8.zip`
+- `dist/die1-geo-ads-pro-1.0.9.zip`
 
 Then install it in WordPress:
 
 1. Open **WordPress Admin → Plugins → Add New → Upload Plugin**.
-2. Select `geo-ads-pro-1.0.8.zip`.
-3. Click **Install Now** and activate **Geo Ads Pro**.
+2. Select `die1-geo-ads-pro-1.0.9.zip`.
+3. Click **Install Now** and activate **die1-Geo Ads Pro**.
 
 The zip contains a single `geo-ads-pro/` plugin folder, ready for WordPress upload installation.
 
@@ -156,7 +171,7 @@ The zip contains a single `geo-ads-pro/` plugin folder, ready for WordPress uplo
 
 ## 🧠 Runtime Data
 
-Geo Ads Pro stores runtime data under the WordPress uploads directory:
+die1-Geo Ads Pro stores runtime data under the WordPress uploads directory:
 
 ```text
 wp-content/uploads/geo-ads-pro/
@@ -185,7 +200,7 @@ wp-content/uploads/geo-ads-pro/
 
 ## 🧭 Versioning
 
-Geo Ads Pro tracks both release and schema versions:
+die1-Geo Ads Pro tracks both release and schema versions:
 
 - `GAP_VERSION`: Current plugin release version.
 - `GAP_SCHEMA_VERSION`: Current runtime data/schema version.
@@ -199,7 +214,7 @@ Geo Ads Pro tracks both release and schema versions:
 
 ## 🌐 Languages
 
-Geo Ads Pro uses the `geo-ads-pro` text domain and loads translation files from `/languages`.
+die1-Geo Ads Pro uses the `geo-ads-pro` text domain and loads translation files from `/languages`.
 
 - `geo-ads-pro.pot`: Translation template.
 - `geo-ads-pro-tr_TR.po/.mo`: Turkish.

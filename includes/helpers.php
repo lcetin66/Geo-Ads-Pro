@@ -89,22 +89,33 @@ function gap_validate_click_url($url) {
         return '';
     }
 
-    $url = esc_url_raw($url, ['http', 'https']);
+    // Güvenlik: Sadece https izinli — http ile açık linklere izin verilmez (phishing/SEO riski)
+    $url = esc_url_raw($url, ['https']);
     if (!$url) {
         return '';
     }
 
     $parts = wp_parse_url($url);
-    if (empty($parts['scheme']) || !in_array($parts['scheme'], ['http', 'https'], true)) {
+    if (empty($parts['scheme']) || !in_array($parts['scheme'], ['https'], true)) {
         return '';
+    }
+
+    // Kendi domainine yönlendirme engelle — open redirect önleme
+    $home_parse = wp_parse_url(home_url());
+    if (!empty($parts['host']) && !empty($home_parse['host'])) {
+        if (strcasecmp($parts['host'], $home_parse['host']) === 0 || strcasecmp($parts['host'], 'www.' . $home_parse['host']) === 0) {
+            return ''; // Kendi domaine yönlendirme engellendi (SEO spam koruması)
+        }
     }
 
     return $url;
 }
 
 function gap_rate_limit($bucket, $limit, $window) {
-    $ip = sanitize_text_field($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-    $key = 'gap_rate_' . md5($bucket . '|' . $ip);
+    // Güvenlik: IP adresi FILTER_VALIDATE_IP ile doğrulanmalı — sanitize_text_field IP için uygun değil
+    $raw_ip = wp_unslash($_SERVER['REMOTE_ADDR'] ?? '');
+    $ip     = filter_var($raw_ip, FILTER_VALIDATE_IP) ? $raw_ip : '0.0.0.0';
+    $key    = 'gap_rate_' . md5($bucket . '|' . $ip);
     $count = intval(get_transient($key));
 
     if ($count >= $limit) {
@@ -187,6 +198,50 @@ function gap_geocode_region_center($region) {
     }
 
     return ['latitude' => 0, 'longitude' => 0];
+}
+
+/**
+ * Resolve city name from visitor IP address (server-side).
+ * Uses ip-api.com with 24h transient cache per IP.
+ */
+function gap_resolve_city_from_ip($ip = '') {
+    if ($ip === '') {
+        $raw_ip = wp_unslash($_SERVER['REMOTE_ADDR'] ?? '');
+        $ip = filter_var($raw_ip, FILTER_VALIDATE_IP) ? $raw_ip : '';
+    }
+
+    if ($ip === '' || $ip === '127.0.0.1' || $ip === '::1') {
+        return '';
+    }
+
+    $cache_key = 'gap_ip_city_' . md5($ip);
+    $cached = get_transient($cache_key);
+    if ($cached !== false) {
+        return $cached;
+    }
+
+    $response = wp_remote_get(
+        'http://ip-api.com/json/' . rawurlencode($ip) . '?fields=status,city,regionName,country',
+        ['timeout' => 3, 'blocking' => true]
+    );
+
+    if (is_wp_error($response)) {
+        set_transient($cache_key, '', HOUR_IN_SECONDS);
+        return '';
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    if (!is_array($data) || ($data['status'] ?? '') !== 'success') {
+        set_transient($cache_key, '', HOUR_IN_SECONDS);
+        return '';
+    }
+
+    $city = sanitize_text_field($data['city'] ?? '');
+    set_transient($cache_key, $city, DAY_IN_SECONDS);
+
+    return $city;
 }
 
 /**

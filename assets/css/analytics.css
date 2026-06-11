@@ -1,15 +1,45 @@
-/* Plugin Name: Geo Ads Pro - analytics.css */  
-/* Date: 20260606 */
+/* Plugin Name: Geo Ads Pro - analytics.css */
+/* Date: 20260610 */
 /* Author: Levent Cetin - 3CCS.com */
 
-#gapChart {
-    margin-top: 30px;
+.gap-charts-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    margin: 24px 0;
+}
+
+.gap-chart-bar-col {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.gap-chart-pie-col {
+    flex: 0 0 35%;
+    min-width: 0;
+}
+
+#gapChart,
+#gapPieChart {
     max-width: 100%;
     background: #fff;
     border: 1px solid #ddd;
-    padding: 20px;
+    border-radius: 6px;
+    padding: 16px;
+    box-sizing: border-box;
 }
 
 .gap-analytics-table {
     margin-top: 24px;
+}
+
+@media (max-width: 1100px) {
+    .gap-charts-row {
+        flex-direction: column;
+    }
+
+    .gap-chart-pie-col {
+        flex: none;
+        width: 100%;
+    }
 }

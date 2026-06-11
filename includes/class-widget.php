@@ -36,7 +36,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         $id = 'gap-tip-' . ($key ? $key : uniqid());
         return sprintf(
             '<span class="gap-tooltip-wrap"><span class="gap-tooltip-icon" data-gap-tip="%s" tabindex="0" role="button" aria-label="%s">i</span><span id="%s" class="gap-tooltip-box"><div class="gap-tooltip-box-inner"><span class="gap-tooltip-box-label">%s</span>%s</div></span></span>',
-            esc_attr($text),
+            esc_attr($id),
             __('Hilfe', 'geo-ads-pro'),
             $id,
             esc_html__('Hilfe', 'geo-ads-pro'),
@@ -280,7 +280,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
 }
 
 .gap-tooltip-box {
-    display: block; position: absolute; z-index: 99999; left: -40px; bottom: calc(100% + 8px);
+    display: none; position: absolute; z-index: 99999; left: -40px; bottom: calc(100% + 8px);
     min-width: 260px; max-width: 340px; padding: 0;
     background: #fff; border: 1px solid #ddd; border-radius: 8px;
     box-shadow: 0 8px 30px rgba(0,0,0,.18);
@@ -337,8 +337,16 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
             'p'         => array(),
             'br'        => array(),
             'ins'       => array('class' => true, 'style' => true, 'data-ad-slot' => true, 'data-full-width-responsive' => true),
-            'script'    => array(),
-            'iframe'    => array('src' => true, 'width' => true, 'height' => true, 'frameborder' => true, 'allow' => true, 'loading' => true),
+            // <script> tags removed — XSS risk. Use external src for ad scripts.
+            'iframe'    => array(
+                'src'         => true,
+                'width'       => true,
+                'height'      => true,
+                'frameborder' => true,
+                'allow'       => true,
+                'loading'     => true,
+                'sandbox'     => true, // Restrict iframe capabilities
+            ),
         );
         $instance['ad_code'] = wp_kses($new['ad_code'] ?? '', $allowed);
 

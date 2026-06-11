@@ -28,14 +28,16 @@ class Geo_Ads_Pro_CityMap {
     }
 
     public function map_city($city, $region) {
-        $city   = (string) $city;
-        $region = (string) $region;
+        // Enjeksiyon koruması: şehir ve bölge adları sanitization'lanmalı
+        $city   = sanitize_text_field((string) $city);
+        $region = sanitize_text_field((string) $region);
         $this->data[$city] = $region;
         $this->save();
     }
 
     public function delete_city($city) {
-        $city = (string) $city;
+        // Enjeksiyon koruması
+        $city = sanitize_text_field((string) $city);
         if (isset($this->data[$city])) {
             unset($this->data[$city]);
             $this->save();
@@ -43,7 +45,7 @@ class Geo_Ads_Pro_CityMap {
     }
 
     public function city_to_region($city) {
-        $city = (string) $city;
+        $city = sanitize_text_field((string) $city);
 
         if (isset($this->data[$city])) return $this->data[$city];
 
@@ -55,7 +57,8 @@ class Geo_Ads_Pro_CityMap {
     }
 
     public function remove_region_mappings($region) {
-        $region = (string) $region;
+        // Enjeksiyon koruması
+        $region = sanitize_text_field((string) $region);
         foreach ($this->data as $city => $r) {
             if ($r === $region) {
                 unset($this->data[$city]);

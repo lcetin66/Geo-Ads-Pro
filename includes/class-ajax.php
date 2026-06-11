@@ -51,6 +51,10 @@ class Geo_Ads_Pro_Ajax {
         $latitude = isset($_POST['latitude']) && is_numeric($_POST['latitude']) ? floatval($_POST['latitude']) : null;
         $longitude = isset($_POST['longitude']) && is_numeric($_POST['longitude']) ? floatval($_POST['longitude']) : null;
 
+        if ($city === '') {
+            $city = gap_resolve_city_from_ip();
+        }
+
         $result = $this->generate_banner_html($mode, $region, $city, $latitude, $longitude);
         wp_send_json($result);
     }
@@ -70,6 +74,10 @@ class Geo_Ads_Pro_Ajax {
         $banner_id = intval($_POST['banner_id'] ?? 0);
         $region    = sanitize_text_field($_POST['region'] ?? '');
         $city      = sanitize_text_field($_POST['city'] ?? '');
+
+        if ($city === '') {
+            $city = gap_resolve_city_from_ip();
+        }
 
         if (!$banner_id || !$region) wp_send_json(['ok' => false]);
 
@@ -94,6 +102,10 @@ class Geo_Ads_Pro_Ajax {
 
         $banner_id = intval($_GET['gap_click']);
         $city = sanitize_text_field($_GET['gap_city'] ?? '');
+
+        if ($city === '') {
+            $city = gap_resolve_city_from_ip();
+        }
 
         $found = $this->banner_service->find_banner($banner_id);
 

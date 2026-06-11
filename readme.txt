@@ -1,19 +1,19 @@
-=== Geo Ads Pro ===
+=== die1-Geo Ads Pro ===
 Contributors: leventcetin
 Author: Levent Cetin - 3CCS.com
 Tags: ads, geo ads, banner, advertising, widget, shortcode, rest api
 Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
-Geo Ads Pro, bölge bazlı banner yönetimi, şehir → bölge eşleştirme, A/B test, analytics, widget, shortcode ve REST API desteği sunan profesyonel bir WordPress reklam eklentisidir.
+die1-Geo Ads Pro, bölge bazlı banner yönetimi, şehir → bölge eşleştirme, A/B test, analytics, widget, shortcode ve REST API desteği sunan profesyonel bir WordPress reklam eklentisidir.
 
 == Description ==
 
-Geo Ads Pro, reklamlarınızı coğrafi konuma göre hedeflemenizi sağlar.  
+die1-Geo Ads Pro, reklamlarınızı coğrafi konuma göre hedeflemenizi sağlar.  
 Bölge bazlı banner yönetimi, şehir eşleştirme, tıklama ve gösterim takibi, A/B test sistemi ve gelişmiş analytics özellikleri içerir.
 
 === Features ===
@@ -79,7 +79,7 @@ Veri dosyaları PHP exit guard ile yazılır; doğrudan web isteği geldiğinde 
 * Uninstall sırasında veri varsayılan olarak korunur; tam temizlik için ayardan ayrıca etkinleştirmek gerekir.
 
 === Versioning ===
-Geo Ads Pro hem release hem de schema versiyonu takip eder.
+die1-Geo Ads Pro hem release hem de schema versiyonu takip eder.
 
 * GAP_VERSION: Aktif plugin sürümü
 * GAP_SCHEMA_VERSION: Aktif runtime veri/schema sürümü
@@ -101,17 +101,29 @@ Eklenti geo-ads-pro text domain kullanır ve languages klasöründen çeviri yü
 Yeni arayüz metinleri __(), esc_html__(), esc_html_e() veya esc_attr__() ile çevrilebilir hale getirilmelidir.
 
 === Installation ===
-1. GitHub reposundaki dist/geo-ads-pro-1.0.8.zip dosyasını indirin
+1. GitHub reposundaki dist/die1-geo-ads-pro-1.0.9.zip dosyasını indirin
 2. WordPress Admin -> Plugins -> Add New -> Upload Plugin ekranını açın
-3. geo-ads-pro-1.0.8.zip dosyasını seçip Install Now ile yükleyin
+3. die1-geo-ads-pro-1.0.9.zip dosyasını seçip Install Now ile yükleyin
 4. Eklentiyi etkinleştirin
-5. Geo Ads Pro menüsünden bölgeleri ve banner’ları yönetin
+5. die1-Geo Ads Pro menüsünden bölgeleri ve banner’ları yönetin
 
 === Changelog ===
+= 1.0.9 =
+* Proje ve plugin adı die1-Geo Ads Pro olarak güncellendi.
+* Ana admin menüsü Banner List sayfasıyla açılacak şekilde yeniden düzenlendi.
+* Bölge yönetimi ve banner yükleme akışı Regions & Upload sayfasına taşındı.
+* Banner List ekranına region, boyut, click ve view sütunlarında sıralama eklendi.
+* Banner URL, link target, müşteri e-postası, shortcode kopyalama ve silme işlemleri merkezi listeden yönetilebilir hale getirildi.
+* Çoklu bölge silme akışına bannerları Media Library içine arşivleme seçeneği eklendi.
+* Analytics ekranına banner performans grafiğinin yanında şehir/region bazlı pasta grafik eklendi.
+* Shortcode ile basılan bannerlar için frontend impression tracking eklendi.
+* Local mode için şehir bilgisi boşsa server-side IP çözümleme fallback’i eklendi.
+* Shortcode işleme, redirect URL doğrulama, IP doğrulama, rapor indirme, widget HTML, banner dosya yolu ve admin inputlarında güvenlik sertleştirmeleri yapıldı.
+
 = 1.0.8 =
 * Widget görünüm renkleri düzeltildi: Hintergrundfarbe, Textfarbe, Link-Farbe ve Active Links Color gerçek renk seçici ve hex değeriyle çalışır.
 * Widgetten Hintergrundfarbe 2 ve Hintergrundbild alanları kaldırıldı.
-* Geo Ads Pro admin sayfaları için yetki kontrolü dayanıklı hale getirildi.
+* die1-Geo Ads Pro admin sayfaları için yetki kontrolü dayanıklı hale getirildi.
 * Local targeting için city-map/radius radio seçimi ve region radius alanı eklendi; region merkezi isimden otomatik çözülür.
 * Asset/schema sürümü 1.0.8 / 2026060701 olarak güncellendi.
 

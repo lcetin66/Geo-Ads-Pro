@@ -33,7 +33,8 @@ class Geo_Ads_Pro_Regions {
     }
 
     public function add_region($region, $meta = []) {
-        $region = (string) $region;
+        // Path traversal ve injection koruması
+        $region = sanitize_text_field((string) $region);
         if (!isset($this->data[$region])) {
             $this->data[$region] = array_merge([
                 'banners' => [],
@@ -64,30 +65,64 @@ class Geo_Ads_Pro_Regions {
     }
 
     public function add_banner($region, $banner) {
-        $region = (string) $region;
+        // Enjeksiyon koruması: bölge adı temizlenmeli
+        $region = sanitize_text_field((string) $region);
         if (!isset($this->data[$region])) $this->data[$region] = ['banners' => []];
+        // Banner yapısı doğrulanmalı — enjeksiyon önleme
+        if (is_array($banner)) {
+            $banner = [
+                'id'             => absint($banner['id'] ?? 0),
+                'file'           => sanitize_file_name($banner['file'] ?? ''),
+                'width'          => absint($banner['width'] ?? 0),
+                'height'         => absint($banner['height'] ?? 0),
+                'selected'       => !empty($banner['selected']),
+                'url'            => esc_url_raw($banner['url'] ?? ''),
+                'link_target'    => in_array($banner['link_target'] ?? '', ['_blank', '_self'], true) ? $banner['link_target'] : '_blank',
+                'customer_email' => sanitize_email($banner['customer_email'] ?? ''),
+            ];
+        }
         $this->data[$region]['banners'][] = $banner;
         $this->save();
     }
 
     public function update_banners($region, $banners) {
-        $region = (string) $region;
+        // Enjeksiyon koruması
+        $region = sanitize_text_field((string) $region);
         if (!isset($this->data[$region])) $this->data[$region] = ['banners' => []];
-        $this->data[$region]['banners'] = array_values($banners);
+
+        // Her banner'ın yapısını doğrula — enjeksiyon önleme
+        $validated = [];
+        foreach ($banners as $banner) {
+            if (!is_array($banner)) continue;
+            $validated[] = [
+                'id'             => absint($banner['id'] ?? 0),
+                'file'           => sanitize_file_name($banner['file'] ?? ''),
+                'width'          => absint($banner['width'] ?? 0),
+                'height'         => absint($banner['height'] ?? 0),
+                'selected'       => !empty($banner['selected']),
+                'url'            => esc_url_raw($banner['url'] ?? ''),
+                'link_target'    => in_array($banner['link_target'] ?? '', ['_blank', '_self'], true) ? $banner['link_target'] : '_blank',
+                'customer_email' => sanitize_email($banner['customer_email'] ?? ''),
+            ];
+        }
+        $this->data[$region]['banners'] = array_values($validated);
         $this->save();
     }
 
     public function delete_banner($region, $banner_id) {
-        $region = (string) $region;
+        // Enjeksiyon koruması
+        $region = sanitize_text_field((string) $region);
+        $banner_id = absint($banner_id);
         if (isset($this->data[$region])) {
             $banners = $this->data[$region]['banners'] ?? [];
-            $this->data[$region]['banners'] = array_values(array_filter($banners, fn($b) => $b['id'] != $banner_id));
+            $this->data[$region]['banners'] = array_values(array_filter($banners, fn($b) => intval($b['id']) != $banner_id));
             $this->save();
         }
     }
 
     public function delete_region($region) {
-        $region = (string) $region;
+        // Enjeksiyon koruması
+        $region = sanitize_text_field((string) $region);
         if (isset($this->data[$region])) {
             unset($this->data[$region]);
             $this->save();

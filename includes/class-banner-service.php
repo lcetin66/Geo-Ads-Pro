@@ -200,7 +200,7 @@ class Geo_Ads_Pro_Banner_Service {
         $click_url = home_url('/?gap_click=' . intval($banner['id']));
         $target = isset($banner['link_target']) && $banner['link_target'] === '_self' ? '_self' : '_blank';
         $html = '<a href="' . esc_url($click_url) . '" target="' . esc_attr($target) . '" rel="noopener noreferrer">'
-              . '<img class="gap-banner" data-banner-id="' . intval($banner['id']) . '" '
+              . '<img class="gap-banner" data-banner-id="' . intval($banner['id']) . '" data-region="' . esc_attr($result['region']) . '" '
               . 'src="' . esc_url($src) . '" width="' . intval($banner['width']) . '" height="' . intval($banner['height']) . '" alt="">'
               . '</a>';
 
@@ -255,9 +255,9 @@ class Geo_Ads_Pro_Banner_Service {
             }
         }
 
-        // Yeni grup için ID üret
+        // Yeni grup için ID üret — güvenli, tahmin edilemez
         if (!$found && empty($group['id'])) {
-            $group['id'] = uniqid('rg_');
+            $group['id'] = 'rg_' . bin2hex(random_bytes(16));
         }
 
         $groups[] = $group;
@@ -277,7 +277,19 @@ class Geo_Ads_Pro_Banner_Service {
     }
 
     public function banner_image_url($region, $file) {
-        return trailingslashit(gap_upload_base_url()) . rawurlencode(gap_region_folder_name($region)) . '/' . rawurlencode(basename($file));
+        // Güvenli: bölge adı ve dosya yolu uploads dizini dışına çıkamaz mı kontrol et
+        $base_dir = trailingslashit(gap_upload_base_dir());
+        $safe_region = basename(gap_region_folder_name((string) $region));
+        $safe_file   = basename((string) $file);
+
+        // Path traversal koruması
+        $full_path = realpath($base_dir . $safe_region . '/' . $safe_file);
+        $expected  = realpath($base_dir . $safe_region);
+        if ($full_path === false || $expected === false || strpos($full_path, $expected) !== 0) {
+            return ''; // Erişim reddedildi — path traversal denemesi
+        }
+
+        return trailingslashit(gap_upload_base_url()) . rawurlencode($safe_region) . '/' . rawurlencode($safe_file);
     }
 
     private function pick_banner($region, $size, $group) {
@@ -289,10 +301,16 @@ class Geo_Ads_Pro_Banner_Service {
             return $this->pick_sequential_banner($region, $size, $group);
         }
 
+        if (empty($group)) {
+            return null; // Boş array → hata önleme
+        }
         return $group[array_rand($group)];
     }
 
     private function pick_best_ctr_banner($group) {
+        if (empty($group)) {
+            return null;
+        }
         $winner = null;
         $best_ctr = -1;
 

@@ -23,7 +23,7 @@ class Geo_Ads_Pro_REST {
         register_rest_route('geo-ads-pro/v1', '/banner', [
             'methods'  => 'GET',
             'callback' => [$this, 'get_banner'],
-            'permission_callback' => '__return_true'
+            'permission_callback' => '__return_true', // Public endpoint — rate-limited
         ]);
     }
 

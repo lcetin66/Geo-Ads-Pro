@@ -15,26 +15,35 @@ class Geo_Ads_Pro_Admin {
 
     public function register_menu() {
         add_menu_page(
-            __('Upload / Edit Banners', 'geo-ads-pro'),
+            __('Banner List', 'geo-ads-pro'),
             'Geo Ads Pro',
             'manage_options',
-            'geo-ads-pro-upload', // ← parent = upload sayfası, redundant giriş yok
-            [$this, 'render_page'],
+            'geo-ads-pro-banners',
+            [$this, 'render_banner_list_page'],
             'dashicons-location-alt',
             60
         );
 
         add_submenu_page(
-            'geo-ads-pro-upload',
-            __('Upload / Edit Banners', 'geo-ads-pro'),
-            __('Upload / Edit Banners', 'geo-ads-pro'),
+            'geo-ads-pro-banners',
+            __('Banner List', 'geo-ads-pro'),
+            __('Banner List', 'geo-ads-pro'),
+            'manage_options',
+            'geo-ads-pro-banners',
+            [$this, 'render_banner_list_page']
+        );
+
+        add_submenu_page(
+            'geo-ads-pro-banners',
+            __('Regions & Upload', 'geo-ads-pro'),
+            __('Regions & Upload', 'geo-ads-pro'),
             'manage_options',
             'geo-ads-pro-upload',
             [$this, 'render_page']
         );
 
         add_submenu_page(
-            'geo-ads-pro-upload',
+            'geo-ads-pro-banners',
             __('Rotation Einstellungen', 'geo-ads-pro'),
             __('Rotation Einstellungen', 'geo-ads-pro'),
             'manage_options',
@@ -235,6 +244,32 @@ class Geo_Ads_Pro_Admin {
         <?php
     }
 
+    private function archive_banner_to_media($banner, $region, $base_dir) {
+        $file_path = trailingslashit($base_dir) . gap_region_folder_name($region) . '/' . basename($banner['file']);
+        if (!file_exists($file_path)) return;
+
+        $upload_dir = wp_upload_dir();
+        $new_filename = wp_unique_filename($upload_dir['path'], $banner['file']);
+        $new_path = trailingslashit($upload_dir['path']) . $new_filename;
+
+        if (!copy($file_path, $new_path)) return;
+
+        $filetype = wp_check_filetype($new_filename);
+        $attachment = [
+            'post_mime_type' => $filetype['type'],
+            'post_title'     => sanitize_file_name(pathinfo($new_filename, PATHINFO_FILENAME)),
+            'post_content'   => '',
+            'post_status'    => 'inherit',
+        ];
+
+        $attach_id = wp_insert_attachment($attachment, $new_path);
+        if (!is_wp_error($attach_id)) {
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+            $meta = wp_generate_attachment_metadata($attach_id, $new_path);
+            wp_update_attachment_metadata($attach_id, $meta);
+        }
+    }
+
     private function delete_region_directory($region, $base_dir) {
         $base_real = realpath($base_dir);
         $region_dir = trailingslashit($base_dir) . gap_region_folder_name($region);
@@ -341,6 +376,42 @@ class Geo_Ads_Pro_Admin {
         $base_dir = gap_upload_base_dir();
         $base_url = gap_upload_base_url();
 
+        // Multi-region archive or delete
+        if (isset($_POST['gap_archive_regions']) || isset($_POST['gap_delete_regions_confirm'])) {
+            if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_delete_region_nonce')) {
+                wp_die(esc_html__('Invalid request.', 'geo-ads-pro'));
+            }
+            $archive = isset($_POST['gap_archive_regions']);
+            $regions_to_delete = array_filter(array_map('sanitize_text_field', explode(',', $_POST['gap_regions_to_delete'] ?? '')));
+            $deleted = [];
+
+            foreach ($regions_to_delete as $r) {
+                if (!$this->region_exists($r, $regions)) continue;
+
+                if ($archive) {
+                    $rd = $this->regions->get_region($r);
+                    foreach ($rd['banners'] ?? [] as $b) {
+                        $this->archive_banner_to_media($b, $r, $base_dir);
+                    }
+                }
+
+                $this->delete_region_directory($r, $base_dir);
+                $this->regions->delete_region($r);
+                $this->citymap->remove_region_mappings($r);
+                GAP()->analytics->delete_region($r);
+                $deleted[] = $r;
+            }
+
+            if (!empty($deleted)) {
+                $msg = $archive
+                    ? sprintf(__('Region(s) deleted, banners archived to Media Library: %s', 'geo-ads-pro'), implode(', ', $deleted))
+                    : sprintf(__('Region(s) and banners deleted: %s', 'geo-ads-pro'), implode(', ', $deleted));
+                echo '<div class="updated"><p>' . esc_html($msg) . '</p></div>';
+                $regions = $this->regions->get_all();
+                $_POST['gap_selected_region'] = '';
+            }
+        }
+
         // Bölge silme
         if (isset($_POST['gap_delete_region'])) {
             if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'gap_delete_region_nonce')) {
@@ -417,7 +488,7 @@ class Geo_Ads_Pro_Admin {
                 $this->regions->add_region($region, [
                     'latitude'  => $lat,
                     'longitude' => $lon,
-                    'radius_km' => $_POST['gap_region_radius_km'] ?? 0,
+                    'radius_km' => max(0, min(99999, floatval($_POST['gap_region_radius_km'] ?? '0'))),
                 ]);
                 $region_dir = trailingslashit($base_dir) . gap_region_folder_name($region);
                 if (!file_exists($region_dir)) wp_mkdir_p($region_dir);
@@ -441,7 +512,7 @@ class Geo_Ads_Pro_Admin {
                 $this->regions->update_region_targeting($region, [
                     'latitude'  => $coords['latitude'] ?? ($region_data['latitude'] ?? 0),
                     'longitude' => $coords['longitude'] ?? ($region_data['longitude'] ?? 0),
-                    'radius_km' => $_POST['gap_region_radius_km'] ?? 0,
+                    'radius_km' => max(0, min(99999, floatval($_POST['gap_region_radius_km'] ?? '0'))),
                 ]);
                 echo '<div class="updated"><p>' . esc_html__('Region targeting saved.', 'geo-ads-pro') . '</p></div>';
                 $regions = $this->regions->get_all();
@@ -500,17 +571,18 @@ class Geo_Ads_Pro_Admin {
             }
 
             $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
+            // Banner IDs integer olmalı, URL/Email/link_target sanitize edilmeli
             $selected_ids = isset($_POST['gap_banner_select']) && is_array($_POST['gap_banner_select'])
-                ? array_map('sanitize_text_field', $_POST['gap_banner_select'])
+                ? array_map('absint', $_POST['gap_banner_select'])
                 : [];
             $urls = isset($_POST['gap_banner_url']) && is_array($_POST['gap_banner_url'])
-                ? $_POST['gap_banner_url']
+                ? array_map('sanitize_text_field', $_POST['gap_banner_url'])
                 : [];
             $emails = isset($_POST['gap_banner_email']) && is_array($_POST['gap_banner_email'])
-                ? $_POST['gap_banner_email']
+                ? array_map('sanitize_email', $_POST['gap_banner_email'])
                 : [];
             $link_targets = isset($_POST['gap_banner_link_target']) && is_array($_POST['gap_banner_link_target'])
-                ? $_POST['gap_banner_link_target']
+                ? array_map('sanitize_text_field', $_POST['gap_banner_link_target'])
                 : [];
 
             $region_data = $this->regions->get_region($region);
@@ -536,7 +608,12 @@ class Geo_Ads_Pro_Admin {
             $regions = $this->regions->get_all();
         }
 
-        $selected_region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
+        $selected_region = sanitize_text_field($_POST['gap_selected_region'] ?? ($_GET['gap_selected_region'] ?? ''));
+
+        // Boş durumda ilk region'u otomatik seç
+        if ($selected_region === '' && !empty($regions)) {
+            $selected_region = array_key_first($regions);
+        }
 
         $this->render_page_content($selected_region, $regions, $base_dir, $base_url);
     }
@@ -561,24 +638,48 @@ class Geo_Ads_Pro_Admin {
             <hr>
 
             <h2><?php esc_html_e('Select Region', 'geo-ads-pro'); ?></h2>
-            <form method="post" enctype="multipart/form-data" style="display:inline-block; margin-bottom:15px;">
-                <select name="gap_selected_region" onchange="this.form.submit()">
-                    <option value=""><?php esc_html_e('Select a region', 'geo-ads-pro'); ?></option>
-                    <?php foreach ($regions as $region => $data): ?>
-                        <option value="<?php echo esc_attr($region); ?>" <?php selected($selected_region, $region); ?>>
-                            <?php echo esc_html($region); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+            <form method="post" enctype="multipart/form-data" id="gap_select_region_form" style="display:none;">
+                <input type="hidden" name="gap_selected_region" id="gap_selected_region_input" value="<?php echo esc_attr($selected_region); ?>">
             </form>
 
-            <?php if ($selected_region !== ''): ?>
-                <form method="post" style="display:inline-block; margin-left: 10px;" onsubmit="return confirm('<?php echo esc_js(__('Are you sure you want to delete this region and all its banners?', 'geo-ads-pro')); ?>')">
-                    <?php wp_nonce_field('gap_delete_region_nonce'); ?>
-                    <input type="hidden" name="gap_selected_region" value="<?php echo esc_attr($selected_region); ?>">
-                    <button class="button button-link-delete" name="gap_delete_region" style="color: #bc0b0b; cursor: pointer;"><?php esc_html_e('Delete This Region', 'geo-ads-pro'); ?></button>
-                </form>
-            <?php endif; ?>
+            <div class="gap-region-picker-row">
+                <div class="gap-region-picker" id="gap_region_picker" data-no-selection="<?php echo esc_attr(__('Please select at least one region to delete.', 'geo-ads-pro')); ?>">
+                    <div class="gap-region-picker-toggle" id="gap_region_picker_toggle">
+                        <span class="gap-region-picker-label"><?php echo esc_html($selected_region !== '' ? $selected_region : __('Select a region', 'geo-ads-pro')); ?></span>
+                        <span class="gap-region-picker-arrow">▾</span>
+                    </div>
+                    <div class="gap-region-picker-dropdown" id="gap_region_picker_dropdown">
+                        <?php foreach ($regions as $region => $data): ?>
+                            <div class="gap-region-picker-item<?php echo $selected_region === $region ? ' active' : ''; ?>" data-region="<?php echo esc_attr($region); ?>">
+                                <input type="checkbox" class="gap-region-check" value="<?php echo esc_attr($region); ?>" onclick="event.stopPropagation();">
+                                <span class="gap-region-item-name"><?php echo esc_html($region); ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <button type="button" class="gap-region-delete-btn" id="gap_delete_regions_btn">
+                    <?php esc_html_e('Delete This Region', 'geo-ads-pro'); ?>
+                </button>
+            </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div id="gap_delete_region_modal" class="gap-modal-overlay" style="display:none;" data-msg="<?php echo esc_attr(__('When you delete the selected region(s) ({regions}), all banners belonging to those regions will also be deleted automatically. Would you like to archive the banners to the Media Library instead?', 'geo-ads-pro')); ?>">
+                <div class="gap-modal">
+                    <div class="gap-modal-body">
+                        <p id="gap_modal_message"></p>
+                    </div>
+                    <div class="gap-modal-footer">
+                        <form method="post" id="gap_modal_form">
+                            <?php wp_nonce_field('gap_delete_region_nonce'); ?>
+                            <input type="hidden" name="gap_regions_to_delete" id="gap_regions_to_delete" value="">
+                            <button type="submit" name="gap_archive_regions" class="button button-primary"><?php esc_html_e('Yes, archive', 'geo-ads-pro'); ?></button>
+                            <button type="submit" name="gap_delete_regions_confirm" class="button" style="background:#dc3232;border-color:#dc3232;color:#fff;margin-left:8px;"><?php esc_html_e('No, delete', 'geo-ads-pro'); ?></button>
+                            <button type="button" class="button gap-modal-cancel" style="margin-left:8px;"><?php esc_html_e('Cancel', 'geo-ads-pro'); ?></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
             <?php
             if ($selected_region !== ''):
@@ -670,39 +771,120 @@ class Geo_Ads_Pro_Admin {
                 <button class="button button-primary" name="gap_upload_banner"><?php esc_html_e('Upload', 'geo-ads-pro'); ?></button>
             </form>
 
-            <hr>
+            <?php endif; ?>
 
-            <h2><?php esc_html_e('Banner List', 'geo-ads-pro'); ?></h2>
+        </div>
+        <?php
+    }
+
+    // =========================================================================
+    // Banner List Page
+    // =========================================================================
+
+    public function render_banner_list_page() {
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('You do not have permission.', 'geo-ads-pro'));
+        }
+
+        $regions = $this->regions->get_all();
+        $base_dir = gap_upload_base_dir();
+        $base_url = gap_upload_base_url();
+        // Handle save
+        if (isset($_POST['gap_save_banner_list']) && isset($_POST['_wpnonce']) && wp_verify_nonce($_POST['_wpnonce'], 'gap_banner_list_nonce')) {
+            // Tüm array inputları sanitize et — injection koruması
+            $urls = isset($_POST['gap_banner_url']) && is_array($_POST['gap_banner_url']) ? array_map('sanitize_text_field', $_POST['gap_banner_url']) : [];
+            $emails = isset($_POST['gap_banner_email']) && is_array($_POST['gap_banner_email']) ? array_map('sanitize_email', $_POST['gap_banner_email']) : [];
+            $link_targets = isset($_POST['gap_banner_link_target']) && is_array($_POST['gap_banner_link_target']) ? array_map('sanitize_text_field', $_POST['gap_banner_link_target']) : [];
+            $banner_regions = isset($_POST['gap_banner_region']) && is_array($_POST['gap_banner_region']) ? array_map('sanitize_text_field', $_POST['gap_banner_region']) : [];
+
+            foreach ($banner_regions as $bid => $rname) {
+                $region_data = $this->regions->get_region($rname);
+                $banners = $region_data['banners'] ?? [];
+                foreach ($banners as &$b) {
+                    if ((string) $b['id'] === (string) $bid) {
+                        if (isset($urls[$bid])) $b['url'] = gap_validate_click_url($urls[$bid]);
+                        if (isset($emails[$bid])) $b['customer_email'] = gap_sanitize_customer_email($emails[$bid]);
+                        if (isset($link_targets[$bid])) {
+                            $lt = sanitize_text_field($link_targets[$bid]);
+                            $b['link_target'] = in_array($lt, ['_blank', '_self'], true) ? $lt : '_blank';
+                        }
+                    }
+                }
+                $this->regions->update_banners($rname, $banners);
+            }
+            $regions = $this->regions->get_all();
+            echo '<div class="updated"><p>' . esc_html__('Banner list saved.', 'geo-ads-pro') . '</p></div>';
+        }
+
+        // Handle delete
+        if (isset($_POST['gap_delete_banner_id']) && $_POST['gap_delete_banner_id'] && isset($_POST['gap_delete_nonce']) && wp_verify_nonce($_POST['gap_delete_nonce'], 'gap_delete_banner_list_nonce')) {
+            $del_id = absint($_POST['gap_delete_banner_id']);
+            $del_region = sanitize_text_field($_POST['gap_delete_banner_region'] ?? '');
+            if ($del_region) {
+                $region_data = $this->regions->get_region($del_region);
+                $all_banners = $region_data['banners'] ?? [];
+                foreach ($all_banners as $b) {
+                    if ((int) $b['id'] === $del_id) {
+                        $banner_file = trailingslashit($base_dir) . gap_region_folder_name($del_region) . '/' . basename($b['file']);
+                        $banner_real = realpath($banner_file);
+                        $region_real = realpath(trailingslashit($base_dir) . gap_region_folder_name($del_region));
+                        if ($banner_real && $region_real && strpos($banner_real, $region_real . DIRECTORY_SEPARATOR) === 0) {
+                            @unlink($banner_real);
+                        }
+                        break;
+                    }
+                }
+                $banners = array_filter($all_banners, fn($b) => (int) $b['id'] !== $del_id);
+                $this->regions->update_banners($del_region, array_values($banners));
+                GAP()->analytics->delete_banner($del_id);
+                $regions = $this->regions->get_all();
+                echo '<div class="updated"><p>' . esc_html__('Banner deleted.', 'geo-ads-pro') . '</p></div>';
+            }
+        }
+
+        ?>
+        <div class="wrap">
+            <h1><?php esc_html_e('Banner List', 'geo-ads-pro'); ?></h1>
 
             <form method="post">
-                <?php wp_nonce_field('gap_save_selection_nonce'); ?>
-                <input type="hidden" name="gap_selected_region" value="<?php echo esc_attr($region); ?>">
+                <?php wp_nonce_field('gap_banner_list_nonce'); ?>
 
-                <table class="widefat">
+                <table class="widefat striped" id="gap-banner-table">
                     <thead>
                         <tr>
                             <th><?php esc_html_e('Preview', 'geo-ads-pro'); ?></th>
-                            <th><?php esc_html_e('Size', 'geo-ads-pro'); ?></th>
-                            <th><?php esc_html_e('File', 'geo-ads-pro'); ?></th>
+                            <th class="gap-sortable" data-sort-key="region" data-sort-type="string"><?php esc_html_e('Region', 'geo-ads-pro'); ?> <span class="gap-sort-icon">⇅</span></th>
+                            <th class="gap-sortable" data-sort-key="size" data-sort-type="number"><?php esc_html_e('Size', 'geo-ads-pro'); ?> <span class="gap-sort-icon">⇅</span></th>
                             <th>ID</th>
-                            <th><?php esc_html_e('Select', 'geo-ads-pro'); ?></th>
                             <th><?php esc_html_e('Ad URL', 'geo-ads-pro'); ?></th>
                             <th><?php esc_html_e('Open in', 'geo-ads-pro'); ?></th>
                             <th><?php esc_html_e('Customer Email', 'geo-ads-pro'); ?></th>
+                            <th class="gap-sortable" data-sort-key="clicks" data-sort-type="number"><?php esc_html_e('Clicks', 'geo-ads-pro'); ?> <span class="gap-sort-icon">⇅</span></th>
+                            <th class="gap-sortable" data-sort-key="views" data-sort-type="number"><?php esc_html_e('Views', 'geo-ads-pro'); ?> <span class="gap-sort-icon">⇅</span></th>
                             <th><?php esc_html_e('Shortcode', 'geo-ads-pro'); ?></th>
-                            <th><?php esc_html_e('Action', 'geo-ads-pro'); ?></th>
+                            <th><?php esc_html_e('Delete', 'geo-ads-pro'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
-                    <?php if (!empty($banners)): ?>
-                        <?php foreach ($banners as $banner): ?>
-                            <tr class="gap-banner-main">
+                        <?php
+                        $has_banners = false;
+                        foreach ($regions as $region_name => $region_data):
+                            $banners = $region_data['banners'] ?? [];
+                            $region_url = trailingslashit($base_url) . rawurlencode(gap_region_folder_name($region_name));
+                            foreach ($banners as $banner):
+                                $has_banners = true;
+                                $stats = GAP()->analytics->get_banner_stats($banner['id']);
+                                $shortcode = '[geo_ads_pro mode="local" region="' . esc_attr($region_name) . '" banner_id="' . esc_attr($banner['id']) . '"]';
+                        ?>
+                            <tr class="gap-banner-main" data-region="<?php echo esc_attr($region_name); ?>" data-size="<?php echo esc_attr((int) $banner['width'] * (int) $banner['height']); ?>" data-clicks="<?php echo esc_attr(intval($stats['clicks'] ?? 0)); ?>" data-views="<?php echo esc_attr(intval($stats['impressions'] ?? 0)); ?>">
                                 <td><img src="<?php echo esc_url($region_url . '/' . rawurlencode(basename($banner['file']))); ?>" width="120" alt=""></td>
-                                <td><?php echo esc_html((int)$banner['width'] . 'x' . (int)$banner['height']); ?></td>
-                                <td><?php echo esc_html($banner['file']); ?></td>
+                                <td><?php echo esc_html($region_name); ?></td>
+                                <td><?php echo esc_html((int) $banner['width'] . 'x' . (int) $banner['height']); ?></td>
                                 <td><?php echo esc_html($banner['id']); ?></td>
-                                <td><input type="checkbox" name="gap_banner_select[]" value="<?php echo esc_attr($banner['id']); ?>" <?php checked(!empty($banner['selected'])); ?>></td>
-                                <td><input type="text" class="widefat" name="gap_banner_url[<?php echo esc_attr($banner['id']); ?>]" value="<?php echo esc_attr($banner['url'] ?? ''); ?>" placeholder="https://..."></td>
+                                <td>
+                                    <input type="text" class="widefat" name="gap_banner_url[<?php echo esc_attr($banner['id']); ?>]" value="<?php echo esc_attr($banner['url'] ?? ''); ?>" placeholder="https://...">
+                                    <input type="hidden" name="gap_banner_region[<?php echo esc_attr($banner['id']); ?>]" value="<?php echo esc_attr($region_name); ?>">
+                                </td>
                                 <td>
                                     <select name="gap_banner_link_target[<?php echo esc_attr($banner['id']); ?>]">
                                         <option value="_blank" <?php selected(($banner['link_target'] ?? '_blank'), '_blank'); ?>><?php esc_html_e('New tab', 'geo-ads-pro'); ?></option>
@@ -710,92 +892,35 @@ class Geo_Ads_Pro_Admin {
                                     </select>
                                 </td>
                                 <td><input type="email" class="widefat" name="gap_banner_email[<?php echo esc_attr($banner['id']); ?>]" value="<?php echo esc_attr($banner['customer_email'] ?? ''); ?>" placeholder="customer@example.com"></td>
-                                <td colspan="2"><button type="submit" name="gap_delete_banner" value="1" class="button button-link-delete" style="color: #bc0b0b; cursor: pointer;" onclick="if(confirm('<?php echo esc_js(__('Are you sure you want to delete this banner?', 'geo-ads-pro')); ?>')) { jQuery('#gap_delete_banner_id').val('<?php echo esc_attr($banner['id']); ?>'); return true; } return false;"><?php esc_html_e('Delete', 'geo-ads-pro'); ?></button></td>
+                                <td><?php echo intval($stats['clicks'] ?? 0); ?></td>
+                                <td><?php echo intval($stats['impressions'] ?? 0); ?></td>
+                                <td>
+                                    <span style="position:relative;display:inline-block;">
+                                        <input type="text" readonly value="<?php echo esc_attr($shortcode); ?>" onclick="this.select();document.execCommand('copy');var b=this.nextElementSibling;b.style.opacity=1;b.style.visibility='visible';setTimeout(function(){b.style.opacity=0;b.style.visibility='hidden';},1500);" style="font-family:monospace;font-size:11px;width:220px;cursor:pointer;background:#f6f7f7;" title="<?php esc_attr_e('Click to copy', 'geo-ads-pro'); ?>">
+                                        <span style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#1d2327;color:#fff;padding:4px 10px;border-radius:4px;font-size:12px;white-space:nowrap;opacity:0;visibility:hidden;transition:opacity .3s;pointer-events:none;"><?php esc_html_e('Copied!', 'geo-ads-pro'); ?></span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="button button-small gap-delete-banner-btn" data-id="<?php echo esc_attr($banner['id']); ?>" data-region="<?php echo esc_attr($region_name); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('gap_delete_banner_list_nonce')); ?>" style="color:#bc0b0b;" title="<?php esc_attr_e('Delete', 'geo-ads-pro'); ?>">
+                                        <span class="dashicons dashicons-trash" style="font-size:14px;width:14px;height:14px;line-height:14px;"></span>
+                                    </button>
+                                </td>
                             </tr>
-                            <tr class="gap-banner-shortcode">
-                                <td colspan="9" style="font-family:monospace; font-size:13px; background:#f6f6f7; padding:6px 10px;">[geo_ads_pro mode="local" region="<?php echo esc_attr($region); ?>" banner_id="<?php echo esc_attr($banner['id']); ?>"]</td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr><td colspan="9"><?php esc_html_e('There are no banners for this region yet.', 'geo-ads-pro'); ?></td></tr>
-                    <?php endif; ?>
+                        <?php
+                            endforeach;
+                        endforeach;
+                        ?>
+                        <?php if (!$has_banners): ?>
+                            <tr><td colspan="11"><?php esc_html_e('There are no banners uploaded yet.', 'geo-ads-pro'); ?></td></tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
 
-                <input type="hidden" name="gap_delete_banner_id" id="gap_delete_banner_id" value="0">
-                <input type="hidden" name="gap_delete_banner_nonce" value="<?php echo esc_attr(wp_create_nonce('gap_delete_banner_nonce')); ?>">
-
-                <br>
-                <button class="button button-primary" name="gap_save_selection"><?php esc_html_e('Save Selections', 'geo-ads-pro'); ?></button>
+                <?php if ($has_banners): ?>
+                    <br>
+                    <button class="button button-primary" name="gap_save_banner_list"><?php esc_html_e('Save Changes', 'geo-ads-pro'); ?></button>
+                <?php endif; ?>
             </form>
-
-            <?php else: ?>
-
-            <hr>
-
-            <h2><?php esc_html_e('Upload Banner', 'geo-ads-pro'); ?></h2>
-
-            <div class="gap-dropzone gap-dropzone-disabled" aria-disabled="true">
-                <div class="gap-dropzone-icon">+</div>
-                <div class="gap-dropzone-title"><?php esc_html_e('Add or select a region to upload banners.', 'geo-ads-pro'); ?></div>
-                <div class="gap-dropzone-text"><?php esc_html_e('The drag and drop upload area will appear here after a region is selected.', 'geo-ads-pro'); ?></div>
-            </div>
-
-            <?php endif; ?>
-
-            <hr>
-            <h2><?php esc_html_e('Banner → Region Assignment', 'geo-ads-pro'); ?></h2>
-
-            <table class="widefat striped">
-                <thead>
-                    <tr>
-                        <th><?php esc_html_e('Preview', 'geo-ads-pro'); ?></th>
-                        <th><?php esc_html_e('Region', 'geo-ads-pro'); ?></th>
-                        <th><?php esc_html_e('File', 'geo-ads-pro'); ?></th>
-                        <th><?php esc_html_e('Size', 'geo-ads-pro'); ?></th>
-                        <th>ID</th>
-                        <th><?php esc_html_e('Selected', 'geo-ads-pro'); ?></th>
-                        <th><?php esc_html_e('Ad URL', 'geo-ads-pro'); ?></th>
-                        <th><?php esc_html_e('Open in', 'geo-ads-pro'); ?></th>
-                        <th><?php esc_html_e('Customer Email', 'geo-ads-pro'); ?></th>
-                        <th><?php esc_html_e('Shortcode', 'geo-ads-pro'); ?></th>
-                        <th><?php esc_html_e('Action', 'geo-ads-pro'); ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $has_banners = false;
-                    foreach ($regions as $overview_region => $overview_data):
-                        $overview_banners = $overview_data['banners'] ?? [];
-                        $overview_region_url = trailingslashit($base_url) . rawurlencode(gap_region_folder_name($overview_region));
-                        foreach ($overview_banners as $overview_banner):
-                            $has_banners = true;
-                    ?>
-                        <tr class="gap-banner-main">
-                            <td><img src="<?php echo esc_url($overview_region_url . '/' . rawurlencode(basename($overview_banner['file']))); ?>" width="120" alt=""></td>
-                            <td><?php echo esc_html($overview_region); ?></td>
-                            <td><?php echo esc_html($overview_banner['file']); ?></td>
-                            <td><?php echo esc_html((int) $overview_banner['width'] . 'x' . (int) $overview_banner['height']); ?></td>
-                            <td><?php echo esc_html($overview_banner['id']); ?></td>
-                            <td><?php echo !empty($overview_banner['selected']) ? esc_html__('Yes', 'geo-ads-pro') : esc_html__('No', 'geo-ads-pro'); ?></td>
-                            <td><?php echo esc_html($overview_banner['url'] ?? ''); ?></td>
-                            <td><?php echo ($overview_banner['link_target'] ?? '_blank') === '_self' ? esc_html__('Same page', 'geo-ads-pro') : esc_html__('New tab', 'geo-ads-pro'); ?></td>
-                            <td><?php echo esc_html($overview_banner['customer_email'] ?? ''); ?></td>
-                            <td colspan="2"><form method="post" style="display:inline;"><input type="hidden" name="gap_selected_region" value="<?php echo esc_attr($overview_region); ?>"><button class="button" type="submit"><?php esc_html_e('Edit Region Banners', 'geo-ads-pro'); ?></button></form></td>
-                        </tr>
-                        <tr class="gap-banner-shortcode">
-                            <td colspan="10" style="font-family:monospace; font-size:13px; background:#f6f6f7; padding:6px 10px;">[geo_ads_pro mode="local" region="<?php echo esc_attr($overview_region); ?>" banner_id="<?php echo esc_attr($overview_banner['id']); ?>"]</td>
-                        </tr>
-                    <?php
-                        endforeach;
-                    endforeach;
-                    ?>
-                    <?php if (!$has_banners): ?>
-                        <tr><td colspan="10"><?php esc_html_e('There are no banners uploaded yet.', 'geo-ads-pro'); ?></td></tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-
         </div>
         <?php
     }

@@ -515,6 +515,9 @@ class Geo_Ads_Pro_Analytics {
     }
 
     public function handle_report_download_request() {
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('Access denied.', 'geo-ads-pro'));
+        }
         $token = sanitize_text_field($_GET['gap_report_download'] ?? '');
         if ($token === '') {
             return;
@@ -854,7 +857,7 @@ class Geo_Ads_Pro_Analytics {
     public function register_page() {
 
         add_submenu_page(
-            'geo-ads-pro-upload',
+            'geo-ads-pro-banners',
             __('Analytics', 'geo-ads-pro'),
             __('Analytics', 'geo-ads-pro'),
             'manage_options',
@@ -1019,7 +1022,16 @@ class Geo_Ads_Pro_Analytics {
                 </div>
             </details>
 
-            <canvas id="gapChart" width="800" height="400"></canvas>
+            <div class="gap-charts-row">
+                <div class="gap-chart-bar-col">
+                    <h3 style="margin:0 0 8px;"><?php esc_html_e('Banner Performance', 'geo-ads-pro'); ?></h3>
+                    <canvas id="gapChart" height="400" style="width:100%;"></canvas>
+                </div>
+                <div class="gap-chart-pie-col">
+                    <h3 id="gapPieChartTitle" style="margin:0 0 8px;"><?php esc_html_e('Visitors by City', 'geo-ads-pro'); ?></h3>
+                    <canvas id="gapPieChart" height="400" style="width:100%;"></canvas>
+                </div>
+            </div>
 
             <table class="widefat striped gap-analytics-table">
                 <thead>
@@ -1058,6 +1070,10 @@ class Geo_Ads_Pro_Analytics {
 
             <script>
                 window.GAP_ANALYTICS = <?php echo wp_json_encode($regions, JSON_UNESCAPED_UNICODE); ?>;
+                window.GAP_ANALYTICS_I18N = {
+                    byCity: <?php echo wp_json_encode(__('Visitors by City', 'geo-ads-pro')); ?>,
+                    byRegion: <?php echo wp_json_encode(__('Visitors by Region', 'geo-ads-pro')); ?>
+                };
             </script>
         </div>
         <?php
