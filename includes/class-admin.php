@@ -16,7 +16,7 @@ class Geo_Ads_Pro_Admin {
     public function register_menu() {
         add_menu_page(
             __('Banner List', 'geo-ads-pro'),
-            'Geo Ads Pro',
+            'die1-Geo Ads Pro',
             'manage_options',
             'geo-ads-pro-banners',
             [$this, 'render_banner_list_page'],
@@ -44,8 +44,8 @@ class Geo_Ads_Pro_Admin {
 
         add_submenu_page(
             'geo-ads-pro-banners',
-            __('Rotation Einstellungen', 'geo-ads-pro'),
-            __('Rotation Einstellungen', 'geo-ads-pro'),
+            __('Rotation Settings', 'geo-ads-pro'),
+            __('Rotation Settings', 'geo-ads-pro'),
             'manage_options',
             'geo-ads-pro-rotation',
             [$this, 'render_rotation_page']
@@ -54,7 +54,16 @@ class Geo_Ads_Pro_Admin {
 
     private function region_exists($region, $regions = null) {
         $regions = is_array($regions) ? $regions : $this->regions->get_all();
+        $region = Geo_Ads_Pro_Regions::normalize_region_input($region);
         return $region !== '' && array_key_exists($region, $regions);
+    }
+
+    private function is_unlimited_region($region) {
+        return Geo_Ads_Pro_Regions::is_unlimited_region($region);
+    }
+
+    private function region_display_name($region) {
+        return Geo_Ads_Pro_Regions::display_name($region);
     }
 
     // =========================================================================
@@ -109,7 +118,7 @@ class Geo_Ads_Pro_Admin {
         ?>
         <?php wp_nonce_field('gap_save_rotation_group_nonce'); ?>
         <div class="wrap gap-rotation-page">
-            <h1><?php esc_html_e('Rotation Einstellungen', 'geo-ads-pro'); ?></h1>
+            <h1><?php esc_html_e('Rotation Settings', 'geo-ads-pro'); ?></h1>
 
             <h2><?php esc_html_e('New Rotation Group', 'geo-ads-pro'); ?></h2>
 
@@ -198,7 +207,7 @@ class Geo_Ads_Pro_Admin {
             <hr>
 
             <!-- Bestehende Rotationsgruppen -->
-            <h2><?php esc_html_e('Rotated Banners (Multi language)', 'geo-ads-pro'); ?></h2>
+            <h2><?php esc_html_e('Rotated Banners', 'geo-ads-pro'); ?></h2>
 
             <?php if (!empty($all_groups)): ?>
                 <table class="widefat striped">
@@ -217,7 +226,9 @@ class Geo_Ads_Pro_Admin {
                                 <td><?php echo esc_html($group['name'] ?? ''); ?></td>
                                 <td><?php
                                     $group_regions = $group['regions'] ?? [$group['region'] ?? ''];
-                                    echo esc_html(implode(', ', array_filter($group_regions)));
+                                    $group_regions = array_filter($group_regions);
+                                    $group_regions = array_map([$this, 'region_display_name'], $group_regions);
+                                    echo esc_html(implode(', ', $group_regions));
                                 ?></td>
                                 <td><?php echo esc_html(count($group['banner_ids'] ?? [])); ?></td>
                                 <td style="font-family:monospace; font-size:14px;">
@@ -387,6 +398,7 @@ class Geo_Ads_Pro_Admin {
 
             foreach ($regions_to_delete as $r) {
                 if (!$this->region_exists($r, $regions)) continue;
+                if ($this->is_unlimited_region($r)) continue;
 
                 if ($archive) {
                     $rd = $this->regions->get_region($r);
@@ -399,7 +411,7 @@ class Geo_Ads_Pro_Admin {
                 $this->regions->delete_region($r);
                 $this->citymap->remove_region_mappings($r);
                 GAP()->analytics->delete_region($r);
-                $deleted[] = $r;
+                $deleted[] = $this->region_display_name($r);
             }
 
             if (!empty($deleted)) {
@@ -419,13 +431,17 @@ class Geo_Ads_Pro_Admin {
             }
             $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
             if ($this->region_exists($region, $regions)) {
+                if ($this->is_unlimited_region($region)) {
+                    echo '<div class="error"><p>' . esc_html__('The unlimited region is fixed and cannot be deleted.', 'geo-ads-pro') . '</p></div>';
+                } else {
                 $this->delete_region_directory($region, $base_dir);
                 $this->regions->delete_region($region);
                 $this->citymap->remove_region_mappings($region);
                 GAP()->analytics->delete_region($region);
-                echo '<div class="updated"><p>' . esc_html(sprintf(__('Region deleted: %s', 'geo-ads-pro'), $region)) . '</p></div>';
+                echo '<div class="updated"><p>' . esc_html(sprintf(__('Region deleted: %s', 'geo-ads-pro'), $this->region_display_name($region))) . '</p></div>';
                 $regions = $this->regions->get_all();
                 $_POST['gap_selected_region'] = '';
+                }
             } else {
                 echo '<div class="error"><p>' . esc_html__('Region not found.', 'geo-ads-pro') . '</p></div>';
             }
@@ -508,12 +524,16 @@ class Geo_Ads_Pro_Admin {
             $region = sanitize_text_field($_POST['gap_selected_region'] ?? '');
             if ($this->region_exists($region, $regions)) {
                 $region_data = $this->regions->get_region($region);
-                $coords = gap_geocode_region_center($region);
-                $this->regions->update_region_targeting($region, [
-                    'latitude'  => $coords['latitude'] ?? ($region_data['latitude'] ?? 0),
-                    'longitude' => $coords['longitude'] ?? ($region_data['longitude'] ?? 0),
-                    'radius_km' => max(0, min(99999, floatval($_POST['gap_region_radius_km'] ?? '0'))),
-                ]);
+                if ($this->is_unlimited_region($region)) {
+                    $this->regions->update_region_targeting($region, []);
+                } else {
+                    $coords = gap_geocode_region_center($region);
+                    $this->regions->update_region_targeting($region, [
+                        'latitude'  => $coords['latitude'] ?? ($region_data['latitude'] ?? 0),
+                        'longitude' => $coords['longitude'] ?? ($region_data['longitude'] ?? 0),
+                        'radius_km' => max(0, min(99999, floatval($_POST['gap_region_radius_km'] ?? '0'))),
+                    ]);
+                }
                 echo '<div class="updated"><p>' . esc_html__('Region targeting saved.', 'geo-ads-pro') . '</p></div>';
                 $regions = $this->regions->get_all();
             }
@@ -612,7 +632,7 @@ class Geo_Ads_Pro_Admin {
 
         // Boş durumda ilk region'u otomatik seç
         if ($selected_region === '' && !empty($regions)) {
-            $selected_region = array_key_first($regions);
+            $selected_region = Geo_Ads_Pro_Regions::unlimited_region_key();
         }
 
         $this->render_page_content($selected_region, $regions, $base_dir, $base_url);
@@ -625,7 +645,7 @@ class Geo_Ads_Pro_Admin {
     private function render_page_content($selected_region, $regions, $base_dir, $base_url) {
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Geo Ads Pro – Regions & Banner Management', 'geo-ads-pro'); ?></h1>
+            <h1><?php esc_html_e('die1-Geo Ads Pro – Regions & Banner Management', 'geo-ads-pro'); ?></h1>
 
             <h2><?php esc_html_e('Add Region', 'geo-ads-pro'); ?></h2>
             <form method="post">
@@ -645,20 +665,24 @@ class Geo_Ads_Pro_Admin {
             <div class="gap-region-picker-row">
                 <div class="gap-region-picker" id="gap_region_picker" data-no-selection="<?php echo esc_attr(__('Please select at least one region to delete.', 'geo-ads-pro')); ?>">
                     <div class="gap-region-picker-toggle" id="gap_region_picker_toggle">
-                        <span class="gap-region-picker-label"><?php echo esc_html($selected_region !== '' ? $selected_region : __('Select a region', 'geo-ads-pro')); ?></span>
+                        <span class="gap-region-picker-label"><?php echo esc_html($selected_region !== '' ? $this->region_display_name($selected_region) : __('Select a region', 'geo-ads-pro')); ?></span>
                         <span class="gap-region-picker-arrow">▾</span>
                     </div>
                     <div class="gap-region-picker-dropdown" id="gap_region_picker_dropdown">
                         <?php foreach ($regions as $region => $data): ?>
-                            <div class="gap-region-picker-item<?php echo $selected_region === $region ? ' active' : ''; ?>" data-region="<?php echo esc_attr($region); ?>">
-                                <input type="checkbox" class="gap-region-check" value="<?php echo esc_attr($region); ?>" onclick="event.stopPropagation();">
-                                <span class="gap-region-item-name"><?php echo esc_html($region); ?></span>
+                            <div class="gap-region-picker-item<?php echo $selected_region === $region ? ' active' : ''; ?><?php echo $this->is_unlimited_region($region) ? ' is-fixed' : ''; ?>" data-region="<?php echo esc_attr($region); ?>">
+                                <?php if (!$this->is_unlimited_region($region)): ?>
+                                    <input type="checkbox" class="gap-region-check" value="<?php echo esc_attr($region); ?>" onclick="event.stopPropagation();">
+                                <?php else: ?>
+                                    <input type="checkbox" class="gap-region-check" value="<?php echo esc_attr($region); ?>" disabled aria-disabled="true">
+                                <?php endif; ?>
+                                <span class="gap-region-item-name"><?php echo esc_html($this->region_display_name($region)); ?></span>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
 
-                <button type="button" class="gap-region-delete-btn" id="gap_delete_regions_btn">
+                <button type="button" class="gap-region-delete-btn" id="gap_delete_regions_btn"<?php disabled($this->is_unlimited_region($selected_region)); ?>>
                     <?php esc_html_e('Delete This Region', 'geo-ads-pro'); ?>
                 </button>
             </div>
@@ -689,35 +713,43 @@ class Geo_Ads_Pro_Admin {
                 $region_url = trailingslashit($base_url) . rawurlencode(gap_region_folder_name($region));
                 $region_data = $this->regions->get_region($region);
                 $banners = $region_data['banners'] ?? [];
+                $is_unlimited_region = $this->is_unlimited_region($region);
             ?>
 
             <hr>
 
-            <h2><?php esc_html_e('Region Radius Targeting', 'geo-ads-pro'); ?></h2>
-            <form method="post" style="max-width: 760px;">
-                <?php wp_nonce_field('gap_region_targeting_nonce'); ?>
-                <input type="hidden" name="gap_selected_region" value="<?php echo esc_attr($region); ?>">
-                <div style="display:grid; grid-template-columns:minmax(0, 1fr); gap:12px; margin-bottom:12px;">
-                    <label style="display:block; font-weight:600;">
-                        <?php esc_html_e('Radius km', 'geo-ads-pro'); ?>
-                        <input class="widefat" type="number" min="0" step="0.1" name="gap_region_radius_km" value="<?php echo esc_attr($region_data['radius_km'] ?? ''); ?>">
-                    </label>
-                </div>
+            <?php if ($is_unlimited_region): ?>
+                <h2><?php esc_html_e('Region Radius Targeting', 'geo-ads-pro'); ?></h2>
                 <p class="description">
-                    <?php
-                    printf(
-                        esc_html__('Used when Settings → Local Targeting Method is set to radius matching. Coordinates are resolved automatically from the region name. Current center: %1$s, %2$s', 'geo-ads-pro'),
-                        esc_html($region_data['latitude'] ?? '-'),
-                        esc_html($region_data['longitude'] ?? '-')
-                    );
-                    ?>
+                    <?php esc_html_e('The unlimited region is always available and does not use radius targeting.', 'geo-ads-pro'); ?>
                 </p>
-                <button class="button button-secondary" name="gap_save_region_targeting"><?php esc_html_e('Save Region Targeting', 'geo-ads-pro'); ?></button>
-            </form>
+            <?php else: ?>
+                <h2><?php esc_html_e('Region Radius Targeting', 'geo-ads-pro'); ?></h2>
+                <form method="post" style="max-width: 760px;">
+                    <?php wp_nonce_field('gap_region_targeting_nonce'); ?>
+                    <input type="hidden" name="gap_selected_region" value="<?php echo esc_attr($region); ?>">
+                    <div style="display:grid; grid-template-columns:minmax(0, 1fr); gap:12px; margin-bottom:12px;">
+                        <label style="display:block; font-weight:600;">
+                            <?php esc_html_e('Radius km', 'geo-ads-pro'); ?>
+                            <input class="widefat" type="number" min="0" step="0.1" name="gap_region_radius_km" value="<?php echo esc_attr($region_data['radius_km'] ?? ''); ?>">
+                        </label>
+                    </div>
+                    <p class="description">
+                        <?php
+                        printf(
+                            esc_html__('Used when Settings → Local Targeting Method is set to radius matching. Coordinates are resolved automatically from the region name. Current center: %1$s, %2$s', 'geo-ads-pro'),
+                            esc_html($region_data['latitude'] ?? '-'),
+                            esc_html($region_data['longitude'] ?? '-')
+                        );
+                        ?>
+                    </p>
+                    <button class="button button-secondary" name="gap_save_region_targeting"><?php esc_html_e('Save Region Targeting', 'geo-ads-pro'); ?></button>
+                </form>
+            <?php endif; ?>
 
             <hr>
 
-            <h2><?php echo esc_html(sprintf(__('%s Region – Upload Banner', 'geo-ads-pro'), $region)); ?></h2>
+            <h2><?php echo esc_html(sprintf(__('%s Region – Upload Banner', 'geo-ads-pro'), $this->region_display_name($region))); ?></h2>
 
             <form method="post" enctype="multipart/form-data" class="gap-upload-form">
                 <?php wp_nonce_field('gap_upload_banner_nonce'); ?>
@@ -855,7 +887,7 @@ class Geo_Ads_Pro_Admin {
                             <th><?php esc_html_e('Preview', 'geo-ads-pro'); ?></th>
                             <th class="gap-sortable" data-sort-key="region" data-sort-type="string"><?php esc_html_e('Region', 'geo-ads-pro'); ?> <span class="gap-sort-icon">⇅</span></th>
                             <th class="gap-sortable" data-sort-key="size" data-sort-type="number"><?php esc_html_e('Size', 'geo-ads-pro'); ?> <span class="gap-sort-icon">⇅</span></th>
-                            <th>ID</th>
+                            <th><?php esc_html_e('ID', 'geo-ads-pro'); ?></th>
                             <th><?php esc_html_e('Ad URL', 'geo-ads-pro'); ?></th>
                             <th><?php esc_html_e('Open in', 'geo-ads-pro'); ?></th>
                             <th><?php esc_html_e('Customer Email', 'geo-ads-pro'); ?></th>
@@ -878,7 +910,7 @@ class Geo_Ads_Pro_Admin {
                         ?>
                             <tr class="gap-banner-main" data-region="<?php echo esc_attr($region_name); ?>" data-size="<?php echo esc_attr((int) $banner['width'] * (int) $banner['height']); ?>" data-clicks="<?php echo esc_attr(intval($stats['clicks'] ?? 0)); ?>" data-views="<?php echo esc_attr(intval($stats['impressions'] ?? 0)); ?>">
                                 <td><img src="<?php echo esc_url($region_url . '/' . rawurlencode(basename($banner['file']))); ?>" width="120" alt=""></td>
-                                <td><?php echo esc_html($region_name); ?></td>
+                                <td><?php echo esc_html($this->region_display_name($region_name)); ?></td>
                                 <td><?php echo esc_html((int) $banner['width'] . 'x' . (int) $banner['height']); ?></td>
                                 <td><?php echo esc_html($banner['id']); ?></td>
                                 <td>

@@ -1,302 +1,826 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Geo Ads Pro 1.0.4\n"
+"Project-Id-Version: die1-Geo Ads Pro 1.0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-12 02:01+0200\n"
 "PO-Revision-Date: 2026-06-06 00:00+0000\n"
 "Last-Translator: Levent Cetin - 3CCS.com\n"
 "Language-Team: English\n"
 "Language: en_US\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: geo-ads-pro\n"
 
-msgid "%s Region – Upload Banner"
-msgstr "%s Region – Upload Banner"
+#: geo-ads-pro.php:96
+msgid "View ad"
+msgstr "View ad"
 
+#: geo-ads-pro.php:97
+msgid "No banner available."
+msgstr "No banner available."
+
+#: geo-ads-pro.php:162
+msgid "Please select at least 2 banners."
+msgstr "Please select at least 2 banners."
+
+#: geo-ads-pro.php:163
+msgid "Please enter a group name."
+msgstr "Please enter a group name."
+
+#: geo-ads-pro.php:164
+msgid "Security field missing. Please reload."
+msgstr "Security field missing. Please reload."
+
+#: geo-ads-pro.php:165
+msgid "Security nonce has no value. Please reload."
+msgstr "Security nonce has no value. Please reload."
+
+#: geo-ads-pro.php:166 geo-ads-pro.php:182
+msgid "Please select at least one region."
+msgstr "Please select at least one region."
+
+#: geo-ads-pro.php:167
+#, php-format
+msgid "Banner #%s"
+msgstr "Banner #%s"
+
+#: geo-ads-pro.php:181
+msgid "Are you sure?"
+msgstr "Are you sure?"
+
+#: includes/class-abtest.php:21 includes/class-abtest.php:22
 msgid "A/B Test"
 msgstr "A/B Test"
 
-msgid "A/B Test Auto Optimization"
-msgstr "A/B Test Auto Optimization"
-
-msgid "Action"
-msgstr "Action"
-
-msgid "Add"
-msgstr "Add"
-
-msgid "Add Region"
-msgstr "Add Region"
-
-msgid "Analytics"
-msgstr "Analytics"
-
-msgid "Analytics data reset."
-msgstr "Analytics data reset."
-
-msgid "Are you sure you want to delete this banner?"
-msgstr "Are you sure you want to delete this banner?"
-
-msgid "Are you sure you want to delete this region and all its banners?"
-msgstr "Are you sure you want to delete this region and all its banners?"
-
-msgid "Automatically select the banner with the highest CTR"
-msgstr "Automatically select the banner with the highest CTR"
-
-msgid "Banner List"
-msgstr "Banner List"
-
-msgid "Banner Rotation Mode"
-msgstr "Banner Rotation Mode"
-
-msgid "Banner → Region Assignment"
-msgstr "Banner → Region Assignment"
-
-msgid "Banner could not be deleted."
-msgstr "Banner could not be deleted."
-
-msgid "Banner deleted."
-msgstr "Banner deleted."
-
-msgid "Banner uploaded."
-msgstr "Banner uploaded."
-
-msgid "%d banner uploaded."
-msgid_plural "%d banners uploaded."
-msgstr[0] "%d banner uploaded."
-msgstr[1] "%d banners uploaded."
-
-msgid "Banners with the same size are automatically grouped as variants."
-msgstr "Banners with the same size are automatically grouped as variants."
-
-msgid "City"
-msgstr "City"
-
-msgid "City mapped: %1$s → %2$s"
-msgstr "City mapped: %1$s → %2$s"
-
-msgid "City mapping could not be updated."
-msgstr "City mapping could not be updated."
-
-msgid "City mapping deleted: %s"
-msgstr "City mapping deleted: %s"
-
-msgid "City mapping updated: %s"
-msgstr "City mapping updated: %s"
-
-msgid "City name (example: Düsseldorf)"
-msgstr "City name (example: Düsseldorf)"
-
-msgid "City → Region Mapping"
-msgstr "City → Region Mapping"
-
-msgid "Click URL"
-msgstr "Click URL"
-
-msgid "Clicks"
-msgstr "Clicks"
-
-msgid "Current Mappings"
-msgstr "Current Mappings"
-
-msgid "Default Region"
-msgstr "Default Region"
-
-msgid "Delete"
-msgstr "Delete"
-
-msgid "Delete This Region"
-msgstr "Delete This Region"
-
-msgid "Delete this city mapping?"
-msgstr "Delete this city mapping?"
-
-msgid "Displays region-based banners."
-msgstr "Displays region-based banners."
-
-msgid "Edit Region Banners"
-msgstr "Edit Region Banners"
-
-msgid "Enable IP-based city → region mapping"
-msgstr "Enable IP-based city → region mapping"
-
-msgid "Example: NRW, Istanbul, Bayern"
-msgstr "Example: NRW, Istanbul, Bayern"
-
-msgid "File"
-msgstr "File"
-
-msgid "Geo Ads Pro Widget"
-msgstr "Geo Ads Pro Widget"
-
-msgid "Geo Ads Pro – A/B Test System"
-msgstr "Geo Ads Pro – A/B Test System"
-
-msgid "Geo Ads Pro – Analytics"
-msgstr "Geo Ads Pro – Analytics"
-
-msgid "Geo Ads Pro – Regions & Banner Management"
-msgstr "Geo Ads Pro – Regions & Banner Management"
-
-msgid "Geo Ads Pro – Settings"
-msgstr "Geo Ads Pro – Settings"
-
-msgid "Invalid file type."
-msgstr "Invalid file type."
-
-msgid "Invalid request."
-msgstr "Invalid request."
-
-msgid "Impressions"
-msgstr "Impressions"
-
-msgid "Last Upgrade"
-msgstr "Last Upgrade"
-
-msgid "Local (IP)"
-msgstr "Local (IP)"
-
-msgid "Local Mode (IP Based)"
-msgstr "Local Mode (IP Based)"
-
-msgid "Location Mode:"
-msgstr "Location Mode:"
-
-msgid "No region selected."
-msgstr "No region selected."
-
-msgid "No"
-msgstr "No"
-
-msgid "No analytics data yet."
-msgstr "No analytics data yet."
-
-msgid "Plugin Version"
-msgstr "Plugin Version"
-
-msgid "Preview"
-msgstr "Preview"
-
-msgid "Random"
-msgstr "Random"
-
-msgid "Rate limit exceeded."
-msgstr "Rate limit exceeded."
-
-msgid "Region"
-msgstr "Region"
-
-msgid "Region added: %s"
-msgstr "Region added: %s"
-
-msgid "Region deleted: %s"
-msgstr "Region deleted: %s"
-
-msgid "Region in Global Mode:"
-msgstr "Region in Global Mode:"
-
-msgid "Region not found."
-msgstr "Region not found."
-
-msgid "Remove banner files, JSON data, and settings when the plugin is deleted"
-msgstr "Remove banner files, JSON data, and settings when the plugin is deleted"
-
-msgid "Reset Analytics Data"
-msgstr "Reset Analytics Data"
-
-msgid "Reset analytics data?"
-msgstr "Reset analytics data?"
-
-msgid "Save Selections"
-msgstr "Save Selections"
-
-msgid "Save Settings"
-msgstr "Save Settings"
-
-msgid "Schema Version"
-msgstr "Schema Version"
-
-msgid "Select"
-msgstr "Select"
-
-msgid "Selected"
-msgstr "Selected"
-
-msgid "Select Region"
-msgstr "Select Region"
-
-msgid "Select a region"
-msgstr "Select a region"
-
-msgid "Select or drop banner images"
-msgstr "Select or drop banner images"
-
-msgid "Selections and URLs saved."
-msgstr "Selections and URLs saved."
-
-msgid "Sequential"
-msgstr "Sequential"
-
-msgid "Settings"
-msgstr "Settings"
-
-msgid "Size"
-msgstr "Size"
-
-msgid "There are no banners for this region yet."
-msgstr "There are no banners for this region yet."
-
-msgid "There are no banners uploaded yet."
-msgstr "There are no banners uploaded yet."
-
-msgid "Drop banner images here"
-msgstr "Drop banner images here"
-
-msgid "or click to choose JPG, PNG, GIF, or WebP files"
-msgstr "or click to choose JPG, PNG, GIF, or WebP files"
-
-msgid "There are no mappings yet."
-msgstr "There are no mappings yet."
-
-msgid "This screen displays click and impression statistics."
-msgstr "This screen displays click and impression statistics."
-
-msgid "Title:"
-msgstr "Title:"
-
-msgid "Uninstall Cleanup"
-msgstr "Uninstall Cleanup"
-
-msgid "Update"
-msgstr "Update"
-
-msgid "Upload"
-msgstr "Upload"
-
-msgid "Upload Banner"
-msgstr "Upload Banner"
-
-msgid "Add or select a region to upload banners."
-msgstr "Add or select a region to upload banners."
-
-msgid "The drag and drop upload area will appear here after a region is selected."
-msgstr "The drag and drop upload area will appear here after a region is selected."
-
-msgid "Upload error."
-msgstr "Upload error."
-
-msgid "Upload / Edit Banners"
-msgstr "Upload / Edit Banners"
-
-msgid "Variants"
-msgstr "Variants"
-
-msgid "Winner"
-msgstr "Winner"
-
+#: includes/class-abtest.php:32 includes/class-admin.php:74
+#: includes/class-admin.php:381 includes/class-admin.php:817
+#: includes/class-analytics.php:869 includes/class-settings.php:43
 msgid "You do not have permission."
 msgstr "You do not have permission."
 
-msgid "Yes"
-msgstr "Yes"
+#: includes/class-abtest.php:39
+msgid "die1-Geo Ads Pro – A/B Test System"
+msgstr "die1-Geo Ads Pro – A/B Test System"
+
+#: includes/class-abtest.php:42
+msgid "What is the A/B Test System?"
+msgstr "What is the A/B Test System?"
+
+#: includes/class-abtest.php:43
+msgid ""
+"The A/B Test System automatically compares banners of the same size within "
+"the same region. It measures which banner gets more clicks and declares the "
+"best-performing one as the \"Winner\"."
+msgstr ""
+"The A/B Test System automatically compares banners of the same size within "
+"the same region. It measures which banner gets more clicks and declares the "
+"best-performing one as the \"Winner\"."
+
+#: includes/class-abtest.php:44
+msgid ""
+"CTR (Click-Through Rate) = Number of Clicks ÷ Number of Impressions × 100. "
+"Example: If a banner was shown 1,000 times and clicked 20 times, the CTR is "
+"2%. The higher the CTR, the more effective the banner."
+msgstr ""
+"CTR (Click-Through Rate) = Number of Clicks ÷ Number of Impressions × 100. "
+"Example: If a banner was shown 1,000 times and clicked 20 times, the CTR is "
+"2%. The higher the CTR, the more effective the banner."
+
+#: includes/class-abtest.php:51 includes/class-admin.php:216
+#: includes/class-admin.php:887 includes/class-analytics.php:1036
+msgid "Region"
+msgstr "Region"
+
+#: includes/class-abtest.php:52
+msgid "The geographic area where the banner is displayed."
+msgstr "The geographic area where the banner is displayed."
+
+#: includes/class-abtest.php:55 includes/class-admin.php:888
+msgid "Size"
+msgstr "Size"
+
+#: includes/class-abtest.php:56
+msgid ""
+"Banner dimensions (width × height in pixels). Banners with the same size are "
+"compared against each other."
+msgstr ""
+"Banner dimensions (width × height in pixels). Banners with the same size are "
+"compared against each other."
+
+#: includes/class-abtest.php:59
+msgid "Variants"
+msgstr "Variants"
+
+#: includes/class-abtest.php:60
+msgid ""
+"All competing banners in this group. Each banner's ID and CTR (click rate) "
+"is shown."
+msgstr ""
+"All competing banners in this group. Each banner's ID and CTR (click rate) "
+"is shown."
+
+#: includes/class-abtest.php:63
+msgid "Winner"
+msgstr "Winner"
+
+#: includes/class-abtest.php:64
+msgid ""
+"The banner with the highest CTR – the most effective banner in this group."
+msgstr ""
+"The banner with the highest CTR - the most effective banner in this group."
+
+#: includes/class-abtest.php:111 includes/class-abtest.php:120
+#: includes/class-admin.php:889 includes/class-analytics.php:1037
+msgid "ID"
+msgstr "ID"
+
+#: includes/class-abtest.php:112 includes/class-analytics.php:1042
+msgid "CTR"
+msgstr "CTR"
+
+#: includes/class-admin.php:18 includes/class-admin.php:29
+#: includes/class-admin.php:30 includes/class-admin.php:878
+msgid "Banner List"
+msgstr "Banner List"
+
+#: includes/class-admin.php:38 includes/class-admin.php:39
+msgid "Regions & Upload"
+msgstr "Regions & Upload"
+
+#: includes/class-admin.php:47 includes/class-admin.php:48
+#: includes/class-admin.php:120
+msgid "Rotation Settings"
+msgstr "Rotation Settings"
+
+#: includes/class-admin.php:84 includes/class-admin.php:108
+#: includes/class-admin.php:392 includes/class-admin.php:429
+#: includes/class-admin.php:452 includes/class-admin.php:485
+#: includes/class-admin.php:520 includes/class-admin.php:545
+#: includes/class-admin.php:589 includes/class-analytics.php:877
+#: includes/class-settings.php:49
+msgid "Invalid request."
+msgstr "Invalid request."
+
+#: includes/class-admin.php:99
+#, php-format
+msgid "Rotation Group %d"
+msgstr "Rotation Group %d"
+
+#: includes/class-admin.php:102
+msgid "Rotation group saved."
+msgstr "Rotation group saved."
+
+#: includes/class-admin.php:112
+msgid "Rotation group deleted."
+msgstr "Rotation group deleted."
+
+#: includes/class-admin.php:122
+msgid "New Rotation Group"
+msgstr "New Rotation Group"
+
+#: includes/class-admin.php:128
+msgid "Filter by Region"
+msgstr "Filter by Region"
+
+#: includes/class-admin.php:131
+msgid "All Banners"
+msgstr "All Banners"
+
+#: includes/class-admin.php:155
+msgid "Rotation Group Members"
+msgstr "Rotation Group Members"
+
+#: includes/class-admin.php:164
+msgid "Drag banners here to add them to the rotation group."
+msgstr "Drag banners here to add them to the rotation group."
+
+#: includes/class-admin.php:170 includes/class-admin.php:659
+msgid "Select Region"
+msgstr "Select Region"
+
+#: includes/class-admin.php:174
+msgid "Select regions…"
+msgstr "Select regions…"
+
+#: includes/class-admin.php:188 includes/class-admin.php:215
+msgid "Group Name"
+msgstr "Group Name"
+
+#: includes/class-admin.php:190
+msgid "e.g. Stuttgart Summer Rotation"
+msgstr "e.g. Stuttgart Summer Rotation"
+
+#: includes/class-admin.php:193
+msgid "Create Rotate Group"
+msgstr "Create Rotate Group"
+
+#: includes/class-admin.php:198 includes/class-admin.php:218
+#: includes/class-admin.php:895 includes/class-widget.php:74
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: includes/class-admin.php:201
+msgid "Copy this shortcode and paste it on your page."
+msgstr "Copy this shortcode and paste it on your page."
+
+#: includes/class-admin.php:209
+msgid "Rotated Banners"
+msgstr "Rotated Banners"
+
+#: includes/class-admin.php:217
+msgid "Banner Count"
+msgstr "Banner Count"
+
+#: includes/class-admin.php:219
+msgid "Action"
+msgstr "Action"
+
+#: includes/class-admin.php:237
+msgid "Delete this rotation group?"
+msgstr "Delete this rotation group?"
+
+#: includes/class-admin.php:240 includes/class-admin.php:896
+#: includes/class-admin.php:935
+msgid "Delete"
+msgstr "Delete"
+
+#: includes/class-admin.php:248
+msgid "No rotation groups created yet."
+msgstr "No rotation groups created yet."
+
+#: includes/class-admin.php:345
+msgid "Upload error."
+msgstr "Upload error."
+
+#: includes/class-admin.php:351
+msgid "Invalid file type."
+msgstr "Invalid file type."
+
+#: includes/class-admin.php:418
+#, php-format
+msgid "Region(s) deleted, banners archived to Media Library: %s"
+msgstr "Region(s) deleted, banners archived to Media Library: %s"
+
+#: includes/class-admin.php:419
+#, php-format
+msgid "Region(s) and banners deleted: %s"
+msgstr "Region(s) and banners deleted: %s"
+
+#: includes/class-admin.php:434
+msgid "The unlimited region is fixed and cannot be deleted."
+msgstr "The unlimited region is fixed and cannot be deleted."
+
+#: includes/class-admin.php:440
+#, php-format
+msgid "Region deleted: %s"
+msgstr "Region deleted: %s"
+
+#: includes/class-admin.php:445
+msgid "Region not found."
+msgstr "Region not found."
+
+#: includes/class-admin.php:474 includes/class-admin.php:872
+msgid "Banner deleted."
+msgstr "Banner deleted."
+
+#: includes/class-admin.php:477
+msgid "Banner could not be deleted."
+msgstr "Banner could not be deleted."
+
+#: includes/class-admin.php:510
+#, php-format
+msgid "Region added: %s"
+msgstr "Region added: %s"
+
+#: includes/class-admin.php:536
+msgid "Region targeting saved."
+msgstr "Region targeting saved."
+
+#: includes/class-admin.php:550
+msgid "No region selected."
+msgstr "No region selected."
+
+#: includes/class-admin.php:626
+msgid "Selections, URLs, and customer emails saved."
+msgstr "Selections, URLs, and customer emails saved."
+
+#: includes/class-admin.php:647
+msgid "die1-Geo Ads Pro – Regions & Banner Management"
+msgstr "die1-Geo Ads Pro – Regions & Banner Management"
+
+#: includes/class-admin.php:649
+msgid "Add Region"
+msgstr "Add Region"
+
+#: includes/class-admin.php:652
+msgid "Example: NRW, Istanbul, Bayern"
+msgstr "Example: NRW, Istanbul, Bayern"
+
+#: includes/class-admin.php:653 includes/class-admin.php:732
+msgid "Radius km"
+msgstr "Radius km"
+
+#: includes/class-admin.php:654
+msgid "Add"
+msgstr "Add"
+
+#: includes/class-admin.php:665
+msgid "Please select at least one region to delete."
+msgstr "Please select at least one region to delete."
+
+#: includes/class-admin.php:667
+msgid "Select a region"
+msgstr "Select a region"
+
+#: includes/class-admin.php:685
+msgid "Delete This Region"
+msgstr "Delete This Region"
+
+#: includes/class-admin.php:690
+msgid ""
+"When you delete the selected region(s) ({regions}), all banners belonging to "
+"those regions will also be deleted automatically. Would you like to archive "
+"the banners to the Media Library instead?"
+msgstr ""
+"When you delete the selected region(s) ({regions}), all banners belonging to "
+"those regions will also be deleted automatically. Would you like to archive "
+"the banners to the Media Library instead?"
+
+#: includes/class-admin.php:699
+msgid "Yes, archive"
+msgstr "Yes, archive"
+
+#: includes/class-admin.php:700
+msgid "No, delete"
+msgstr "No, delete"
+
+#: includes/class-admin.php:701
+msgid "Cancel"
+msgstr "Cancel"
+
+#: includes/class-admin.php:721 includes/class-admin.php:726
+msgid "Region Radius Targeting"
+msgstr "Region Radius Targeting"
+
+#: includes/class-admin.php:723
+msgid ""
+"The unlimited region is always available and does not use radius targeting."
+msgstr "The unlimited region is always available and does not use radius targeting."
+
+#: includes/class-admin.php:739
+#, php-format
+msgid ""
+"Used when Settings → Local Targeting Method is set to radius matching. "
+"Coordinates are resolved automatically from the region name. Current center: "
+"%1$s, %2$s"
+msgstr ""
+"Used when Settings → Local Targeting Method is set to radius matching. "
+"Coordinates are resolved automatically from the region name. Current center: "
+"%1$s, %2$s"
+
+#: includes/class-admin.php:745
+msgid "Save Region Targeting"
+msgstr "Save Region Targeting"
+
+#: includes/class-admin.php:751
+#, php-format
+msgid "%s Region – Upload Banner"
+msgstr "%s Region – Upload Banner"
+
+#: includes/class-admin.php:758 includes/class-admin.php:892
+#: includes/class-analytics.php:994 includes/class-analytics.php:1039
+msgid "Customer Email"
+msgstr "Customer Email"
+
+#: includes/class-admin.php:766
+msgid "Monthly CSV reports can be sent to this email address."
+msgstr "Monthly CSV reports can be sent to this email address."
+
+#: includes/class-admin.php:771 includes/class-admin.php:890
+#: includes/class-widget.php:240
+msgid "Ad URL"
+msgstr "Ad URL"
+
+#: includes/class-admin.php:779
+msgid "The URL that the banner links to when clicked."
+msgstr "The URL that the banner links to when clicked."
+
+#: includes/class-admin.php:784 includes/class-admin.php:891
+msgid "Open in"
+msgstr "Open in"
+
+#: includes/class-admin.php:788 includes/class-admin.php:921
+msgid "New tab"
+msgstr "New tab"
+
+#: includes/class-admin.php:792 includes/class-admin.php:922
+msgid "Same page"
+msgstr "Same page"
+
+#: includes/class-admin.php:795
+msgid "Select or drop banner images"
+msgstr "Select or drop banner images"
+
+#: includes/class-admin.php:798
+msgid "Drop banner images here"
+msgstr "Drop banner images here"
+
+#: includes/class-admin.php:799
+msgid "or click to choose JPG, PNG, GIF, or WebP files"
+msgstr "or click to choose JPG, PNG, GIF, or WebP files"
+
+#: includes/class-admin.php:802
+msgid "Upload"
+msgstr "Upload"
+
+#: includes/class-admin.php:847
+msgid "Banner list saved."
+msgstr "Banner list saved."
+
+#: includes/class-admin.php:886
+msgid "Preview"
+msgstr "Preview"
+
+#: includes/class-admin.php:893 includes/class-analytics.php:1041
+msgid "Clicks"
+msgstr "Clicks"
+
+#: includes/class-admin.php:894
+msgid "Views"
+msgstr "Views"
+
+#: includes/class-admin.php:930
+msgid "Click to copy"
+msgstr "Click to copy"
+
+#: includes/class-admin.php:931
+msgid "Copied!"
+msgstr "Copied!"
+
+#: includes/class-admin.php:945
+msgid "There are no banners uploaded yet."
+msgstr "There are no banners uploaded yet."
+
+#: includes/class-admin.php:952
+msgid "Save Changes"
+msgstr "Save Changes"
+
+#: includes/class-analytics.php:348
+msgid "Unknown"
+msgstr "Unknown"
+
+#: includes/class-analytics.php:472
+msgid "A valid email address is required."
+msgstr "A valid email address is required."
+
+#: includes/class-analytics.php:478
+msgid "Could not create a temporary report file."
+msgstr "Could not create a temporary report file."
+
+#: includes/class-analytics.php:489
+#, php-format
+msgid "die1-Geo Ads Pro Monthly Report (%s)"
+msgstr "die1-Geo Ads Pro Monthly Report (%s)"
+
+#: includes/class-analytics.php:498
+msgid "The email could not be sent."
+msgstr "The email could not be sent."
+
+#: includes/class-analytics.php:525
+msgid "Report link expired or invalid."
+msgstr "Report link expired or invalid."
+
+#: includes/class-analytics.php:546
+msgid "No banner image attachments were available for this report."
+msgstr "No banner image attachments were available for this report."
+
+#: includes/class-analytics.php:551
+msgid "die1-Geo Ads Pro Monthly Report"
+msgstr "die1-Geo Ads Pro Monthly Report"
+
+#: includes/class-analytics.php:552
+#, php-format
+msgid "Your monthly CSV report for %s is ready."
+msgstr "Your monthly CSV report for %s is ready."
+
+#: includes/class-analytics.php:556 includes/class-analytics.php:982
+msgid "Download CSV"
+msgstr "Download CSV"
+
+#: includes/class-analytics.php:561
+msgid "Banner Previews"
+msgstr "Banner Previews"
+
+#: includes/class-analytics.php:565
+msgid "Best regards."
+msgstr "Best regards."
+
+#: includes/class-analytics.php:586
+#, php-format
+msgid "Banner #%d"
+msgstr "Banner #%d"
+
+#: includes/class-analytics.php:593
+#, php-format
+msgid "Region: %s"
+msgstr "Region: %s"
+
+#: includes/class-analytics.php:594
+#, php-format
+msgid "File: %s"
+msgstr "File: %s"
+
+#: includes/class-analytics.php:858 includes/class-analytics.php:859
+msgid "Analytics"
+msgstr "Analytics"
+
+#: includes/class-analytics.php:899
+msgid "Monthly report emailed successfully."
+msgstr "Monthly report emailed successfully."
+
+#: includes/class-analytics.php:930
+msgid "No email"
+msgstr "No email"
+
+#: includes/class-analytics.php:939
+msgid "die1-Geo Ads Pro – Analytics"
+msgstr "die1-Geo Ads Pro – Analytics"
+
+#: includes/class-analytics.php:941
+msgid ""
+"This screen displays click, impression, city, and monthly report statistics."
+msgstr ""
+"This screen displays click, impression, city, and monthly report statistics."
+
+#: includes/class-analytics.php:952
+msgid "Monthly Report"
+msgstr "Monthly Report"
+
+#: includes/class-analytics.php:957 includes/class-analytics.php:995
+msgid "Month"
+msgstr "Month"
+
+#: includes/class-analytics.php:961
+msgid "Banner"
+msgstr "Banner"
+
+#: includes/class-analytics.php:964
+msgid "All banners"
+msgstr "All banners"
+
+#: includes/class-analytics.php:974
+msgid "Email Override"
+msgstr "Email Override"
+
+#: includes/class-analytics.php:977
+msgid "Leave empty to use the selected banner’s stored customer email."
+msgstr "Leave empty to use the selected banner’s stored customer email."
+
+#: includes/class-analytics.php:983
+msgid "Send by Email"
+msgstr "Send by Email"
+
+#: includes/class-analytics.php:989
+msgid "Automatic Report History"
+msgstr "Automatic Report History"
+
+#: includes/class-analytics.php:996
+msgid "Last Sent"
+msgstr "Last Sent"
+
+#: includes/class-analytics.php:997
+msgid "Banners"
+msgstr "Banners"
+
+#: includes/class-analytics.php:998
+msgid "Banner IDs"
+msgstr "Banner IDs"
+
+#: includes/class-analytics.php:1014
+msgid "No automatic monthly reports have been sent yet."
+msgstr "No automatic monthly reports have been sent yet."
+
+#: includes/class-analytics.php:1024
+msgid "Banner Performance"
+msgstr "Banner Performance"
+
+#: includes/class-analytics.php:1028 includes/class-analytics.php:1071
+msgid "Visitors by City"
+msgstr "Visitors by City"
+
+#: includes/class-analytics.php:1038
+msgid "File"
+msgstr "File"
+
+#: includes/class-analytics.php:1040
+msgid "Impressions"
+msgstr "Impressions"
+
+#: includes/class-analytics.php:1043
+msgid "Top Cities"
+msgstr "Top Cities"
+
+#: includes/class-analytics.php:1062
+msgid "No analytics data yet."
+msgstr "No analytics data yet."
+
+#: includes/class-analytics.php:1072
+msgid "Visitors by Region"
+msgstr "Visitors by Region"
+
+#: includes/class-regions.php:67
+msgid "Unlimited"
+msgstr "Unlimited"
+
+#: includes/class-rest.php:32
+msgid "Rate limit exceeded."
+msgstr "Rate limit exceeded."
+
+#: includes/class-settings.php:19 includes/class-settings.php:20
+msgid "Settings"
+msgstr "Settings"
+
+#: includes/class-settings.php:53
+msgid "Analytics data reset."
+msgstr "Analytics data reset."
+
+#: includes/class-settings.php:60
+msgid "die1-Geo Ads Pro – Settings"
+msgstr "die1-Geo Ads Pro – Settings"
+
+#: includes/class-settings.php:65
+msgid "Plugin Version"
+msgstr "Plugin Version"
+
+#: includes/class-settings.php:69
+msgid "Schema Version"
+msgstr "Schema Version"
+
+#: includes/class-settings.php:73
+msgid "Last Upgrade"
+msgstr "Last Upgrade"
+
+#: includes/class-settings.php:86
+msgid "Local Mode (IP Based)"
+msgstr "Local Mode (IP Based)"
+
+#: includes/class-settings.php:90
+msgid "Enable IP-based city → region mapping"
+msgstr "Enable IP-based city → region mapping"
+
+#: includes/class-settings.php:95
+msgid "Default Region"
+msgstr "Default Region"
+
+#: includes/class-settings.php:98
+msgid "Select"
+msgstr "Select"
+
+#: includes/class-settings.php:110
+msgid "Banner Rotation Mode"
+msgstr "Banner Rotation Mode"
+
+#: includes/class-settings.php:113
+msgid "Random"
+msgstr "Random"
+
+#: includes/class-settings.php:114
+msgid "Sequential"
+msgstr "Sequential"
+
+#: includes/class-settings.php:120
+msgid "A/B Test Auto Optimization"
+msgstr "A/B Test Auto Optimization"
+
+#: includes/class-settings.php:124
+msgid "Automatically select the banner with the highest CTR"
+msgstr "Automatically select the banner with the highest CTR"
+
+#: includes/class-settings.php:129
+msgid "Uninstall Cleanup"
+msgstr "Uninstall Cleanup"
+
+#: includes/class-settings.php:133
+msgid "Remove banner files, JSON data, and settings when the plugin is deleted"
+msgstr ""
+"Remove banner files, JSON data, and settings when the plugin is deleted"
+
+#: includes/class-settings.php:141
+msgid "Save Settings"
+msgstr "Save Settings"
+
+#: includes/class-settings.php:149
+msgid "Reset analytics data?"
+msgstr "Reset analytics data?"
+
+#: includes/class-settings.php:150
+msgid "Reset Analytics Data"
+msgstr "Reset Analytics Data"
+
+#: includes/class-widget.php:30
+msgid "die1-Geo Ads Pro Widget"
+msgstr "die1-Geo Ads Pro Widget"
+
+#: includes/class-widget.php:31
+msgid "Displays region-based banners."
+msgstr "Displays region-based banners."
+
+#: includes/class-widget.php:62
+msgid "Display mode"
+msgstr "Display mode"
+
+#: includes/class-widget.php:68
+msgid "Individual"
+msgstr "Individual"
+
+#: includes/class-widget.php:80
+msgid "Widget Info"
+msgstr "Widget Info"
+
+#: includes/class-widget.php:90
+msgid "Title"
+msgstr "Title"
+
+#: includes/class-widget.php:102
+msgid "Ad title"
+msgstr "Ad title"
+
+#: includes/class-widget.php:112
+msgid "Ad link title"
+msgstr "Ad link title"
+
+#: includes/class-widget.php:125
+msgid "Show ad only?"
+msgstr "Show ad only?"
+
+#: includes/class-widget.php:134
+msgid "Open links in a new window?"
+msgstr "Open links in a new window?"
+
+#: includes/class-widget.php:143
+msgid "Nofollow? (Do not follow link)"
+msgstr "Nofollow? (Do not follow link)"
+
+#: includes/class-widget.php:149
+msgid "Image URL"
+msgstr "Image URL"
+
+#: includes/class-widget.php:160
+msgid "Image width"
+msgstr "Image width"
+
+#: includes/class-widget.php:173
+msgid "Image height"
+msgstr "Image height"
+
+#: includes/class-widget.php:186
+msgid "Padding"
+msgstr "Padding"
+
+#: includes/class-widget.php:190
+msgid "Top"
+msgstr "Top"
+
+#: includes/class-widget.php:199
+msgid "Right"
+msgstr "Right"
+
+#: includes/class-widget.php:208
+msgid "Bottom"
+msgstr "Bottom"
+
+#: includes/class-widget.php:217
+msgid "Left"
+msgstr "Left"
+
+#: includes/class-widget.php:230
+msgid "Image alt text"
+msgstr "Image alt text"
+
+#: includes/class-widget.php:252
+msgid "HTML Code"
+msgstr "HTML Code"
+
+#: includes/class-widget.php:265
+msgid "HTML Embed"
+msgstr "HTML Embed"
+
+#~ msgid "Banners with the same size are automatically grouped as variants."
+#~ msgstr "Banners with the same size are automatically grouped as variants."
+
+#, php-format
+#~ msgid "%d banner uploaded."
+#~ msgid_plural "%d banners uploaded."
+#~ msgstr[0] "%d banner uploaded."
+#~ msgstr[1] "%d banners uploaded."
+
+#~ msgid "Access denied."
+#~ msgstr "Access denied."
+
+#, php-format
+#~ msgid "%d banner image is attached with the report."
+#~ msgid_plural "%d banner images are attached with the report."
+#~ msgstr[0] "%d banner image is attached with the report."
+#~ msgstr[1] "%d banner images are attached with the report."

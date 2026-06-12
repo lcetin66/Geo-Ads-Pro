@@ -46,7 +46,7 @@ class Geo_Ads_Pro_Ajax {
         }
 
         $mode   = sanitize_text_field($_POST['mode'] ?? 'global');
-        $region = sanitize_text_field($_POST['region'] ?? '');
+        $region = sanitize_text_field(Geo_Ads_Pro_Regions::normalize_region_input($_POST['region'] ?? ''));
         $city   = sanitize_text_field($_POST['city'] ?? '');
         $latitude = isset($_POST['latitude']) && is_numeric($_POST['latitude']) ? floatval($_POST['latitude']) : null;
         $longitude = isset($_POST['longitude']) && is_numeric($_POST['longitude']) ? floatval($_POST['longitude']) : null;
@@ -72,7 +72,7 @@ class Geo_Ads_Pro_Ajax {
         }
 
         $banner_id = intval($_POST['banner_id'] ?? 0);
-        $region    = sanitize_text_field($_POST['region'] ?? '');
+        $region    = sanitize_text_field(Geo_Ads_Pro_Regions::normalize_region_input($_POST['region'] ?? ''));
         $city      = sanitize_text_field($_POST['city'] ?? '');
 
         if ($city === '') {

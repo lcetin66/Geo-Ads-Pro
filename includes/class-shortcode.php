@@ -1,5 +1,5 @@
 <?php
-/* Plugin Name: Geo Ads Pro - shortcode.php */
+/* Plugin Name: die1-Geo Ads Pro - shortcode.php */
 /* Date: 20260609 */
 /* Author: Levent Cetin - 3CCS.com */
 
@@ -86,7 +86,7 @@ class Geo_Ads_Pro_Shortcode {
         ], $atts);
 
         $mode       = sanitize_text_field($atts['mode']);
-        $region     = sanitize_text_field($atts['region']);
+        $region     = sanitize_text_field(Geo_Ads_Pro_Regions::normalize_region_input($atts['region']));
         $banner_id  = intval($atts['banner_id']);
         $group_id   = sanitize_text_field($atts['group_id']);
         $has_group  = ($group_id !== '' && $group_id !== '0');
@@ -108,14 +108,14 @@ class Geo_Ads_Pro_Shortcode {
                     $region = $visitor_region;
                 } else {
                     // Tekli banner: bölge eşleşmiyorsa boş dön
-                    if ($visitor_region !== $region) {
+                    if (!Geo_Ads_Pro_Regions::is_unlimited_region($region) && $visitor_region !== $region) {
                         return '';
                     }
                 }
             } else {
                 // IP'den şehir tespit edilemedi — fallback: default region kullan
                 if ($has_group) {
-                    $region = sanitize_text_field(get_option('gap_default_region', ''));
+                    $region = sanitize_text_field(Geo_Ads_Pro_Regions::normalize_region_input(get_option('gap_default_region', '')));
                 } else {
                     return '';
                 }

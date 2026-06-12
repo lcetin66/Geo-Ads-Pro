@@ -1,5 +1,5 @@
 <?php
-/* Plugin Name: Geo Ads Pro - helpers.php */
+/* Plugin Name: die1-Geo Ads Pro - helpers.php */
 /* Date: 20260606 */
 /* Author: Levent Cetin - 3CCS.com */
 
@@ -89,23 +89,14 @@ function gap_validate_click_url($url) {
         return '';
     }
 
-    // Güvenlik: Sadece https izinli — http ile açık linklere izin verilmez (phishing/SEO riski)
-    $url = esc_url_raw($url, ['https']);
+    $url = esc_url_raw($url, ['http', 'https']);
     if (!$url) {
         return '';
     }
 
     $parts = wp_parse_url($url);
-    if (empty($parts['scheme']) || !in_array($parts['scheme'], ['https'], true)) {
+    if (empty($parts['scheme']) || !in_array($parts['scheme'], ['http', 'https'], true)) {
         return '';
-    }
-
-    // Kendi domainine yönlendirme engelle — open redirect önleme
-    $home_parse = wp_parse_url(home_url());
-    if (!empty($parts['host']) && !empty($home_parse['host'])) {
-        if (strcasecmp($parts['host'], $home_parse['host']) === 0 || strcasecmp($parts['host'], 'www.' . $home_parse['host']) === 0) {
-            return ''; // Kendi domaine yönlendirme engellendi (SEO spam koruması)
-        }
     }
 
     return $url;

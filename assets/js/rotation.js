@@ -1,6 +1,7 @@
-/* Geo Ads Pro – Rotation Page JS */
+/* die1-Geo Ads Pro – Rotation Page JS */
 
 jQuery(function($){
+    var i18n = window.GAP_ROTATION_I18N || {};
     var dragged = null;
     var selectedBanners = [];
 
@@ -53,9 +54,10 @@ jQuery(function($){
         $('#gap_rotation_dropzone_empty').removeClass('is-visible');
 
         $.each(selectedBanners, function(i, b){
+            var bannerLabel = i18n.bannerNumber ? i18n.bannerNumber.replace('%s', b.id) : String(b.id);
             var html = '<div class="gap-rotation-drop-item">'
                      + '  <img src="' + b.img + '" alt=""> '
-                     + '  <span>Banner #' + b.id + '</span> '
+                     + '  <span>' + bannerLabel + '</span> '
                      + '  <span class="gap-remove-banner" data-id="' + b.id + '">✕</span> '
                      + '</div>';
             $items.append(html);
@@ -90,7 +92,7 @@ jQuery(function($){
         console.log('   selectedBanners:', selectedBanners);
 
         if (selectedBanners.length < 2) {
-            alert(__('Please select at least 2 banners.', 'geo-ads-pro'));
+            alert(i18n.selectAtLeastTwoBanners);
             return;
         }
 
@@ -98,7 +100,7 @@ jQuery(function($){
         console.log('   group name:', name);
 
         if (!name) {
-            alert(__('Please enter a group name.', 'geo-ads-pro'));
+            alert(i18n.enterGroupName);
             return;
         }
 
@@ -109,13 +111,13 @@ jQuery(function($){
 
         if (nonceInput.length === 0) {
             console.error('❌ _wpnonce input not found in DOM');
-            alert('❌ Security field missing. Please reload.');
+            alert(i18n.securityFieldMissing);
             return;
         }
 
         if (!nonceVal) {
             console.error('❌ nonce value is empty');
-            alert('❌ Security nonce has no value. Please reload.');
+            alert(i18n.securityNonceMissing);
             return;
         }
 
@@ -131,7 +133,7 @@ jQuery(function($){
         });
 
         if (selectedRegions.length === 0) {
-            alert('Bitte wählen Sie mindestens eine Region aus. / Please select at least one region.');
+            alert(i18n.selectAtLeastOneRegion);
             return;
         }
 

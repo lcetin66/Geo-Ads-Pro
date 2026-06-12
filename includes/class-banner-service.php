@@ -1,5 +1,5 @@
 <?php
-/* Plugin Name: Geo Ads Pro - banner-service.php */
+/* Plugin Name: die1-Geo Ads Pro - banner-service.php */
 /* Date: 20260606 */
 /* Author: Levent Cetin - 3CCS.com */
 
@@ -19,8 +19,12 @@ class Geo_Ads_Pro_Banner_Service {
 
     public function resolve_region($mode, $region, $city) {
         $mode = in_array($mode, ['global', 'local'], true) ? $mode : 'global';
-        $region = sanitize_text_field($region);
+        $region = sanitize_text_field(Geo_Ads_Pro_Regions::normalize_region_input($region));
         $city = sanitize_text_field($city);
+
+        if (Geo_Ads_Pro_Regions::is_unlimited_region($region)) {
+            return Geo_Ads_Pro_Regions::unlimited_region_key();
+        }
 
         if ($mode === 'local' && get_option('gap_enable_local_mode') && $city !== '') {
             // 1. Önce city map'te ara
@@ -37,6 +41,9 @@ class Geo_Ads_Pro_Banner_Service {
                     $best_region = '';
                     $best_dist = PHP_INT_MAX;
                     foreach ($this->regions->get_all() as $r_name => $r_data) {
+                        if (Geo_Ads_Pro_Regions::is_unlimited_region($r_name)) {
+                            continue;
+                        }
                         $lat = floatval($r_data['latitude'] ?? 0);
                         $lon = floatval($r_data['longitude'] ?? 0);
                         $radius = floatval($r_data['radius_km'] ?? 0);
@@ -55,7 +62,7 @@ class Geo_Ads_Pro_Banner_Service {
         }
 
         if ($region === '') {
-            $region = sanitize_text_field(get_option('gap_default_region', ''));
+            $region = sanitize_text_field(Geo_Ads_Pro_Regions::normalize_region_input(get_option('gap_default_region', '')));
         }
 
         $regions = $this->regions->get_all();
@@ -81,6 +88,9 @@ class Geo_Ads_Pro_Banner_Service {
         $best_region = '';
         $best_dist = PHP_INT_MAX;
         foreach ($this->regions->get_all() as $r_name => $r_data) {
+            if (Geo_Ads_Pro_Regions::is_unlimited_region($r_name)) {
+                continue;
+            }
             $lat    = floatval($r_data['latitude'] ?? 0);
             $lon    = floatval($r_data['longitude'] ?? 0);
             $radius = floatval($r_data['radius_km'] ?? 0);

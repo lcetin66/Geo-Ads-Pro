@@ -1,5 +1,5 @@
 <?php
-// Plugin Name: Geo Ads Pro - class-regions.php
+// Plugin Name: die1-Geo Ads Pro - class-regions.php
 // 06062026
 // Author: Levent Cetin - 3CCS.com
 
@@ -27,46 +27,67 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
     public function __construct() {
         parent::__construct(
             'geo_ads_pro_widget',
-            __('Geo Ads Pro Widget', 'geo-ads-pro'),
+            __('die1-Geo Ads Pro Widget', 'geo-ads-pro'),
             ['description' => __('Displays region-based banners.', 'geo-ads-pro')]
-        );
-    }
-
-    private function info_icon($text, $key = '') {
-        $id = 'gap-tip-' . ($key ? $key : uniqid());
-        return sprintf(
-            '<span class="gap-tooltip-wrap"><span class="gap-tooltip-icon" data-gap-tip="%s" tabindex="0" role="button" aria-label="%s">i</span><span id="%s" class="gap-tooltip-box"><div class="gap-tooltip-box-inner"><span class="gap-tooltip-box-label">%s</span>%s</div></span></span>',
-            esc_attr($id),
-            __('Hilfe', 'geo-ads-pro'),
-            $id,
-            esc_html__('Hilfe', 'geo-ads-pro'),
-            esc_html($text)
         );
     }
 
     public function form($instance) {
 
-        $title         = isset($instance['title']) ? esc_attr($instance['title']) : '';
-        $ad_title      = isset($instance['ad_title']) ? esc_attr($instance['ad_title']) : '';
-        $link_title    = isset($instance['link_title']) ? esc_attr($instance['link_title']) : '';
-        $show_ad_only  = !empty($instance['show_ad_only']);
-        $new_window    = !empty($instance['new_window']);
-        $nofollow      = !empty($instance['nofollow']);
-        $image_url     = isset($instance['image_url']) ? esc_url($instance['image_url']) : '';
-        $image_width   = isset($instance['image_width']) ? absint($instance['image_width']) : '';
-        $image_height  = isset($instance['image_height']) ? absint($instance['image_height']) : '';
-        $padding_top   = isset($instance['padding_top']) ? absint($instance['padding_top']) : '';
-        $padding_right = isset($instance['padding_right']) ? absint($instance['padding_right']) : '';
+        $title          = isset($instance['title']) ? esc_attr($instance['title']) : '';
+        $description    = isset($instance['description']) ? esc_textarea($instance['description']) : '';
+        $ad_title       = isset($instance['ad_title']) ? esc_attr($instance['ad_title']) : '';
+        $link_title     = isset($instance['link_title']) ? esc_attr($instance['link_title']) : '';
+        $show_ad_only   = !empty($instance['show_ad_only']);
+        $new_window     = !empty($instance['new_window']);
+        $nofollow       = !empty($instance['nofollow']);
+        $image_url      = isset($instance['image_url']) ? esc_url($instance['image_url']) : '';
+        $image_width    = isset($instance['image_width']) ? absint($instance['image_width']) : '';
+        $image_height   = isset($instance['image_height']) ? absint($instance['image_height']) : '';
+        $padding_top    = isset($instance['padding_top']) ? absint($instance['padding_top']) : '';
+        $padding_right  = isset($instance['padding_right']) ? absint($instance['padding_right']) : '';
         $padding_bottom = isset($instance['padding_bottom']) ? absint($instance['padding_bottom']) : '';
-        $padding_left  = isset($instance['padding_left']) ? absint($instance['padding_left']) : '';
-        $image_alt     = isset($instance['image_alt']) ? esc_attr($instance['image_alt']) : '';
-        $ad_url        = isset($instance['ad_url']) ? esc_url($instance['ad_url']) : '';
-        $ad_code       = isset($instance['ad_code']) ? esc_textarea($instance['ad_code']) : '';
+        $padding_left   = isset($instance['padding_left']) ? absint($instance['padding_left']) : '';
+        $image_alt      = isset($instance['image_alt']) ? esc_attr($instance['image_alt']) : '';
+        $ad_url         = isset($instance['ad_url']) ? esc_url($instance['ad_url']) : '';
+        $ad_code        = isset($instance['ad_code']) ? esc_textarea($instance['ad_code']) : '';
+        $display_mode   = isset($instance['display_mode']) ? sanitize_text_field($instance['display_mode']) : '';
+        if (!in_array($display_mode, ['individual', 'shortcode'], true)) {
+            $display_mode = ($ad_code !== '' && $image_url === '') ? 'shortcode' : 'individual';
+        }
         ?>
 
         <p style="margin:0 0 14px;">
+            <label style="display:block; font-weight:600; margin:0 0 6px;">
+                <?php esc_html_e('Display mode', 'geo-ads-pro'); ?>
+            </label>
+            <label style="display:block; margin:0 0 6px;">
+                <input type="radio"
+                       name="<?php echo esc_attr($this->get_field_name('display_mode')); ?>"
+                       value="individual" <?php checked($display_mode, 'individual'); ?>>
+                <?php esc_html_e('Individual', 'geo-ads-pro'); ?>
+            </label>
+            <label style="display:block;">
+                <input type="radio"
+                       name="<?php echo esc_attr($this->get_field_name('display_mode')); ?>"
+                       value="shortcode" <?php checked($display_mode, 'shortcode'); ?>>
+                <?php esc_html_e('Shortcode', 'geo-ads-pro'); ?>
+            </label>
+        </p>
+
+        <p style="margin:0 0 20px; padding-top:8px;">
+            <label for="<?php echo esc_attr($this->get_field_id('description')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
+                <?php esc_html_e('Widget Info', 'geo-ads-pro'); ?>
+            </label>
+            <textarea class="widefat"
+                      rows="3"
+                      id="<?php echo esc_attr($this->get_field_id('description')); ?>"
+                      name="<?php echo esc_attr($this->get_field_name('description')); ?>"><?php echo $description; ?></textarea>
+        </p>
+
+        <p style="margin:0 0 14px;">
             <label for="<?php echo esc_attr($this->get_field_id('title')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
-                <?php esc_html_e('Title:', 'geo-ads-pro'); ?>
+                <?php esc_html_e('Title', 'geo-ads-pro'); ?>
             </label>
             <input class="widefat"
                    id="<?php echo esc_attr($this->get_field_id('title')); ?>"
@@ -75,234 +96,203 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         </p>
 
         <div style="margin:14px 0 0; padding:12px; border:1px solid #dcdcde; border-radius:6px; background:#f8f9fa;">
-            <p style="margin:0 0 14px; padding:8px 10px; border-left:4px solid #2271b1; background:#fff;">
-                <strong><?php esc_html_e('Hinweis:', 'geo-ads-pro'); ?></strong>
-                <?php esc_html_e('Wenn Bildpfad und Code leer sind, läuft das automatische Geo Ads Pro Banner-System weiter.', 'geo-ads-pro'); ?>
-            </p>
+            <div class="gap-widget-manual-fields" style="<?php echo $display_mode === 'shortcode' ? 'display:none;' : 'display:block;'; ?> padding:12px; border:1px solid #dcdcde; border-radius:6px; background:#fff;">
+                <p style="margin:0 0 14px;">
+                    <label for="<?php echo esc_attr($this->get_field_id('ad_title')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
+                        <?php esc_html_e('Ad title', 'geo-ads-pro'); ?>
+                    </label>
+                    <input class="widefat"
+                           id="<?php echo esc_attr($this->get_field_id('ad_title')); ?>"
+                           name="<?php echo esc_attr($this->get_field_name('ad_title')); ?>"
+                           value="<?php echo $ad_title; ?>">
+                </p>
 
-        <p style="margin:0 0 14px;">
-            <label for="<?php echo esc_attr($this->get_field_id('ad_title')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
-                <?php esc_html_e('Anzeigentitel', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Optionaler sichtbarer Hinweis über der Anzeige, z. B. Werbung.', 'geo-ads-pro'), 'ad_title'); ?>
-            </label>
-            <input class="widefat"
-                   id="<?php echo esc_attr($this->get_field_id('ad_title')); ?>"
-                   name="<?php echo esc_attr($this->get_field_name('ad_title')); ?>"
-                   value="<?php echo $ad_title; ?>">
-            <span style="display:block; margin-top:4px;">
-                <?php esc_html_e('Ein Titel für die Anzeige, z. B. Werbung - lassen Sie dieses Feld leer, um die Kennzeichnung zu deaktivieren.', 'geo-ads-pro'); ?>
-            </span>
-        </p>
+                <p style="margin:0 0 14px;">
+                    <label for="<?php echo esc_attr($this->get_field_id('link_title')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
+                        <?php esc_html_e('Ad link title', 'geo-ads-pro'); ?>
+                    </label>
+                    <input class="widefat"
+                           id="<?php echo esc_attr($this->get_field_id('link_title')); ?>"
+                           name="<?php echo esc_attr($this->get_field_name('link_title')); ?>"
+                           value="<?php echo $link_title; ?>">
+                </p>
 
-        <p style="margin:0 0 14px;">
-            <label for="<?php echo esc_attr($this->get_field_id('link_title')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
-                <?php esc_html_e('Link Anzeigentitel', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Optionaler title-Text für den Anzeigenlink.', 'geo-ads-pro'), 'link_title'); ?>
-            </label>
-            <input class="widefat"
-                   id="<?php echo esc_attr($this->get_field_id('link_title')); ?>"
-                   name="<?php echo esc_attr($this->get_field_name('link_title')); ?>"
-                   value="<?php echo $link_title; ?>">
-        </p>
+                <p style="margin:0 0 12px;">
+                    <label>
+                        <input type="checkbox"
+                               name="<?php echo esc_attr($this->get_field_name('show_ad_only')); ?>"
+                               value="1" <?php checked($show_ad_only); ?>>
+                        <?php esc_html_e('Show ad only?', 'geo-ads-pro'); ?>
+                    </label>
+                </p>
 
-        <p style="margin:0 0 12px;">
-            <label>
-                <input type="checkbox"
-                       name="<?php echo esc_attr($this->get_field_name('show_ad_only')); ?>"
-                       value="1" <?php checked($show_ad_only); ?>>
-                <?php esc_html_e('Nur Werbeanzeige anzeigen?', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Blendet Widget-Titel und Anzeigenkennzeichnung aus.', 'geo-ads-pro'), 'show_ad_only'); ?>
-            </label>
-        </p>
+                <p style="margin:0 0 12px;">
+                    <label>
+                        <input type="checkbox"
+                               name="<?php echo esc_attr($this->get_field_name('new_window')); ?>"
+                               value="1" <?php checked($new_window); ?>>
+                        <?php esc_html_e('Open links in a new window?', 'geo-ads-pro'); ?>
+                    </label>
+                </p>
 
-        <p style="margin:0 0 12px;">
-            <label>
-                <input type="checkbox"
-                       name="<?php echo esc_attr($this->get_field_name('new_window')); ?>"
-                       value="1" <?php checked($new_window); ?>>
-                <?php esc_html_e('Links in einem neuen Fenster öffnen?', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Öffnet die Anzeigen-URL in einem neuen Browserfenster oder Tab.', 'geo-ads-pro'), 'new_window'); ?>
-            </label>
-        </p>
+                <p style="margin:0 0 14px;">
+                    <label>
+                        <input type="checkbox"
+                               name="<?php echo esc_attr($this->get_field_name('nofollow')); ?>"
+                               value="1" <?php checked($nofollow); ?>>
+                        <?php esc_html_e('Nofollow? (Do not follow link)', 'geo-ads-pro'); ?>
+                    </label>
+                </p>
 
-        <p style="margin:0 0 14px;">
-            <label>
-                <input type="checkbox"
-                       name="<?php echo esc_attr($this->get_field_name('nofollow')); ?>"
-                       value="1" <?php checked($nofollow); ?>>
-                <?php esc_html_e('Nofollow? (Link nicht folgen)', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Fügt rel="nofollow" zum Anzeigenlink hinzu.', 'geo-ads-pro'), 'nofollow'); ?>
-            </label>
-        </p>
+                <p style="margin:0 0 14px;">
+                    <label for="<?php echo esc_attr($this->get_field_id('image_url')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
+                        <?php esc_html_e('Image URL', 'geo-ads-pro'); ?>
+                    </label>
+                    <input class="widefat"
+                           id="<?php echo esc_attr($this->get_field_id('image_url')); ?>"
+                           name="<?php echo esc_attr($this->get_field_name('image_url')); ?>"
+                           value="<?php echo $image_url; ?>"
+                           placeholder="https://">
+                </p>
 
-        <p style="margin:0 0 14px;">
-            <label for="<?php echo esc_attr($this->get_field_id('image_url')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
-                <?php esc_html_e('Bildpfad:', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('URL zum Anzeigenbild. Wird genutzt, wenn kein Code eingetragen ist.', 'geo-ads-pro'), 'image_url'); ?>
-            </label>
-            <input class="widefat"
-                   id="<?php echo esc_attr($this->get_field_id('image_url')); ?>"
-                   name="<?php echo esc_attr($this->get_field_name('image_url')); ?>"
-                   value="<?php echo $image_url; ?>"
-                   placeholder="https://">
-        </p>
+                <p style="margin:0 0 14px; display:flex; align-items:center; gap:10px;">
+                    <label for="<?php echo esc_attr($this->get_field_id('image_width')); ?>" style="min-width:180px; font-weight:600;">
+                        <?php esc_html_e('Image width', 'geo-ads-pro'); ?>
+                    </label>
+                    <input type="number"
+                           min="0"
+                           step="1"
+                           id="<?php echo esc_attr($this->get_field_id('image_width')); ?>"
+                           name="<?php echo esc_attr($this->get_field_name('image_width')); ?>"
+                           value="<?php echo esc_attr($image_width); ?>"
+                           style="width:90px;">
+                </p>
 
-        <p style="margin:0 0 14px; display:flex; align-items:center; gap:10px;">
-            <label for="<?php echo esc_attr($this->get_field_id('image_width')); ?>" style="min-width:180px; font-weight:600;">
-                <?php esc_html_e('Bild Breite hinzufügen', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Optionale Bildbreite in Pixeln.', 'geo-ads-pro'), 'image_width'); ?>
-            </label>
-            <input type="number"
-                   min="0"
-                   step="1"
-                   id="<?php echo esc_attr($this->get_field_id('image_width')); ?>"
-                   name="<?php echo esc_attr($this->get_field_name('image_width')); ?>"
-                   value="<?php echo esc_attr($image_width); ?>"
-                   style="width:90px;">
-        </p>
+                <p style="margin:0 0 14px; display:flex; align-items:center; gap:10px;">
+                    <label for="<?php echo esc_attr($this->get_field_id('image_height')); ?>" style="min-width:180px; font-weight:600;">
+                        <?php esc_html_e('Image height', 'geo-ads-pro'); ?>
+                    </label>
+                    <input type="number"
+                           min="0"
+                           step="1"
+                           id="<?php echo esc_attr($this->get_field_id('image_height')); ?>"
+                           name="<?php echo esc_attr($this->get_field_name('image_height')); ?>"
+                           value="<?php echo esc_attr($image_height); ?>"
+                           style="width:90px;">
+                </p>
 
-        <p style="margin:0 0 14px; display:flex; align-items:center; gap:10px;">
-            <label for="<?php echo esc_attr($this->get_field_id('image_height')); ?>" style="min-width:180px; font-weight:600;">
-                <?php esc_html_e('Bildhöhe hinzufügen', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Optionale Bildhöhe in Pixeln.', 'geo-ads-pro'), 'image_height'); ?>
-            </label>
-            <input type="number"
-                   min="0"
-                   step="1"
-                   id="<?php echo esc_attr($this->get_field_id('image_height')); ?>"
-                   name="<?php echo esc_attr($this->get_field_name('image_height')); ?>"
-                   value="<?php echo esc_attr($image_height); ?>"
-                   style="width:90px;">
-        </p>
+                <div style="margin:0 0 14px;">
+                    <div style="font-weight:600; margin:0 0 8px;">
+                        <?php esc_html_e('Padding', 'geo-ads-pro'); ?>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px;">
+                        <label style="display:block; font-weight:600;">
+                            <?php esc_html_e('Top', 'geo-ads-pro'); ?>
+                            <input type="number"
+                                   min="0"
+                                   step="1"
+                                   name="<?php echo esc_attr($this->get_field_name('padding_top')); ?>"
+                                   value="<?php echo esc_attr($padding_top); ?>"
+                                   style="width:100%; margin-top:4px;">
+                        </label>
+                        <label style="display:block; font-weight:600;">
+                            <?php esc_html_e('Right', 'geo-ads-pro'); ?>
+                            <input type="number"
+                                   min="0"
+                                   step="1"
+                                   name="<?php echo esc_attr($this->get_field_name('padding_right')); ?>"
+                                   value="<?php echo esc_attr($padding_right); ?>"
+                                   style="width:100%; margin-top:4px;">
+                        </label>
+                        <label style="display:block; font-weight:600;">
+                            <?php esc_html_e('Bottom', 'geo-ads-pro'); ?>
+                            <input type="number"
+                                   min="0"
+                                   step="1"
+                                   name="<?php echo esc_attr($this->get_field_name('padding_bottom')); ?>"
+                                   value="<?php echo esc_attr($padding_bottom); ?>"
+                                   style="width:100%; margin-top:4px;">
+                        </label>
+                        <label style="display:block; font-weight:600;">
+                            <?php esc_html_e('Left', 'geo-ads-pro'); ?>
+                            <input type="number"
+                                   min="0"
+                                   step="1"
+                                   name="<?php echo esc_attr($this->get_field_name('padding_left')); ?>"
+                                   value="<?php echo esc_attr($padding_left); ?>"
+                                   style="width:100%; margin-top:4px;">
+                        </label>
+                    </div>
+                </div>
 
-        <div style="margin:0 0 14px;">
-            <div style="font-weight:600; margin:0 0 8px;">
-                <?php esc_html_e('Padding', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Innenabstand der manuellen Anzeige in Pixeln.', 'geo-ads-pro'), 'padding'); ?>
+                <p style="margin:0 0 14px;">
+                    <label for="<?php echo esc_attr($this->get_field_id('image_alt')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
+                        <?php esc_html_e('Image alt text', 'geo-ads-pro'); ?>
+                    </label>
+                    <input class="widefat"
+                           id="<?php echo esc_attr($this->get_field_id('image_alt')); ?>"
+                           name="<?php echo esc_attr($this->get_field_name('image_alt')); ?>"
+                           value="<?php echo $image_alt; ?>">
+                </p>
+
+                <p style="margin:0 0 14px;">
+                    <label for="<?php echo esc_attr($this->get_field_id('ad_url')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
+                        <?php esc_html_e('Ad URL', 'geo-ads-pro'); ?>
+                    </label>
+                    <input class="widefat"
+                           id="<?php echo esc_attr($this->get_field_id('ad_url')); ?>"
+                           name="<?php echo esc_attr($this->get_field_name('ad_url')); ?>"
+                           value="<?php echo $ad_url; ?>"
+                           placeholder="https://">
+                </p>
+
+                <div style="margin-top:16px; padding-top:14px; border-top:1px solid #ddd;">
+                    <p style="margin:0;">
+                        <label for="<?php echo esc_attr($this->get_field_id('ad_code')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
+                            <?php esc_html_e('HTML Code', 'geo-ads-pro'); ?>
+                        </label>
+                        <textarea class="widefat"
+                                  rows="8"
+                                  id="<?php echo esc_attr($this->get_field_id('ad_code')); ?>"
+                                  name="<?php echo esc_attr($this->get_field_name('ad_code')); ?>"><?php echo $ad_code; ?></textarea>
+                    </p>
+                </div>
             </div>
-            <div style="display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px;">
-                <label style="display:block; font-weight:600;">
-                    <?php esc_html_e('Oben', 'geo-ads-pro'); ?>
-                    <input type="number"
-                           min="0"
-                           step="1"
-                           name="<?php echo esc_attr($this->get_field_name('padding_top')); ?>"
-                           value="<?php echo esc_attr($padding_top); ?>"
-                           style="width:100%; margin-top:4px;">
-                </label>
-                <label style="display:block; font-weight:600;">
-                    <?php esc_html_e('Rechts', 'geo-ads-pro'); ?>
-                    <input type="number"
-                           min="0"
-                           step="1"
-                           name="<?php echo esc_attr($this->get_field_name('padding_right')); ?>"
-                           value="<?php echo esc_attr($padding_right); ?>"
-                           style="width:100%; margin-top:4px;">
-                </label>
-                <label style="display:block; font-weight:600;">
-                    <?php esc_html_e('Unten', 'geo-ads-pro'); ?>
-                    <input type="number"
-                           min="0"
-                           step="1"
-                           name="<?php echo esc_attr($this->get_field_name('padding_bottom')); ?>"
-                           value="<?php echo esc_attr($padding_bottom); ?>"
-                           style="width:100%; margin-top:4px;">
-                </label>
-                <label style="display:block; font-weight:600;">
-                    <?php esc_html_e('Links', 'geo-ads-pro'); ?>
-                    <input type="number"
-                           min="0"
-                           step="1"
-                           name="<?php echo esc_attr($this->get_field_name('padding_left')); ?>"
-                           value="<?php echo esc_attr($padding_left); ?>"
-                           style="width:100%; margin-top:4px;">
-                </label>
+
+            <div class="gap-widget-shortcode-fields" style="<?php echo $display_mode === 'shortcode' ? 'display:block;' : 'display:none;'; ?> padding:12px; border:1px solid #dcdcde; border-radius:6px; background:#fff; margin-top:12px;">
+                <p style="margin:0;">
+                    <label for="<?php echo esc_attr($this->get_field_id('ad_code')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
+                        <?php esc_html_e('HTML Embed', 'geo-ads-pro'); ?>
+                    </label>
+                    <textarea class="widefat"
+                              rows="8"
+                              id="<?php echo esc_attr($this->get_field_id('ad_code')); ?>"
+                              name="<?php echo esc_attr($this->get_field_name('ad_code')); ?>"><?php echo $ad_code; ?></textarea>
+                </p>
             </div>
         </div>
 
-        <p style="margin:0 0 14px;">
-            <label for="<?php echo esc_attr($this->get_field_id('image_alt')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
-                <?php esc_html_e('Alternativer Text für das Bild', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Beschreibt das Anzeigenbild für Barrierefreiheit und SEO.', 'geo-ads-pro'), 'image_alt'); ?>
-            </label>
-            <input class="widefat"
-                   id="<?php echo esc_attr($this->get_field_id('image_alt')); ?>"
-                   name="<?php echo esc_attr($this->get_field_name('image_alt')); ?>"
-                   value="<?php echo $image_alt; ?>">
-        </p>
-
-        <p style="margin:0 0 14px;">
-            <label for="<?php echo esc_attr($this->get_field_id('ad_url')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
-                <?php esc_html_e('Anzeigen-URL', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('Zieladresse, die beim Klick auf das Anzeigenbild geöffnet wird.', 'geo-ads-pro'), 'ad_url'); ?>
-            </label>
-            <input class="widefat"
-                   id="<?php echo esc_attr($this->get_field_id('ad_url')); ?>"
-                   name="<?php echo esc_attr($this->get_field_name('ad_url')); ?>"
-                   value="<?php echo $ad_url; ?>"
-                   placeholder="https://">
-        </p>
-
-        <p style="margin:0;">
-            <label for="<?php echo esc_attr($this->get_field_id('ad_code')); ?>" style="display:block; font-weight:600; margin:0 0 4px;">
-                <?php esc_html_e('- ODER - Code:', 'geo-ads-pro'); ?>
-                <?php echo $this->info_icon(__('HTML- oder Embed-Code. Wenn Code eingetragen ist, hat er Vorrang vor dem Bildpfad.', 'geo-ads-pro'), 'ad_code'); ?>
-            </label>
-            <textarea class="widefat"
-                      rows="8"
-                      id="<?php echo esc_attr($this->get_field_id('ad_code')); ?>"
-                      name="<?php echo esc_attr($this->get_field_name('ad_code')); ?>"><?php echo $ad_code; ?></textarea>
-        </p>
-        </div>
-
-        <style>
-.gap-tooltip-wrap { position: relative; display: inline-block; vertical-align: middle; }
-
-.gap-tooltip-icon {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: #2271b1; color: #fff; font-size: 11px; font-weight: 700; line-height: 1;
-    cursor: pointer; user-select: none; margin-left: 6px;
-    transition: all .2s ease; box-shadow: 0 0 0 0 rgba(34,113,177,.5);
-}
-.gap-tooltip-icon:hover {
-    background: #135e96; transform: scale(1.25);
-    box-shadow: 0 0 0 4px rgba(34,113,177,.25), 0 0 12px rgba(34,113,177,.35);
-}
-.gap-tooltip-icon.active {
-    background: #d63638; box-shadow: 0 0 0 4px rgba(214,54,56,.2);
-    animation: gap-icon-pulse .6s ease;
-}
-@keyframes gap-icon-pulse {
-    0%   { transform: scale(1.25); }
-    50%  { transform: scale(.9); }
-    100% { transform: scale(1); }
-}
-
-.gap-tooltip-box {
-    display: none; position: absolute; z-index: 99999; left: -40px; bottom: calc(100% + 8px);
-    min-width: 260px; max-width: 340px; padding: 0;
-    background: #fff; border: 1px solid #ddd; border-radius: 8px;
-    box-shadow: 0 8px 30px rgba(0,0,0,.18);
-    opacity: 0; transform: translateY(6px) scale(.97); pointer-events: none;
-    transition: opacity .2s ease, transform .2s ease;
-    overflow: hidden;
-}
-.gap-tooltip-box.show {
-    opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
-}
-.gap-tooltip-box-inner { padding: 14px 18px; font-size: 13.5px; line-height: 1.6; color: #444; }
-.gap-tooltip-box-label {
-    display: block; margin-bottom: 6px; font-size: 11px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .6px; color: #2271b1;
-}
-.gap-tooltip-box::after {
-    content: ""; position: absolute; top: 100%; left: 24px;
-    border: 8px solid transparent; border-top-color: #fff;
-}
-</style>
 <script>
-(function(){var active=null;function open(box,icon){if(active&&active!==box)closeActive();box.style.display="block";requestAnimationFrame(function(){box.classList.add("show")});icon.classList.add("active");active=box}function closeAll(){document.querySelectorAll(".gap-tooltip-box.show").forEach(function(b){b.classList.remove("show");setTimeout(function(){b.style.display="none"},200)});document.querySelectorAll(".gap-tooltip-icon.active").forEach(function(i){i.classList.remove("active")});active=null}document.addEventListener("click",function(e){var i=e.target.closest(".gap-tooltip-icon");if(i){var b=document.getElementById(i.getAttribute("data-gap-tip"));if(b)open(b,i);return}if(!e.target.closest(".gap-tooltip-wrap"))closeActive()});function closeActive(){closeAll()}document.addEventListener("keydown",function(e){if(e.key==="Escape")closeActive()})})();
+(function(){
+  function syncMode(widget){
+    var manual = widget.querySelector(".gap-widget-manual-fields");
+    var shortcode = widget.querySelector(".gap-widget-shortcode-fields");
+    var mode = widget.querySelector('input[type="radio"][name$="[display_mode]"]:checked');
+    if (!manual || !shortcode || !mode) return;
+    var isShortcode = mode.value === "shortcode";
+    manual.style.display = isShortcode ? "none" : "block";
+    shortcode.style.display = isShortcode ? "block" : "none";
+  }
+  document.addEventListener("change", function(e){
+    if (e.target && e.target.matches('input[type="radio"][name$="[display_mode]"]')) {
+      var widget = e.target.closest(".widget-content");
+      if (widget) syncMode(widget);
+    }
+  });
+  document.addEventListener("DOMContentLoaded", function(){
+    document.querySelectorAll(".widget-content").forEach(syncMode);
+  });
+})();
 </script>
 
         <?php
@@ -313,6 +303,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         $instance = [];
 
         $instance['title'] = sanitize_text_field($new['title'] ?? '');
+        $instance['description'] = sanitize_textarea_field($new['description'] ?? '');
         $instance['ad_title'] = sanitize_text_field($new['ad_title'] ?? '');
         $instance['link_title'] = sanitize_text_field($new['link_title'] ?? '');
         $instance['show_ad_only'] = !empty($new['show_ad_only']) ? 1 : 0;
@@ -327,6 +318,9 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         $instance['padding_left'] = absint($new['padding_left'] ?? 0);
         $instance['image_alt'] = sanitize_text_field($new['image_alt'] ?? '');
         $instance['ad_url'] = esc_url_raw($new['ad_url'] ?? '');
+        $instance['display_mode'] = in_array($new['display_mode'] ?? '', ['individual', 'shortcode'], true)
+            ? $new['display_mode']
+            : 'individual';
         // Sanitize ad code: allow safe HTML (for Google Adsense etc) but preserve shortcode brackets
         // wp_kses_post strips <script> OK but we also need to allow <ins>, <div>, <span>, etc.
         $allowed = array(
@@ -351,7 +345,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         $instance['ad_code'] = wp_kses($new['ad_code'] ?? '', $allowed);
 
         $default_mode   = get_option('gap_enable_local_mode') ? 'local' : 'global';
-        $default_region = sanitize_text_field(get_option('gap_default_region', ''));
+        $default_region = sanitize_text_field(Geo_Ads_Pro_Regions::normalize_region_input(get_option('gap_default_region', '')));
 
         $legacy_mode   = $old['mode'] ?? $default_mode;
         $legacy_region = $old['region'] ?? $default_region;
@@ -366,7 +360,11 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
     }
 
     private function has_manual_ad($instance) {
-        return !empty($instance['ad_code']) || !empty($instance['image_url']);
+        $mode = $instance['display_mode'] ?? '';
+        if ($mode === 'shortcode') {
+            return !empty($instance['ad_code']);
+        }
+        return !empty($instance['image_url']) || !empty($instance['ad_code']);
     }
 
     private function render_manual_ad($instance) {
@@ -385,6 +383,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
         $image_alt    = esc_attr($instance['image_alt'] ?? '');
         $ad_url       = esc_url($instance['ad_url'] ?? '');
         $ad_code      = wp_kses_post($instance['ad_code'] ?? '');
+        $display_mode = $instance['display_mode'] ?? 'individual';
 
         $rel = [];
         if ($new_window) {
@@ -412,8 +411,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
             echo '<div class="gap-manual-ad-title">' . esc_html($ad_title) . '</div>';
         }
 
-        if ($ad_code !== '') {
-            // Process shortcodes in user-submitted ad code
+        if ($display_mode === 'shortcode' && $ad_code !== '') {
             $ad_code = do_shortcode($ad_code);
             echo '<div class="gap-manual-ad-code">' . $ad_code . '</div>';
             echo '</div>';
@@ -461,7 +459,7 @@ class Geo_Ads_Pro_Widget extends WP_Widget {
 
         $title      = isset($instance['title']) ? esc_html($instance['title']) : '';
         $mode       = isset($instance['mode']) ? esc_attr($instance['mode']) : (get_option('gap_enable_local_mode') ? 'local' : 'global');
-        $region     = isset($instance['region']) ? esc_attr($instance['region']) : esc_attr(get_option('gap_default_region', ''));
+        $region     = isset($instance['region']) ? esc_attr(Geo_Ads_Pro_Regions::normalize_region_input($instance['region'])) : esc_attr(Geo_Ads_Pro_Regions::normalize_region_input(get_option('gap_default_region', '')));
 
         echo $args['before_widget'];
 

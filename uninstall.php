@@ -1,7 +1,7 @@
 <?php
 // Date: 20260606
 /**
- * Geo Ads Pro Uninstall
+ * die1-Geo Ads Pro Uninstall
  *
  * Runs when the plugin is deleted.
  * 
@@ -20,6 +20,7 @@ if (!$delete_data) {
 
 delete_option('gap_enable_local_mode');
 delete_option('gap_default_region');
+delete_option('gap_unlimited_region_initialized');
 delete_option('gap_rotation_mode');
 delete_option('gap_rotation_state');
 delete_option('gap_abtest_auto');

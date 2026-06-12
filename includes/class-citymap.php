@@ -1,5 +1,5 @@
 <?php
-/* Plugin Name: Geo Ads Pro - class-citymap.php */
+/* Plugin Name: die1-Geo Ads Pro - class-citymap.php */
 /* Date: 20260606 */
 /* Author: Levent Cetin - 3CCS.com */
 

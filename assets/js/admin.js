@@ -1,8 +1,9 @@
-/* Plugin Name: Geo Ads Pro - admin.js */
+/* Plugin Name: die1-Geo Ads Pro - admin.js */
 /* Date: 20260610 */
 /* Author: Levent Cetin - 3CCS.com */
 
 jQuery(function($){
+    var i18n = window.GAP_ADMIN_I18N || {};
 
     // =========================================================================
     // Dropzone
@@ -72,7 +73,7 @@ jQuery(function($){
     $(document).on('click', '.gap-delete-banner-btn', function(e){
         e.preventDefault();
         var $btn = $(this);
-        var confirmMsg = $btn.data('confirm') || 'Are you sure?';
+        var confirmMsg = $btn.data('confirm') || i18n.areYouSure;
         if (!confirm(confirmMsg)) return;
 
         var form = $('<form method="post"></form>');
@@ -161,7 +162,7 @@ jQuery(function($){
             });
 
             if (checked.length === 0) {
-                alert($picker.data('no-selection') || 'Please select at least one region.');
+                alert($picker.data('no-selection') || i18n.selectAtLeastOneRegion);
                 return;
             }
 

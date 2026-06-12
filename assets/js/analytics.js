@@ -1,4 +1,4 @@
-/* Plugin Name: Geo Ads Pro - analytics.js */
+/* Plugin Name: die1-Geo Ads Pro - analytics.js */
 /* Date: 20260610 */
 /* Author: Levent Cetin - 3CCS.com */
 

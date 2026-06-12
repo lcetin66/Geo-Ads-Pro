@@ -486,7 +486,7 @@ class Geo_Ads_Pro_Analytics {
             $attachments = array_merge($attachments, $banner_attachments);
         }
 
-        $subject = sprintf(__('Geo Ads Pro Monthly Report (%s)', 'geo-ads-pro'), $report['month']);
+        $subject = sprintf(__('die1-Geo Ads Pro Monthly Report (%s)', 'geo-ads-pro'), $report['month']);
         $attachment_count = count($attachments) - 1;
         $message = $this->build_monthly_report_email_html($report, $download_url, $banner_ids, $attachment_count);
         $headers = ['Content-Type: text/html; charset=UTF-8'];
@@ -515,9 +515,6 @@ class Geo_Ads_Pro_Analytics {
     }
 
     public function handle_report_download_request() {
-        if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('Access denied.', 'geo-ads-pro'));
-        }
         $token = sanitize_text_field($_GET['gap_report_download'] ?? '');
         if ($token === '') {
             return;
@@ -551,7 +548,7 @@ class Geo_Ads_Pro_Analytics {
         $banner_cards = $this->build_banner_preview_cards_html($banner_ids);
 
         $html  = '<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:#1d2327;">';
-        $html .= '<h2 style="margin:0 0 12px;">' . esc_html__('Geo Ads Pro Monthly Report', 'geo-ads-pro') . '</h2>';
+        $html .= '<h2 style="margin:0 0 12px;">' . esc_html__('die1-Geo Ads Pro Monthly Report', 'geo-ads-pro') . '</h2>';
         $html .= '<p>' . esc_html(sprintf(__('Your monthly CSV report for %s is ready.', 'geo-ads-pro'), $report['month'])) . '</p>';
         $html .= '<p>' . esc_html($attachments_note) . '</p>';
         $html .= '<p style="margin:18px 0;">'
@@ -593,7 +590,7 @@ class Geo_Ads_Pro_Analytics {
             }
 
             $cards .= '<div style="font-size:13px;color:#50575e;">';
-            $cards .= esc_html(sprintf(__('Region: %s', 'geo-ads-pro'), $region !== '' ? $region : '-')) . '<br>';
+            $cards .= esc_html(sprintf(__('Region: %s', 'geo-ads-pro'), $region !== '' ? Geo_Ads_Pro_Regions::display_name($region) : '-')) . '<br>';
             $cards .= esc_html(sprintf(__('File: %s', 'geo-ads-pro'), $file !== '' ? $file : '-'));
             $cards .= '</div>';
             $cards .= '</div>';
@@ -939,7 +936,7 @@ class Geo_Ads_Pro_Analytics {
         $selected_month = isset($_POST['gap_report_month']) ? sanitize_text_field($_POST['gap_report_month']) : current_time('Y-m');
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Geo Ads Pro – Analytics', 'geo-ads-pro'); ?></h1>
+            <h1><?php esc_html_e('die1-Geo Ads Pro – Analytics', 'geo-ads-pro'); ?></h1>
 
             <p><?php esc_html_e('This screen displays click, impression, city, and monthly report statistics.', 'geo-ads-pro'); ?></p>
 
@@ -1037,12 +1034,12 @@ class Geo_Ads_Pro_Analytics {
                 <thead>
                     <tr>
                         <th><?php esc_html_e('Region', 'geo-ads-pro'); ?></th>
-                        <th>ID</th>
+                        <th><?php esc_html_e('ID', 'geo-ads-pro'); ?></th>
                         <th><?php esc_html_e('File', 'geo-ads-pro'); ?></th>
                         <th><?php esc_html_e('Customer Email', 'geo-ads-pro'); ?></th>
                         <th><?php esc_html_e('Impressions', 'geo-ads-pro'); ?></th>
                         <th><?php esc_html_e('Clicks', 'geo-ads-pro'); ?></th>
-                        <th>CTR</th>
+                        <th><?php esc_html_e('CTR', 'geo-ads-pro'); ?></th>
                         <th><?php esc_html_e('Top Cities', 'geo-ads-pro'); ?></th>
                     </tr>
                 </thead>
@@ -1050,7 +1047,7 @@ class Geo_Ads_Pro_Analytics {
                     <?php if (!empty($rows)): ?>
                         <?php foreach ($rows as $row): ?>
                             <tr>
-                                <td><?php echo esc_html($row['region']); ?></td>
+                                <td><?php echo esc_html(Geo_Ads_Pro_Regions::display_name($row['region'])); ?></td>
                                 <td><?php echo esc_html($row['id']); ?></td>
                                 <td><?php echo esc_html($row['file']); ?></td>
                                 <td><?php echo esc_html($row['email']); ?></td>

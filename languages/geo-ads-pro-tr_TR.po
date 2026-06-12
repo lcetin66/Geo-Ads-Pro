@@ -1,302 +1,825 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Geo Ads Pro 1.0.4\n"
+"Project-Id-Version: die1-Geo Ads Pro 1.0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-12 02:01+0200\n"
 "PO-Revision-Date: 2026-06-06 00:00+0000\n"
 "Last-Translator: Levent Cetin - 3CCS.com\n"
 "Language-Team: Turkish\n"
 "Language: tr_TR\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Domain: geo-ads-pro\n"
 
-msgid "%s Region – Upload Banner"
-msgstr "%s Bölgesi – Banner Yükle"
+#: geo-ads-pro.php:96
+msgid "View ad"
+msgstr "Reklamı görüntüle"
 
+#: geo-ads-pro.php:97
+msgid "No banner available."
+msgstr "%d banner yüklendi."
+
+#: geo-ads-pro.php:162
+msgid "Please select at least 2 banners."
+msgstr "Lütfen en az 2 banner seçin."
+
+#: geo-ads-pro.php:163
+msgid "Please enter a group name."
+msgstr "Lütfen bir grup adı girin."
+
+#: geo-ads-pro.php:164
+msgid "Security field missing. Please reload."
+msgstr "Güvenlik alanı eksik. Lütfen sayfayı yenileyin."
+
+#: geo-ads-pro.php:165
+msgid "Security nonce has no value. Please reload."
+msgstr "Güvenlik nonce değeri boş. Lütfen sayfayı yenileyin."
+
+#: geo-ads-pro.php:166 geo-ads-pro.php:182
+msgid "Please select at least one region."
+msgstr "Lütfen en az bir bölge seçin."
+
+#: geo-ads-pro.php:167
+#, php-format
+msgid "Banner #%s"
+msgstr "Banner #%s"
+
+#: geo-ads-pro.php:181
+msgid "Are you sure?"
+msgstr "Emin misiniz?"
+
+#: includes/class-abtest.php:21 includes/class-abtest.php:22
 msgid "A/B Test"
 msgstr "A/B Test"
 
-msgid "A/B Test Auto Optimization"
-msgstr "A/B Test Otomatik Optimizasyon"
-
-msgid "Action"
-msgstr "İşlem"
-
-msgid "Add"
-msgstr "Ekle"
-
-msgid "Add Region"
-msgstr "Bölge Ekle"
-
-msgid "Analytics"
-msgstr "Analytics"
-
-msgid "Analytics data reset."
-msgstr "Analytics verileri sıfırlandı."
-
-msgid "Are you sure you want to delete this banner?"
-msgstr "Bu banner'ı silmek istediğinize emin misiniz?"
-
-msgid "Are you sure you want to delete this region and all its banners?"
-msgstr "Bu bölgeyi ve tüm banner'larını silmek istediğinize emin misiniz?"
-
-msgid "Automatically select the banner with the highest CTR"
-msgstr "En yüksek CTR'a sahip banner'ı otomatik seç"
-
-msgid "Banner List"
-msgstr "Banner Listesi"
-
-msgid "Banner Rotation Mode"
-msgstr "Banner Rotasyon Modu"
-
-msgid "Banner → Region Assignment"
-msgstr "Banner → Bölge Ataması"
-
-msgid "Banner could not be deleted."
-msgstr "Banner silinemedi."
-
-msgid "Banner deleted."
-msgstr "Banner silindi."
-
-msgid "Banner uploaded."
-msgstr "Banner yüklendi."
-
-msgid "%d banner uploaded."
-msgid_plural "%d banners uploaded."
-msgstr[0] "%d banner yüklendi."
-msgstr[1] "%d banner yüklendi."
-
-msgid "Banners with the same size are automatically grouped as variants."
-msgstr "Aynı boyuttaki banner'lar otomatik varyant olarak gruplanır."
-
-msgid "City"
-msgstr "Şehir"
-
-msgid "City mapped: %1$s → %2$s"
-msgstr "Şehir eşleştirildi: %1$s → %2$s"
-
-msgid "City mapping could not be updated."
-msgstr "Şehir eşleştirmesi güncellenemedi."
-
-msgid "City mapping deleted: %s"
-msgstr "Şehir eşleştirmesi silindi: %s"
-
-msgid "City mapping updated: %s"
-msgstr "Şehir eşleştirmesi güncellendi: %s"
-
-msgid "City name (example: Düsseldorf)"
-msgstr "Şehir adı (örnek: Düsseldorf)"
-
-msgid "City → Region Mapping"
-msgstr "Şehir → Bölge Eşleştirme"
-
-msgid "Click URL"
-msgstr "Tıklama URL"
-
-msgid "Clicks"
-msgstr "Tıklamalar"
-
-msgid "Current Mappings"
-msgstr "Mevcut Eşleştirmeler"
-
-msgid "Default Region"
-msgstr "Varsayılan Bölge"
-
-msgid "Delete"
-msgstr "Sil"
-
-msgid "Delete This Region"
-msgstr "Bu Bölgeyi Sil"
-
-msgid "Delete this city mapping?"
-msgstr "Bu şehir eşleştirmesi silinsin mi?"
-
-msgid "Displays region-based banners."
-msgstr "Bölge bazlı banner gösterimi sağlar."
-
-msgid "Edit Region Banners"
-msgstr "Bölge Bannerlarını Düzenle"
-
-msgid "Enable IP-based city → region mapping"
-msgstr "IP tabanlı şehir → bölge eşleştirmeyi aktif et"
-
-msgid "Example: NRW, Istanbul, Bayern"
-msgstr "Örnek: NRW, Istanbul, Bayern"
-
-msgid "File"
-msgstr "Dosya"
-
-msgid "Geo Ads Pro Widget"
-msgstr "Geo Ads Pro Widget"
-
-msgid "Geo Ads Pro – A/B Test System"
-msgstr "Geo Ads Pro – A/B Test Sistemi"
-
-msgid "Geo Ads Pro – Analytics"
-msgstr "Geo Ads Pro – Analytics"
-
-msgid "Geo Ads Pro – Regions & Banner Management"
-msgstr "Geo Ads Pro – Bölgeler & Banner Yönetimi"
-
-msgid "Geo Ads Pro – Settings"
-msgstr "Geo Ads Pro – Ayarlar"
-
-msgid "Invalid file type."
-msgstr "Geçersiz dosya türü."
-
-msgid "Invalid request."
-msgstr "Geçersiz istek."
-
-msgid "Impressions"
-msgstr "Gösterimler"
-
-msgid "Last Upgrade"
-msgstr "Son Upgrade"
-
-msgid "Local (IP)"
-msgstr "Local (IP)"
-
-msgid "Local Mode (IP Based)"
-msgstr "Local Mode (IP Tabanlı)"
-
-msgid "Location Mode:"
-msgstr "Konum Modu:"
-
-msgid "No region selected."
-msgstr "Bölge seçilmedi."
-
-msgid "No"
-msgstr "Hayır"
-
-msgid "No analytics data yet."
-msgstr "Henüz analytics verisi yok."
-
-msgid "Plugin Version"
-msgstr "Plugin Sürümü"
-
-msgid "Preview"
-msgstr "Önizleme"
-
-msgid "Random"
-msgstr "Random"
-
-msgid "Rate limit exceeded."
-msgstr "Rate limit aşıldı."
-
-msgid "Region"
-msgstr "Bölge"
-
-msgid "Region added: %s"
-msgstr "Bölge eklendi: %s"
-
-msgid "Region deleted: %s"
-msgstr "Bölge silindi: %s"
-
-msgid "Region in Global Mode:"
-msgstr "Global Modda Bölge:"
-
-msgid "Region not found."
-msgstr "Bölge bulunamadı."
-
-msgid "Remove banner files, JSON data, and settings when the plugin is deleted"
-msgstr "Eklenti silinince banner dosyalarını, JSON verilerini ve ayarları kaldır"
-
-msgid "Reset Analytics Data"
-msgstr "Analytics Verilerini Sıfırla"
-
-msgid "Reset analytics data?"
-msgstr "Analytics verileri sıfırlansın mı?"
-
-msgid "Save Selections"
-msgstr "Seçimleri Kaydet"
-
-msgid "Save Settings"
-msgstr "Ayarları Kaydet"
-
-msgid "Schema Version"
-msgstr "Schema Sürümü"
-
-msgid "Select"
-msgstr "Seçin"
-
-msgid "Selected"
-msgstr "Seçili"
-
-msgid "Select Region"
-msgstr "Bölge Seç"
-
-msgid "Select a region"
-msgstr "Bölge seçin"
-
-msgid "Select or drop banner images"
-msgstr "Banner görsellerini seçin veya bırakın"
-
-msgid "Selections and URLs saved."
-msgstr "Seçimler ve URL'ler kaydedildi."
-
-msgid "Sequential"
-msgstr "Sequential"
-
-msgid "Settings"
-msgstr "Ayarlar"
-
-msgid "Size"
-msgstr "Boyut"
-
-msgid "There are no banners for this region yet."
-msgstr "Bu bölge için henüz banner yok."
-
-msgid "There are no banners uploaded yet."
-msgstr "Henüz yüklenmiş banner yok."
-
-msgid "Drop banner images here"
-msgstr "Banner görsellerini buraya bırakın"
-
-msgid "or click to choose JPG, PNG, GIF, or WebP files"
-msgstr "veya JPG, PNG, GIF ya da WebP dosyaları seçmek için tıklayın"
-
-msgid "There are no mappings yet."
-msgstr "Henüz eşleştirme yok."
-
-msgid "This screen displays click and impression statistics."
-msgstr "Bu ekran tıklama ve gösterim istatistiklerini gösterir."
-
-msgid "Title:"
-msgstr "Başlık:"
-
-msgid "Uninstall Cleanup"
-msgstr "Uninstall Temizliği"
-
-msgid "Update"
-msgstr "Güncelle"
-
-msgid "Upload"
-msgstr "Yükle"
-
-msgid "Upload Banner"
-msgstr "Banner Yükle"
-
-msgid "Add or select a region to upload banners."
-msgstr "Banner yüklemek için bir bölge ekleyin veya seçin."
-
-msgid "The drag and drop upload area will appear here after a region is selected."
-msgstr "Bir bölge seçildikten sonra drag & drop yükleme alanı burada görünecek."
-
-msgid "Upload error."
-msgstr "Yükleme hatası."
-
-msgid "Upload / Edit Banners"
-msgstr "Banner Yükle / Düzenle"
-
-msgid "Variants"
-msgstr "Varyantlar"
-
-msgid "Winner"
-msgstr "Kazanan"
-
+#: includes/class-abtest.php:32 includes/class-admin.php:74
+#: includes/class-admin.php:381 includes/class-admin.php:817
+#: includes/class-analytics.php:869 includes/class-settings.php:43
 msgid "You do not have permission."
 msgstr "Yetkin yok."
 
-msgid "Yes"
-msgstr "Evet"
+#: includes/class-abtest.php:39
+msgid "die1-Geo Ads Pro – A/B Test System"
+msgstr "die1-Geo Ads Pro – A/B Test Sistemi"
+
+#: includes/class-abtest.php:42
+msgid "What is the A/B Test System?"
+msgstr "A/B Test Sistemi nedir?"
+
+#: includes/class-abtest.php:43
+msgid ""
+"The A/B Test System automatically compares banners of the same size within "
+"the same region. It measures which banner gets more clicks and declares the "
+"best-performing one as the \"Winner\"."
+msgstr ""
+"A/B Test Sistemi, aynı bölgedeki aynı boyuta sahip banner'ları otomatik "
+"olarak karşılaştırır. Hangi banner'ın daha fazla tıklama aldığını ölçer ve "
+"en iyi performans göstereni \"Kazanan\" olarak belirler."
+
+#: includes/class-abtest.php:44
+msgid ""
+"CTR (Click-Through Rate) = Number of Clicks ÷ Number of Impressions × 100. "
+"Example: If a banner was shown 1,000 times and clicked 20 times, the CTR is "
+"2%. The higher the CTR, the more effective the banner."
+msgstr ""
+"CTR (Tıklama Oranı) = Tıklama Sayısı ÷ Gösterim Sayısı × 100. Örnek: Bir "
+"banner 1.000 kez gösterilip 20 kez tıklandıysa CTR %2 olur. CTR ne kadar "
+"yüksekse banner o kadar etkilidir."
+
+#: includes/class-abtest.php:51 includes/class-admin.php:216
+#: includes/class-admin.php:887 includes/class-analytics.php:1036
+msgid "Region"
+msgstr "Bölge"
+
+#: includes/class-abtest.php:52
+msgid "The geographic area where the banner is displayed."
+msgstr "Banner'ın gösterildiği coğrafi alan."
+
+#: includes/class-abtest.php:55 includes/class-admin.php:888
+msgid "Size"
+msgstr "Boyut"
+
+#: includes/class-abtest.php:56
+msgid ""
+"Banner dimensions (width × height in pixels). Banners with the same size are "
+"compared against each other."
+msgstr ""
+"Banner ölçüleri (piksel olarak genişlik × yükseklik). Aynı boyuttaki "
+"banner'lar birbiriyle karşılaştırılır."
+
+#: includes/class-abtest.php:59
+msgid "Variants"
+msgstr "Varyantlar"
+
+#: includes/class-abtest.php:60
+msgid ""
+"All competing banners in this group. Each banner's ID and CTR (click rate) "
+"is shown."
+msgstr ""
+"Bu gruptaki tüm yarışan banner'lar. Her banner'ın ID'si ve CTR'si (tıklama "
+"oranı) gösterilir."
+
+#: includes/class-abtest.php:63
+msgid "Winner"
+msgstr "Kazanan"
+
+#: includes/class-abtest.php:64
+msgid ""
+"The banner with the highest CTR – the most effective banner in this group."
+msgstr "En yüksek CTR'ye sahip banner - bu gruptaki en etkili banner."
+
+#: includes/class-abtest.php:111 includes/class-abtest.php:120
+#: includes/class-admin.php:889 includes/class-analytics.php:1037
+msgid "ID"
+msgstr "ID"
+
+#: includes/class-abtest.php:112 includes/class-analytics.php:1042
+msgid "CTR"
+msgstr "CTR"
+
+#: includes/class-admin.php:18 includes/class-admin.php:29
+#: includes/class-admin.php:30 includes/class-admin.php:878
+msgid "Banner List"
+msgstr "Banner Listesi"
+
+#: includes/class-admin.php:38 includes/class-admin.php:39
+msgid "Regions & Upload"
+msgstr "%s Bölgesi – Banner Yükle"
+
+#: includes/class-admin.php:47 includes/class-admin.php:48
+#: includes/class-admin.php:120
+msgid "Rotation Settings"
+msgstr "Ayarları Kaydet"
+
+#: includes/class-admin.php:84 includes/class-admin.php:108
+#: includes/class-admin.php:392 includes/class-admin.php:429
+#: includes/class-admin.php:452 includes/class-admin.php:485
+#: includes/class-admin.php:520 includes/class-admin.php:545
+#: includes/class-admin.php:589 includes/class-analytics.php:877
+#: includes/class-settings.php:49
+msgid "Invalid request."
+msgstr "Geçersiz istek."
+
+#: includes/class-admin.php:99
+#, php-format
+msgid "Rotation Group %d"
+msgstr "Rotasyon Grubu %d"
+
+#: includes/class-admin.php:102
+msgid "Rotation group saved."
+msgstr "Rotasyon grubu kaydedildi."
+
+#: includes/class-admin.php:112
+msgid "Rotation group deleted."
+msgstr "Banner silindi."
+
+#: includes/class-admin.php:122
+msgid "New Rotation Group"
+msgstr "Banner Rotasyon Modu"
+
+#: includes/class-admin.php:128
+msgid "Filter by Region"
+msgstr "Bu Bölgeyi Sil"
+
+#: includes/class-admin.php:131
+msgid "All Banners"
+msgstr "Banner Yükle"
+
+#: includes/class-admin.php:155
+msgid "Rotation Group Members"
+msgstr "Rotasyon Grubu Üyeleri"
+
+#: includes/class-admin.php:164
+msgid "Drag banners here to add them to the rotation group."
+msgstr "Bannerları rotasyon grubuna eklemek için buraya sürükleyin."
+
+#: includes/class-admin.php:170 includes/class-admin.php:659
+msgid "Select Region"
+msgstr "Bölge Seç"
+
+#: includes/class-admin.php:174
+msgid "Select regions…"
+msgstr "Bölge seçin"
+
+#: includes/class-admin.php:188 includes/class-admin.php:215
+msgid "Group Name"
+msgstr "Grup Adı"
+
+#: includes/class-admin.php:190
+msgid "e.g. Stuttgart Summer Rotation"
+msgstr "örn. Stuttgart Yaz Rotasyonu"
+
+#: includes/class-admin.php:193
+msgid "Create Rotate Group"
+msgstr "Rotasyon Grubu Oluştur"
+
+#: includes/class-admin.php:198 includes/class-admin.php:218
+#: includes/class-admin.php:895 includes/class-widget.php:74
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: includes/class-admin.php:201
+msgid "Copy this shortcode and paste it on your page."
+msgstr "Bu shortcode’u kopyalayıp sayfanıza yapıştırın."
+
+#: includes/class-admin.php:209
+msgid "Rotated Banners"
+msgstr "Banner Yükle"
+
+#: includes/class-admin.php:217
+msgid "Banner Count"
+msgstr "Banner Listesi"
+
+#: includes/class-admin.php:219
+msgid "Action"
+msgstr "İşlem"
+
+#: includes/class-admin.php:237
+msgid "Delete this rotation group?"
+msgstr "Bu şehir eşleştirmesi silinsin mi?"
+
+#: includes/class-admin.php:240 includes/class-admin.php:896
+#: includes/class-admin.php:935
+msgid "Delete"
+msgstr "Sil"
+
+#: includes/class-admin.php:248
+msgid "No rotation groups created yet."
+msgstr "Henüz rotasyon grubu oluşturulmadı."
+
+#: includes/class-admin.php:345
+msgid "Upload error."
+msgstr "Yükleme hatası."
+
+#: includes/class-admin.php:351
+msgid "Invalid file type."
+msgstr "Geçersiz dosya türü."
+
+#: includes/class-admin.php:418
+#, php-format
+msgid "Region(s) deleted, banners archived to Media Library: %s"
+msgstr "Bölge(ler) silindi, bannerlar Medya Kütüphanesi’ne arşivlendi: %s"
+
+#: includes/class-admin.php:419
+#, php-format
+msgid "Region(s) and banners deleted: %s"
+msgstr "Bölge silindi: %s"
+
+#: includes/class-admin.php:434
+msgid "The unlimited region is fixed and cannot be deleted."
+msgstr "Sınırsız bölge sabittir ve silinemez."
+
+#: includes/class-admin.php:440
+#, php-format
+msgid "Region deleted: %s"
+msgstr "Bölge silindi: %s"
+
+#: includes/class-admin.php:445
+msgid "Region not found."
+msgstr "Bölge bulunamadı."
+
+#: includes/class-admin.php:474 includes/class-admin.php:872
+msgid "Banner deleted."
+msgstr "Banner silindi."
+
+#: includes/class-admin.php:477
+msgid "Banner could not be deleted."
+msgstr "Banner silinemedi."
+
+#: includes/class-admin.php:510
+#, php-format
+msgid "Region added: %s"
+msgstr "Bölge eklendi: %s"
+
+#: includes/class-admin.php:536
+msgid "Region targeting saved."
+msgstr "Bölge hedefleme kaydedildi."
+
+#: includes/class-admin.php:550
+msgid "No region selected."
+msgstr "Bölge seçilmedi."
+
+#: includes/class-admin.php:626
+msgid "Selections, URLs, and customer emails saved."
+msgstr "Seçimler ve URL'ler kaydedildi."
+
+#: includes/class-admin.php:647
+msgid "die1-Geo Ads Pro – Regions & Banner Management"
+msgstr "die1-Geo Ads Pro – Bölgeler & Banner Yönetimi"
+
+#: includes/class-admin.php:649
+msgid "Add Region"
+msgstr "Bölge Ekle"
+
+#: includes/class-admin.php:652
+msgid "Example: NRW, Istanbul, Bayern"
+msgstr "Örnek: NRW, Istanbul, Bayern"
+
+#: includes/class-admin.php:653 includes/class-admin.php:732
+msgid "Radius km"
+msgstr "Yarıçap km"
+
+#: includes/class-admin.php:654
+msgid "Add"
+msgstr "Ekle"
+
+#: includes/class-admin.php:665
+msgid "Please select at least one region to delete."
+msgstr "Silmek için en az bir bölge seçin."
+
+#: includes/class-admin.php:667
+msgid "Select a region"
+msgstr "Bölge seçin"
+
+#: includes/class-admin.php:685
+msgid "Delete This Region"
+msgstr "Bu Bölgeyi Sil"
+
+#: includes/class-admin.php:690
+msgid ""
+"When you delete the selected region(s) ({regions}), all banners belonging to "
+"those regions will also be deleted automatically. Would you like to archive "
+"the banners to the Media Library instead?"
+msgstr ""
+"Seçilen bölge(ler)i ({regions}) sildiğinizde, bu bölgelere ait tüm bannerlar "
+"da otomatik olarak silinir. Bunun yerine bannerları Medya Kütüphanesi’ne "
+"arşivlemek ister misiniz?"
+
+#: includes/class-admin.php:699
+msgid "Yes, archive"
+msgstr "Evet, arşivle"
+
+#: includes/class-admin.php:700
+msgid "No, delete"
+msgstr "Sil"
+
+#: includes/class-admin.php:701
+msgid "Cancel"
+msgstr "İptal"
+
+#: includes/class-admin.php:721 includes/class-admin.php:726
+msgid "Region Radius Targeting"
+msgstr "Bölge Yarıçap Hedefleme"
+
+#: includes/class-admin.php:723
+msgid ""
+"The unlimited region is always available and does not use radius targeting."
+msgstr "Sınırsız bölge her zaman kullanılabilir ve radius hedefleme kullanmaz."
+
+#: includes/class-admin.php:739
+#, php-format
+msgid ""
+"Used when Settings → Local Targeting Method is set to radius matching. "
+"Coordinates are resolved automatically from the region name. Current center: "
+"%1$s, %2$s"
+msgstr ""
+"Ayarlar → Yerel Hedefleme Yöntemi yarıçap eşleştirme olarak ayarlandığında "
+"kullanılır. Koordinatlar bölge adından otomatik olarak çözümlenir. Mevcut "
+"merkez: %1$s, %2$s"
+
+#: includes/class-admin.php:745
+msgid "Save Region Targeting"
+msgstr "Bölge Hedeflemeyi Kaydet"
+
+#: includes/class-admin.php:751
+#, php-format
+msgid "%s Region – Upload Banner"
+msgstr "%s Bölgesi – Banner Yükle"
+
+#: includes/class-admin.php:758 includes/class-admin.php:892
+#: includes/class-analytics.php:994 includes/class-analytics.php:1039
+msgid "Customer Email"
+msgstr "Müşteri E-postası"
+
+#: includes/class-admin.php:766
+msgid "Monthly CSV reports can be sent to this email address."
+msgstr "Aylık CSV raporları bu e-posta adresine gönderilebilir."
+
+#: includes/class-admin.php:771 includes/class-admin.php:890
+#: includes/class-widget.php:240
+msgid "Ad URL"
+msgstr "Reklam URL'si"
+
+#: includes/class-admin.php:779
+msgid "The URL that the banner links to when clicked."
+msgstr "Banner tıklandığında açılacak URL."
+
+#: includes/class-admin.php:784 includes/class-admin.php:891
+msgid "Open in"
+msgstr "Açılma yeri"
+
+#: includes/class-admin.php:788 includes/class-admin.php:921
+msgid "New tab"
+msgstr "Yeni sekme"
+
+#: includes/class-admin.php:792 includes/class-admin.php:922
+msgid "Same page"
+msgstr "Aynı sayfa"
+
+#: includes/class-admin.php:795
+msgid "Select or drop banner images"
+msgstr "Banner görsellerini seçin veya bırakın"
+
+#: includes/class-admin.php:798
+msgid "Drop banner images here"
+msgstr "Banner görsellerini buraya bırakın"
+
+#: includes/class-admin.php:799
+msgid "or click to choose JPG, PNG, GIF, or WebP files"
+msgstr "veya JPG, PNG, GIF ya da WebP dosyaları seçmek için tıklayın"
+
+#: includes/class-admin.php:802
+msgid "Upload"
+msgstr "Yükle"
+
+#: includes/class-admin.php:847
+msgid "Banner list saved."
+msgstr "Banner silindi."
+
+#: includes/class-admin.php:886
+msgid "Preview"
+msgstr "Önizleme"
+
+#: includes/class-admin.php:893 includes/class-analytics.php:1041
+msgid "Clicks"
+msgstr "Tıklamalar"
+
+#: includes/class-admin.php:894
+msgid "Views"
+msgstr "Görüntülenmeler"
+
+#: includes/class-admin.php:930
+msgid "Click to copy"
+msgstr "Kopyalamak için tıklayın"
+
+#: includes/class-admin.php:931
+msgid "Copied!"
+msgstr "Kopyalandı!"
+
+#: includes/class-admin.php:945
+msgid "There are no banners uploaded yet."
+msgstr "Henüz yüklenmiş banner yok."
+
+#: includes/class-admin.php:952
+msgid "Save Changes"
+msgstr "Ayarları Kaydet"
+
+#: includes/class-analytics.php:348
+msgid "Unknown"
+msgstr "Bilinmiyor"
+
+#: includes/class-analytics.php:472
+msgid "A valid email address is required."
+msgstr "Geçerli bir e-posta adresi gereklidir."
+
+#: includes/class-analytics.php:478
+msgid "Could not create a temporary report file."
+msgstr "Geçici rapor dosyası oluşturulamadı."
+
+#: includes/class-analytics.php:489
+#, php-format
+msgid "die1-Geo Ads Pro Monthly Report (%s)"
+msgstr "die1-Geo Ads Pro Aylık Raporu (%s)"
+
+#: includes/class-analytics.php:498
+msgid "The email could not be sent."
+msgstr "E-posta gönderilemedi."
+
+#: includes/class-analytics.php:525
+msgid "Report link expired or invalid."
+msgstr "Rapor bağlantısının süresi dolmuş veya geçersiz."
+
+#: includes/class-analytics.php:546
+msgid "No banner image attachments were available for this report."
+msgstr "Bu rapor için banner görsel eki bulunamadı."
+
+#: includes/class-analytics.php:551
+msgid "die1-Geo Ads Pro Monthly Report"
+msgstr "die1-Geo Ads Pro Aylık Raporu"
+
+#: includes/class-analytics.php:552
+#, php-format
+msgid "Your monthly CSV report for %s is ready."
+msgstr "%s için aylık CSV raporunuz hazır."
+
+#: includes/class-analytics.php:556 includes/class-analytics.php:982
+msgid "Download CSV"
+msgstr "CSV İndir"
+
+#: includes/class-analytics.php:561
+msgid "Banner Previews"
+msgstr "Banner Önizlemeleri"
+
+#: includes/class-analytics.php:565
+msgid "Best regards."
+msgstr "Saygılarımızla."
+
+#: includes/class-analytics.php:586
+#, php-format
+msgid "Banner #%d"
+msgstr "Banner #%d"
+
+#: includes/class-analytics.php:593
+#, php-format
+msgid "Region: %s"
+msgstr "Bölge: %s"
+
+#: includes/class-analytics.php:594
+#, php-format
+msgid "File: %s"
+msgstr "Dosya: %s"
+
+#: includes/class-analytics.php:858 includes/class-analytics.php:859
+msgid "Analytics"
+msgstr "Analytics"
+
+#: includes/class-analytics.php:899
+msgid "Monthly report emailed successfully."
+msgstr "Aylık rapor e-posta ile başarıyla gönderildi."
+
+#: includes/class-analytics.php:930
+msgid "No email"
+msgstr "E-posta yok"
+
+#: includes/class-analytics.php:939
+msgid "die1-Geo Ads Pro – Analytics"
+msgstr "die1-Geo Ads Pro – Analytics"
+
+#: includes/class-analytics.php:941
+msgid ""
+"This screen displays click, impression, city, and monthly report statistics."
+msgstr "Bu ekran tıklama ve gösterim istatistiklerini gösterir."
+
+#: includes/class-analytics.php:952
+msgid "Monthly Report"
+msgstr "Aylık Rapor"
+
+#: includes/class-analytics.php:957 includes/class-analytics.php:995
+msgid "Month"
+msgstr "Ay"
+
+#: includes/class-analytics.php:961
+msgid "Banner"
+msgstr "Banner Listesi"
+
+#: includes/class-analytics.php:964
+msgid "All banners"
+msgstr "Tüm bannerlar"
+
+#: includes/class-analytics.php:974
+msgid "Email Override"
+msgstr "E-posta Üzerine Yazma"
+
+#: includes/class-analytics.php:977
+msgid "Leave empty to use the selected banner’s stored customer email."
+msgstr ""
+"Seçilen bannerın kayıtlı müşteri e-postasını kullanmak için boş bırakın."
+
+#: includes/class-analytics.php:983
+msgid "Send by Email"
+msgstr "E-posta ile Gönder"
+
+#: includes/class-analytics.php:989
+msgid "Automatic Report History"
+msgstr "Otomatik Rapor Geçmişi"
+
+#: includes/class-analytics.php:996
+msgid "Last Sent"
+msgstr "Son Gönderim"
+
+#: includes/class-analytics.php:997
+msgid "Banners"
+msgstr "Banner Listesi"
+
+#: includes/class-analytics.php:998
+msgid "Banner IDs"
+msgstr "Banner Listesi"
+
+#: includes/class-analytics.php:1014
+msgid "No automatic monthly reports have been sent yet."
+msgstr "Henüz otomatik aylık rapor gönderilmedi."
+
+#: includes/class-analytics.php:1024
+msgid "Banner Performance"
+msgstr "Banner Performansı"
+
+#: includes/class-analytics.php:1028 includes/class-analytics.php:1071
+msgid "Visitors by City"
+msgstr "Şehre Göre Ziyaretçiler"
+
+#: includes/class-analytics.php:1038
+msgid "File"
+msgstr "Dosya"
+
+#: includes/class-analytics.php:1040
+msgid "Impressions"
+msgstr "Gösterimler"
+
+#: includes/class-analytics.php:1043
+msgid "Top Cities"
+msgstr "En İyi Şehirler"
+
+#: includes/class-analytics.php:1062
+msgid "No analytics data yet."
+msgstr "Henüz analytics verisi yok."
+
+#: includes/class-analytics.php:1072
+msgid "Visitors by Region"
+msgstr "Bölgeye Göre Ziyaretçiler"
+
+#: includes/class-regions.php:67
+msgid "Unlimited"
+msgstr "Sınırsız"
+
+#: includes/class-rest.php:32
+msgid "Rate limit exceeded."
+msgstr "Rate limit aşıldı."
+
+#: includes/class-settings.php:19 includes/class-settings.php:20
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: includes/class-settings.php:53
+msgid "Analytics data reset."
+msgstr "Analytics verileri sıfırlandı."
+
+#: includes/class-settings.php:60
+msgid "die1-Geo Ads Pro – Settings"
+msgstr "die1-Geo Ads Pro – Ayarlar"
+
+#: includes/class-settings.php:65
+msgid "Plugin Version"
+msgstr "Plugin Sürümü"
+
+#: includes/class-settings.php:69
+msgid "Schema Version"
+msgstr "Schema Sürümü"
+
+#: includes/class-settings.php:73
+msgid "Last Upgrade"
+msgstr "Son Upgrade"
+
+#: includes/class-settings.php:86
+msgid "Local Mode (IP Based)"
+msgstr "Local Mode (IP Tabanlı)"
+
+#: includes/class-settings.php:90
+msgid "Enable IP-based city → region mapping"
+msgstr "IP tabanlı şehir → bölge eşleştirmeyi aktif et"
+
+#: includes/class-settings.php:95
+msgid "Default Region"
+msgstr "Varsayılan Bölge"
+
+#: includes/class-settings.php:98
+msgid "Select"
+msgstr "Seçin"
+
+#: includes/class-settings.php:110
+msgid "Banner Rotation Mode"
+msgstr "Banner Rotasyon Modu"
+
+#: includes/class-settings.php:113
+msgid "Random"
+msgstr "Random"
+
+#: includes/class-settings.php:114
+msgid "Sequential"
+msgstr "Sequential"
+
+#: includes/class-settings.php:120
+msgid "A/B Test Auto Optimization"
+msgstr "A/B Test Otomatik Optimizasyon"
+
+#: includes/class-settings.php:124
+msgid "Automatically select the banner with the highest CTR"
+msgstr "En yüksek CTR'a sahip banner'ı otomatik seç"
+
+#: includes/class-settings.php:129
+msgid "Uninstall Cleanup"
+msgstr "Uninstall Temizliği"
+
+#: includes/class-settings.php:133
+msgid "Remove banner files, JSON data, and settings when the plugin is deleted"
+msgstr ""
+"Eklenti silinince banner dosyalarını, JSON verilerini ve ayarları kaldır"
+
+#: includes/class-settings.php:141
+msgid "Save Settings"
+msgstr "Ayarları Kaydet"
+
+#: includes/class-settings.php:149
+msgid "Reset analytics data?"
+msgstr "Analytics verileri sıfırlansın mı?"
+
+#: includes/class-settings.php:150
+msgid "Reset Analytics Data"
+msgstr "Analytics Verilerini Sıfırla"
+
+#: includes/class-widget.php:30
+msgid "die1-Geo Ads Pro Widget"
+msgstr "die1-Geo Ads Pro Widget"
+
+#: includes/class-widget.php:31
+msgid "Displays region-based banners."
+msgstr "Bölge bazlı banner gösterimi sağlar."
+
+#: includes/class-widget.php:62
+msgid "Display mode"
+msgstr "Gösterim modu"
+
+#: includes/class-widget.php:68
+msgid "Individual"
+msgstr "Özel"
+
+#: includes/class-widget.php:80
+msgid "Widget Info"
+msgstr "Widget Bilgisi"
+
+#: includes/class-widget.php:90
+msgid "Title"
+msgstr "Başlık"
+
+#: includes/class-widget.php:102
+msgid "Ad title"
+msgstr "Reklam başlığı"
+
+#: includes/class-widget.php:112
+msgid "Ad link title"
+msgstr "Reklam bağlantı başlığı"
+
+#: includes/class-widget.php:125
+msgid "Show ad only?"
+msgstr "Sadece reklam gösterilsin mi?"
+
+#: includes/class-widget.php:134
+msgid "Open links in a new window?"
+msgstr "Bağlantılar yeni pencerede açılsın mı?"
+
+#: includes/class-widget.php:143
+msgid "Nofollow? (Do not follow link)"
+msgstr "Nofollow? (Bağlantıyı takip etme)"
+
+#: includes/class-widget.php:149
+msgid "Image URL"
+msgstr "Görsel URL'si"
+
+#: includes/class-widget.php:160
+msgid "Image width"
+msgstr "Görsel genişliği"
+
+#: includes/class-widget.php:173
+msgid "Image height"
+msgstr "Görsel yüksekliği"
+
+#: includes/class-widget.php:186
+msgid "Padding"
+msgstr "Padding"
+
+#: includes/class-widget.php:190
+msgid "Top"
+msgstr "Üst"
+
+#: includes/class-widget.php:199
+msgid "Right"
+msgstr "Sağ"
+
+#: includes/class-widget.php:208
+msgid "Bottom"
+msgstr "Alt"
+
+#: includes/class-widget.php:217
+msgid "Left"
+msgstr "Sol"
+
+#: includes/class-widget.php:230
+msgid "Image alt text"
+msgstr "Görsel alternatif metni"
+
+#: includes/class-widget.php:252
+msgid "HTML Code"
+msgstr "HTML Kodu"
+
+#: includes/class-widget.php:265
+msgid "HTML Embed"
+msgstr "HTML Embed"
+
+#~ msgid "Banners with the same size are automatically grouped as variants."
+#~ msgstr "Aynı boyuttaki banner'lar otomatik varyant olarak gruplanır."
+
+#, php-format
+#~ msgid "%d banner uploaded."
+#~ msgid_plural "%d banners uploaded."
+#~ msgstr[0] "%d banner yüklendi."
+#~ msgstr[1] "%d banner yüklendi."
+
+#~ msgid "Access denied."
+#~ msgstr "Erişim reddedildi."
+
+#, php-format
+#~ msgid "%d banner image is attached with the report."
+#~ msgid_plural "%d banner images are attached with the report."
+#~ msgstr[0] "Rapora %d banner görseli eklendi."
+#~ msgstr[1] "Rapora %d banner görseli eklendi."

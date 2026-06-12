@@ -40,6 +40,10 @@ class Geo_Ads_Pro {
     public $ajax;
     public $analytics;
     public $banner_service;
+    public $abtest;
+    public $shortcode;
+    public $rest;
+    public $settings;
 
     private static $instance = null;
 
@@ -62,8 +66,6 @@ class Geo_Ads_Pro {
         $this->rest           = new Geo_Ads_Pro_REST($this->regions, $this->citymap, $this->banner_service);
         $this->settings       = new Geo_Ads_Pro_Settings();
 
-
-        add_action('plugins_loaded', [$this, 'init']);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_public_assets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
     }
@@ -155,6 +157,15 @@ class Geo_Ads_Pro {
                 GAP_VERSION,
                 true
             );
+
+            wp_localize_script('geo-ads-pro-admin-rotation', 'GAP_ROTATION_I18N', [
+                'selectAtLeastTwoBanners' => __('Please select at least 2 banners.', 'geo-ads-pro'),
+                'enterGroupName'          => __('Please enter a group name.', 'geo-ads-pro'),
+                'securityFieldMissing'    => __('Security field missing. Please reload.', 'geo-ads-pro'),
+                'securityNonceMissing'    => __('Security nonce has no value. Please reload.', 'geo-ads-pro'),
+                'selectAtLeastOneRegion'  => __('Please select at least one region.', 'geo-ads-pro'),
+                'bannerNumber'            => __('Banner #%s', 'geo-ads-pro'),
+            ]);
         }
 
         // Genel admin JS
@@ -165,12 +176,22 @@ class Geo_Ads_Pro {
             GAP_VERSION,
             true
         );
+
+        wp_localize_script('geo-ads-pro-admin', 'GAP_ADMIN_I18N', [
+            'areYouSure'               => __('Are you sure?', 'geo-ads-pro'),
+            'selectAtLeastOneRegion'   => __('Please select at least one region.', 'geo-ads-pro'),
+        ]);
     }
 
 
 }
 
 function GAP() { return Geo_Ads_Pro::instance(); }
+
+function gap_bootstrap_plugin() {
+    load_plugin_textdomain('geo-ads-pro', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    GAP();
+}
 
 function gap_activate() {
     gap_maybe_upgrade(true);
@@ -263,6 +284,7 @@ function gap_redirect_legacy_admin_paths() {
 
 register_activation_hook(__FILE__, 'gap_activate');
 register_deactivation_hook(__FILE__, 'gap_deactivate');
+add_action('plugins_loaded', 'gap_bootstrap_plugin', 0);
 add_action('plugins_loaded', 'gap_schedule_monthly_reports_cron', 2);
 add_action('plugins_loaded', 'gap_maybe_upgrade', 1);
 add_action('init', 'gap_redirect_legacy_admin_paths', 0);
@@ -293,7 +315,7 @@ add_action('send_headers', function() {
 
 // Cover WordPress Gutenberg Custom HTML blocks explicitly — only our shortcode
 add_filter('render_block', function($block_content, $block) {
-    if ($block['blockName'] !== 'core/html') return $block_content;
+    if (($block['blockName'] ?? '') !== 'core/html') return $block_content;
     if (strpos($block_content, '[geo_ads_pro') === false) return $block_content;
     return do_shortcode($block_content);
 }, 10, 2 );
@@ -301,5 +323,3 @@ add_filter('render_block', function($block_content, $block) {
 // SECURITY: Do NOT hijack wp_kses_post — it strips dangerous HTML.
 // Running do_shortcode on every kses output is a stored-XSS vector.
 // (Removed the dangerous wp_kses_post hook that was processing arbitrary content.)
-
-GAP();

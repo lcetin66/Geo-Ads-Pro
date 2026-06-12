@@ -1,5 +1,5 @@
 <?php
-/* Plugin Name: Geo Ads Pro - settings.php */
+/* Plugin Name: die1-Geo Ads Pro - settings.php */
 /* Date: 20260606 */
 /* Author: Levent Cetin - 3CCS.com */
 
@@ -27,7 +27,7 @@ class Geo_Ads_Pro_Settings {
     public function register_settings() {
 
         register_setting('gap_settings_group', 'gap_enable_local_mode', ['sanitize_callback' => 'absint']);
-        register_setting('gap_settings_group', 'gap_default_region', ['sanitize_callback' => 'sanitize_text_field']);
+        register_setting('gap_settings_group', 'gap_default_region', ['sanitize_callback' => ['Geo_Ads_Pro_Regions', 'normalize_region_input']]);
         register_setting('gap_settings_group', 'gap_rotation_mode', ['sanitize_callback' => [$this, 'sanitize_rotation_mode']]);
         register_setting('gap_settings_group', 'gap_abtest_auto', ['sanitize_callback' => 'absint']);
         register_setting('gap_settings_group', 'gap_delete_data_on_uninstall', ['sanitize_callback' => 'absint']);
@@ -57,7 +57,7 @@ class Geo_Ads_Pro_Settings {
         ?>
 
         <div class="wrap gap-settings-page">
-            <h1><?php esc_html_e('Geo Ads Pro – Settings', 'geo-ads-pro'); ?></h1>
+            <h1><?php esc_html_e('die1-Geo Ads Pro – Settings', 'geo-ads-pro'); ?></h1>
 
             <table class="widefat striped" style="max-width: 760px; margin: 16px 0;">
                 <tbody>
@@ -99,7 +99,7 @@ class Geo_Ads_Pro_Settings {
                                 <?php foreach ($regions as $r => $data): ?>
                                     <option value="<?php echo esc_attr($r); ?>"
                                         <?php selected(get_option('gap_default_region'), $r); ?>>
-                                        <?php echo esc_html($r); ?>
+                                        <?php echo esc_html(Geo_Ads_Pro_Regions::display_name($r)); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
